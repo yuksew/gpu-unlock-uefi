@@ -31,11 +31,11 @@
     },
     {
       "path": "README.ja.md",
-      "sha256": "3dde2fe431e9a159c4c0ae9095bdb14b7ae932e4c4df7c012100fb7a6c6ccb2c"
+      "sha256": "7d7a7ed4136edc3d67e5b1b5b185ff66df1eff75340cc8a50b1f219ea27accae"
     },
     {
       "path": "README.md",
-      "sha256": "2360490adf6ffdb7e417bd3bb200be79aaa2fbc0236b69177ecec0e57c884e67"
+      "sha256": "8e4dc573185e9ca7bf3ac8735d334eaa38550af49eaeb523be2e2c0cbd8ae731"
     },
     {
       "path": "TESTING.md",
@@ -2651,11 +2651,11 @@
     },
     {
       "path": "docs/BOARD-PROFILE.ja.md",
-      "sha256": "e46b7d523c2b84dce26cc8463b001692f7744f519eea2748657210545276e0e9"
+      "sha256": "8537d932812c17e38eacf9f16e220aa06088e1d431fb76856ca0fe8404649717"
     },
     {
       "path": "docs/BOARD-PROFILE.md",
-      "sha256": "4dfd313f66709fdcafd467c06ea46dc9cda06616648e0ad7a5c8733ab8226f3f"
+      "sha256": "f67aaf35c6b57cf313f9ffb8b01ce56633e88774aee1a9406e6397bf3ecfc92e"
     },
     {
       "path": "docs/USB-BOOT.ja.md",
@@ -2716,6 +2716,10 @@
     {
       "path": "evidence/unlock-3090-01/REPORT.TXT",
       "sha256": "aae59d0146912e384b97260d0849e102022eb617bb92dabbcc04396440c30299"
+    },
+    {
+      "path": "evidence/unlock-3090-02/REPORT.TXT",
+      "sha256": "072cd179a1228b29aab7554728d5cfeeb55bd183c5716237a4345cdc415192ac"
     },
     {
       "path": "evidence/unlock-boot-09/REPORT.TXT",

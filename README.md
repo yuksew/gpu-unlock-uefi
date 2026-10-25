@@ -29,7 +29,7 @@ Every gate compares against values read from that card and that PC. Anything tha
 | Step | RTX 3060 12GB (`ga106_2504`) | MSI RTX 3090 (`ga102_2204`) |
 | --- | --- | --- |
 | Read-only preflight | 3 discovery boots + 1 confirmation boot, no `PENDING` line, `complete=1` | same |
-| Transaction, 1 run | `result=0 FLR=1 clean=1`, selectors rewritten to `0x88888888` / `0x8` | same |
+| Transaction | 1 run, `result=0 FLR=1 clean=1`, selectors rewritten to `0x88888888` / `0x8` | 2 runs, the second with a monitor on both adapters |
 | Effect measured in Windows | GEMM and ComfyUI | GEMM, prefill and decode |
 | Gone after a power cycle | yes: the before and after sets are separate boots | yes, measured directly: 72.0 TFLOPS and 35.8 TFLOPS/GHz after a normal reboot |
 
@@ -72,6 +72,8 @@ Same shape as the 3060 and the same reason: per clock the patched path doubles, 
 Prefill and decode were measured separately with a different harness (an LLM server, 3 repetitions per case) twice per state: prompt throughput rose 8.8% at 4K and 13.2% at 16K, and each state's two runs agree to within half a point. Decode did not move measurably. The same state varies by about ±10% between runs at 16K (109.9 and 125.3 tok/s without the patch, 102.9 and 108.0 with it), so one run is not enough to claim an effect there, and the single high sample is what an earlier reading of −13.8% rested on. That harness's raw data is not in this repository.
 
 A normal reboot is enough to undo it: after one, the same GEMM probe read 72.0 TFLOPS and 35.8 TFLOPS/GHz, the locked state.
+
+The second transaction (`evidence/unlock-3090-02/`) ran with one monitor on the iGPU and another on the 3090. The 3090's own output goes dark when its UEFI driver is released and comes back with the Windows driver; the console never moves, and the card still ends `clean=1`. That makes a spare output on the target harmless, which is what the display check now encodes.
 
 ## Power and efficiency
 

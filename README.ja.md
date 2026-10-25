@@ -29,7 +29,7 @@ NVIDIA GA10x の GeForce カードで、FP16/BF16 テンソルの発行レート
 | 段階 | RTX 3060 12GB（`ga106_2504`） | MSI RTX 3090（`ga102_2204`） |
 | --- | --- | --- |
 | 読み取り専用 preflight | 探索 3 回 + 確定 1 回、`PENDING` 行なし、`complete=1` | 同じ |
-| トランザクション 1 回 | `result=0 FLR=1 clean=1`、セレクタを `0x88888888` / `0x8` に書き換え | 同じ |
+| トランザクション | 1 回、`result=0 FLR=1 clean=1`、セレクタを `0x88888888` / `0x8` に書き換え | 2 回、2 回目は両方のアダプタにモニタを接続 |
 | Windows 側での効果測定 | GEMM と ComfyUI | GEMM、prefill、decode |
 | 電源断での復帰 | あり: 変更前と変更後は別ブート | あり（実測）: 通常の再起動後に 72.0 TFLOPS / 35.8 TFLOPS/GHz |
 

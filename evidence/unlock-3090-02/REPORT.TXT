@@ -1,0 +1,315 @@
+GPU-UNLOCK UEFI transaction v0.10
+RUN09
+Bus Master protocol state checks; one manual attempt per launch.
+PIO readback is not an execution gate. This path does not independently verify TCM contents; FWSEC scratch/WPR results are required.
+CHECK stage=secure-boot status=0
+CHECK stage=watchdog status=0
+PCI enumeration: status=0 handles=50
+PCI target matches=1 status=0
+target pci_path=Pci(0x1,0x1)/Pci(0x0,0x0) depth=2 status=0
+target location: status=0
+identity: pci=0x220410de subsystem=0x38811462 class_rev=0x30000a1
+config[00]=220410de 00100002 030000a1 00800010
+config[10]=de000000 0000000c 000000e8 0000000c
+config[20]=000000f0 0000f001 00000000 38811462
+config[30]=df000000 00000060 00000000 000001ff
+config[40]=38811462 00000000 00000000 00000000
+config[50]=00000000 00000001 0023d6ce 00000000
+config[60]=48036801 00000008 00807805 00000000
+config[70]=00000000 00000000 0012b410 112c8de1
+config[80]=00092930 00454d04 11040040 00000000
+config[90]=00000000 00000000 00000000 00070813
+config[a0]=00001400 0180001e 001f0004 00000000
+config[b0]=00000000 01140009 00000000 00000000
+config[c0]=00000000 00000000 00050011 00b90000
+config[d0]=00ba0000 00000000 00000000 00000000
+config[e0]=00000000 00000000 00000000 00000000
+config[f0]=00000000 00000000 00000000 00000000
+target BDF=0:1:0.0 checks=1 pm=0x60 pcie=0x78 msi=0x68 msix=0
+CHECK stage=target status=0
+GOP enumeration: status=0 handles=2
+GOP[0] path_status=0 route=0 framebuffer=0xe800000000 bytes=3145728 mode=3 max_mode=14 info_bytes=36 console=0 target=1
+GOP[0] format=1 size=1024x768 stride=1024
+GOP[0] not the console (spare output on the target GPU); ignored
+GOP[1] path_status=0 route=1 framebuffer=0xf810000000 bytes=3145728 mode=2 max_mode=15 info_bytes=36 console=0 target=0
+GOP[1] format=1 size=1024x768 stride=1024
+GOP result: valid=1 console_gops=1
+CHECK stage=display status=0
+ownership: records=10 exclusive=0 status=0x800000000000000f
+owner[0] protocol=fe47349a attributes=0x2 count=3 agent=0x84a6ff98 controller=0x85891a18
+owner[1] protocol=fe47349a attributes=0x2 count=1 agent=0x82879020 controller=0x85891a18
+owner[2] protocol=3bc1b285 attributes=0x1 count=2 agent=0x877f4b18 controller=0
+owner[3] protocol=09576e91 attributes=0x1 count=79 agent=0x877f4b18 controller=0
+owner[4] protocol=09576e91 attributes=0x2 count=7 agent=0x84a6ff98 controller=0x85891a18
+owner[5] protocol=09576e91 attributes=0x8 count=1 agent=0x84a6ff98 controller=0x82b46e18
+owner[6] protocol=09576e91 attributes=0x4 count=2 agent=0x848be918 controller=0x85891a18
+owner[7] protocol=09576e91 attributes=0x2 count=2 agent=0x85c33698 controller=0x85891a18
+owner[8] protocol=4cf5b200 attributes=0x1 count=29 agent=0x877f4b18 controller=0
+owner[9] protocol=4cf5b200 attributes=0x10 count=1 agent=0x84a6ff98 controller=0x85891a18
+ownership: records=10 exclusive=0 status=0
+owner[0] protocol=fe47349a attributes=0x2 count=3 agent=0x84a6ff98 controller=0x85891a18
+owner[1] protocol=fe47349a attributes=0x2 count=1 agent=0x82879020 controller=0x85891a18
+owner[2] protocol=3bc1b285 attributes=0x1 count=2 agent=0x877f4b18 controller=0
+owner[3] protocol=09576e91 attributes=0x1 count=79 agent=0x877f4b18 controller=0
+owner[4] protocol=09576e91 attributes=0x2 count=7 agent=0x84a6ff98 controller=0x85891a18
+owner[5] protocol=09576e91 attributes=0x8 count=1 agent=0x84a6ff98 controller=0x82b46e18
+owner[6] protocol=09576e91 attributes=0x4 count=2 agent=0x848be918 controller=0x85891a18
+owner[7] protocol=09576e91 attributes=0x2 count=2 agent=0x85c33698 controller=0x85891a18
+owner[8] protocol=4cf5b200 attributes=0x1 count=29 agent=0x877f4b18 controller=0
+owner[9] protocol=4cf5b200 attributes=0x10 count=1 agent=0x84a6ff98 controller=0x85891a18
+release allows a child of the same driver at record 5
+release candidate: agent=0x84a6ff98 image=0x84a6ff98 source=0x85891a18 base=0x82855000 bytes=177920 version=0x60009 code_type=3 children=0
+Exclusive ownership deferred until manual U and explicit driver release.
+CHECK stage=ownership status=0
+target location: status=0
+identity: pci=0x220410de subsystem=0x38811462 class_rev=0x30000a1
+target BDF=0:1:0.0 checks=1 pm=0x60 pcie=0x78 msi=0x68 msix=0
+CHECK stage=config-recheck status=0
+bar0 query: status=0
+bar0 descriptor: type=0 granularity=32 min=0xde000000 max=0xdeffffff length=0x1000000 translation=0
+bar0 cross-check: config_base=0xde000000 descriptor_base=0xde000000 agree=1
+CHECK stage=bar0 status=0
+chip: actual=0xb72000a1 expected=0xb72000a1 pass=1
+cold state: chip=0xb72000a1 plm=0xffffff8f gfw=0x8b8f/0x3ff/0x10 WPR2_HI=0 SS0=0x50004006 SS1=0x6 fb_mb=0x6000
+cold gates: gfw=1 plm=1 wpr2_hi=1 ss0=1 ss1=1 fb_mb=1
+CHECK stage=cold-state status=0
+live PROM hash sha256=de78e145e527059faec711a9a320b6dca6a88dc4de0fed882d1688ba2dd1aad1 matched=1 base=0xde000000 expected=de78e145e527059faec711a9a320b6dca6a88dc4de0fed882d1688ba2dd1aad1
+CHECK stage=prom status=0
+asset verified: gpu-unlock/610.43.03/booter_load_ga102.bin bytes=61256 sha256=056cbc064a888f80717726c54d7f64fcd68044d123870c95a74f37f4975dcaa4
+asset verified: gpu-unlock/610.43.03/v67-ga102-610.43.03.bin bytes=64000 sha256=2a0aa1f86d0b6afff5214d641d87d46dc98ef06ed908ff05d0ddbad5ffb7e197
+asset verified: gpu-unlock/610.43.03/gsp_ga10x.bin bytes=84277400 sha256=572373620a37418f24dc16b5031c39338778c3257e48e8408de9a57291b24f3a
+asset verified: gpu-unlock/610.43.03/gsp_boot_ga102.bin bytes=24576 sha256=3df651acb174fd5f5561a1996965b192f50c5d763168446ed0d4ead19d895768
+asset verified: gpu-unlock/610.43.03/gsp_boot_desc_ga102.bin bytes=84 sha256=cc5a3fc1f4c47f2fe107b1b68f0176d8a448e6dec84b575e5560ccef5262bf15
+CHECK stage=assets status=0
+READY: MSI RTX 3090 / console amd_igpu_bus1 (AMD iGPU console at 08:00.0, target at 0:1:0.0, confirmed) / verified USB log and firmware.
+U will release the RTX firmware driver, restore verified access settings if needed, then recheck and attempt once.
+Press U to attempt once; Esc or 30-second timeout cancels.
+CHECK stage=arming status=0
+target location: status=0
+identity: pci=0x220410de subsystem=0x38811462 class_rev=0x30000a1
+target BDF=0:1:0.0 checks=1 pm=0x60 pcie=0x78 msi=0x68 msix=0
+CHECK stage=armed-config status=0
+GOP enumeration: status=0 handles=2
+GOP[0] path_status=0 route=0 framebuffer=0xe800000000 bytes=3145728 mode=3 max_mode=14 info_bytes=36 console=0 target=1
+GOP[0] format=1 size=1024x768 stride=1024
+GOP[0] not the console (spare output on the target GPU); ignored
+GOP[1] path_status=0 route=1 framebuffer=0xf810000000 bytes=3145728 mode=2 max_mode=15 info_bytes=36 console=0 target=0
+GOP[1] format=1 size=1024x768 stride=1024
+GOP result: valid=1 console_gops=1
+CHECK stage=armed-display status=0
+chip: actual=0xb72000a1 expected=0xb72000a1 pass=1
+cold state: chip=0xb72000a1 plm=0xffffff8f gfw=0x8b8f/0x3ff/0x10 WPR2_HI=0 SS0=0x50004006 SS1=0x6 fb_mb=0x6000
+cold gates: gfw=1 plm=1 wpr2_hi=1 ss0=1 ss1=1 fb_mb=1
+CHECK stage=armed-cold-state status=0
+Manual U confirmed: release RTX firmware driver once, then revalidate.
+driver release: status=0 refresh=0 same_pci=1
+CHECK stage=driver-release status=0
+ownership: records=6 exclusive=1 status=0
+owner[0] protocol=3bc1b285 attributes=0x1 count=2 agent=0x877f4b18 controller=0
+owner[1] protocol=09576e91 attributes=0x1 count=79 agent=0x877f4b18 controller=0
+owner[2] protocol=09576e91 attributes=0x2 count=7 agent=0x84a6ff98 controller=0x85891a18
+owner[3] protocol=09576e91 attributes=0x4 count=2 agent=0x848be918 controller=0x85891a18
+owner[4] protocol=09576e91 attributes=0x2 count=2 agent=0x85c33698 controller=0x85891a18
+owner[5] protocol=4cf5b200 attributes=0x1 count=30 agent=0x877f4b18 controller=0
+CHECK stage=ownership-after-release status=0
+GOP enumeration: status=0 handles=1
+GOP[0] path_status=0 route=1 framebuffer=0xf810000000 bytes=3145728 mode=2 max_mode=15 info_bytes=36 console=0 target=0
+GOP[0] format=1 size=1024x768 stride=1024
+GOP result: valid=1 console_gops=1
+CHECK stage=display-after-release status=0
+config before decode restore (256 valid bytes):
+config[00]=220410de 00100000 030000a1 00800010
+config[10]=de000000 0000000c 000000e8 0000000c
+config[20]=000000f0 0000f001 00000000 38811462
+config[30]=df000000 00000060 00000000 000001ff
+config[40]=38811462 00000000 00000000 00000000
+config[50]=00000000 00000001 0023d6ce 00000000
+config[60]=48036801 00000008 00807805 00000000
+config[70]=00000000 00000000 0012b410 112c8de1
+config[80]=00092930 00454d04 11040040 00000000
+config[90]=00000000 00000000 00000000 00070813
+config[a0]=00001400 0180001e 001f0004 00000000
+config[b0]=00000000 01140009 00000000 00000000
+config[c0]=00000000 00000000 00050011 00b90000
+config[d0]=00ba0000 00000000 00000000 00000000
+config[e0]=00000000 00000000 00000000 00000000
+config[f0]=00000000 00000000 00000000 00000000
+decode supported attributes: status=0 mask=0x1b77b
+decode current attributes: status=0 mask=0
+decode restore intent: saved_command=0x2 current_command=0 missing=0x2 attributes=0x200
+decode enable status=0
+config after decode restore (256 valid bytes):
+config[00]=220410de 00100002 030000a1 00800010
+config[10]=de000000 0000000c 000000e8 0000000c
+config[20]=000000f0 0000f001 00000000 38811462
+config[30]=df000000 00000060 00000000 000001ff
+config[40]=38811462 00000000 00000000 00000000
+config[50]=00000000 00000001 0023d6ce 00000000
+config[60]=48036801 00000008 00807805 00000000
+config[70]=00000000 00000000 0012b410 112c8de1
+config[80]=00092930 00454d04 11040040 00000000
+config[90]=00000000 00000000 00000000 00070813
+config[a0]=00001400 0180001e 001f0004 00000000
+config[b0]=00000000 01140009 00000000 00000000
+config[c0]=00000000 00000000 00050011 00b90000
+config[d0]=00ba0000 00000000 00000000 00000000
+config[e0]=00000000 00000000 00000000 00000000
+config[f0]=00000000 00000000 00000000 00000000
+decode readback matched=1
+CHECK stage=decode-after-release status=0
+target location: status=0
+identity: pci=0x220410de subsystem=0x38811462 class_rev=0x30000a1
+target BDF=0:1:0.0 checks=1 pm=0x60 pcie=0x78 msi=0x68 msix=0
+CHECK stage=config-after-release status=0
+bar0 query: status=0
+bar0 descriptor: type=0 granularity=32 min=0xde000000 max=0xdeffffff length=0x1000000 translation=0
+bar0 cross-check: config_base=0xde000000 descriptor_base=0xde000000 agree=1
+CHECK stage=bar0-after-release status=0
+chip: actual=0xb72000a1 expected=0xb72000a1 pass=1
+cold state: chip=0xb72000a1 plm=0xffffff8f gfw=0x8b8f/0x3ff/0x10 WPR2_HI=0 SS0=0x50004006 SS1=0x6 fb_mb=0x6000
+cold gates: gfw=1 plm=1 wpr2_hi=1 ss0=1 ss1=1 fb_mb=1
+CHECK stage=cold-after-release status=0
+live PROM hash sha256=de78e145e527059faec711a9a320b6dca6a88dc4de0fed882d1688ba2dd1aad1 matched=1 base=0xde000000 expected=de78e145e527059faec711a9a320b6dca6a88dc4de0fed882d1688ba2dd1aad1
+CHECK stage=prom-after-release status=0
+ARMED: one transaction is starting. Do not reset or remove the USB.
+asset request: gpu-unlock/610.43.03/gsp_ga10x.bin
+asset result: gpu-unlock/610.43.03/gsp_ga10x.bin error=0 bytes=84277400
+asset cache cleanup: gpu-unlock/610.43.03/gsp_ga10x.bin devres_released=0
+driver probe resources: phase=entry empty=1
+asset request: gpu-unlock/610.43.03/v67-ga102-610.43.03.bin
+asset result: gpu-unlock/610.43.03/v67-ga102-610.43.03.bin error=0 bytes=64000
+asset cache cleanup: gpu-unlock/610.43.03/v67-ga102-610.43.03.bin devres_released=0
+asset request: gpu-unlock/610.43.03/gsp_boot_ga102.bin
+asset result: gpu-unlock/610.43.03/gsp_boot_ga102.bin error=0 bytes=24576
+asset cache cleanup: gpu-unlock/610.43.03/gsp_boot_ga102.bin devres_released=0
+asset request: gpu-unlock/610.43.03/gsp_boot_desc_ga102.bin
+asset result: gpu-unlock/610.43.03/gsp_boot_desc_ga102.bin error=0 bytes=84
+asset cache cleanup: gpu-unlock/610.43.03/gsp_boot_desc_ga102.bin devres_released=0
+asset geometry: image=84226048 signature=4096 boot=24576 code=0x1800 data=0x800 manifest=0 parse=0
+asset request: gpu-unlock/610.43.03/booter_load_ga102.bin
+asset result: gpu-unlock/610.43.03/booter_load_ga102.bin error=0 bytes=61256
+asset cache cleanup: gpu-unlock/610.43.03/booter_load_ga102.bin devres_released=0
+claim: power=0 pm_cap=0x60 flags=0
+claim: command=0x2 capability=0x112c8de1 BAR_mask=0x1
+layout inputs: fb_mb=0x6000 vga=0x1 mmu_plm=0x45cb8f mmu_lo=0x100000 mmu_hi=0x5cffff0 image=84226048 boot=24576
+layout mmu: lo=0x10000000 hi=0x5cffff000 hi_exclusive=0x5d0000000 constrain=0
+mmu lock ignored: high address is not the FB top
+layout decoded: fb=0x600000000 vga=0x5fff00000 mmu_valid=0 mmu_low=0x10000000 frts=0x100000 heap=0x5800000 result=0
+layout ranges: nonwpr=0x5f5300000 wpr=0x5f5400000 heap=0x5f5500000 gsp=0x5fada0000 boot=0x5ffdfa000 frts=0x5ffe00000 end=0x5fff00000 scrub_floor=0x5f0000000
+DMA masks: streaming=0xffffffff coherent=0xffffffff requested=0xffffffff
+Booter signature: fuse_raw=0x1 version=1 signatures=2 size=768
+DMA buffers mapped: 2048
+DMA buffers mapped: 4096
+DMA buffers mapped: 6144
+DMA buffers mapped: 8192
+DMA buffers mapped: 10240
+DMA buffers mapped: 12288
+DMA buffers mapped: 14336
+DMA buffers mapped: 16384
+DMA buffers mapped: 18432
+DMA buffers mapped: 20480
+entry: plm=0xffffff8f ss0=0x50004006 ss1=0x6 wpr2_hi=0
+FWSEC: reading PROM at 0x300000
+FWSEC: PROM bytes=1048576 signature=0xaa55
+gpu_unlock: ROM chain: pos=0 data=0x52494350 bytes=65024 type=0 last=0
+gpu_unlock: ROM chain: pos=0xfe00 data=0x52494350 bytes=91648 type=0x3 last=0
+gpu_unlock: ROM chain: pos=0x26400 data=0x5344504e bytes=22016 type=0xe0 last=0
+gpu_unlock: ROM chain: pos=0x2ba00 data=0x5344504e bytes=370688 type=0xe0 last=128
+gpu_unlock: ROM expansion: base=0xfe00 ext=0x26400 adjust=0x16600
+gpu_unlock: ROM BIT: offset=0x1b0 size=12 stride=6 tokens=17 adjust=0x16600
+gpu_unlock: ROM ucode table: offset=0x85fe1 version=1 header=6 stride=6 entries=16
+gpu_unlock: FWSEC descriptor: offset=0x423f0 ROM_bytes=1048576 header=0x4ac0301
+gpu_unlock: FWSEC geometry: image_off=0x4289c size=0xe200 imem=0xda00 va=0 pa=0 dmem=0x800 pa=0 pkc=0x5a4 interface=0x1c engine=0x400 ucode=9 signatures=3 versions=0x7 bytes=1152
+gpu_unlock: FWSEC interface: offset=0x1c version=1 header=4 stride=8 entries=2 FRTS=0x5ffe00000
+gpu_unlock: FWSEC mapper: version=3 size=64 cmd_offset=0x7c0 cmd_size=64
+FWSEC fuse: raw=0x3 version=2
+gpu_unlock: FWSEC signature selection: versions=0x7 fuse_version=2 sig_bytes=384
+Bus Master enable intent: command=0x2 attributes=0x200
+Bus Master enabled: command=0x6 attributes=0x600 matched=1
+Falcon reset begin: base=0x110000
+poll timeout tolerated: reg=0x1100f4 last=0x47f7 mask=0x80000000 expected=0x80000000 budget_us=1000
+Falcon pre-reset timeout tolerated per HW bug 3419321
+Falcon reset done: base=0x110000 hwcfg=0x67f7 chip=0xb72000a1
+Falcon DMA: base=0x110000 dest=0 offset=0 src=0x82777000 size=0xda00 cmd=0x614
+Falcon DMA: base=0x110000 dest=0 offset=0 src=0x82784a00 size=0x800 cmd=0x600
+FWSEC snapshot: phase=pre-start samples=21/21 error=0
+FWSEC register: reg=0x110100 value=0x10 sentinel_like=0
+FWSEC register: reg=0x110008 value=0 sentinel_like=0
+FWSEC register: reg=0x110040 value=0 sentinel_like=0
+FWSEC register: reg=0x110044 value=0 sentinel_like=0
+FWSEC register: reg=0x110094 value=0 sentinel_like=0
+FWSEC register: reg=0x1100f4 value=0x47f7 sentinel_like=0
+FWSEC register: reg=0x110104 value=0 sentinel_like=0
+FWSEC register: reg=0x11010c value=0 sentinel_like=0
+FWSEC register: reg=0x110118 value=0x602 sentinel_like=0
+FWSEC register: reg=0x110600 value=0x115 sentinel_like=0
+FWSEC register: reg=0x110624 value=0x190 sentinel_like=0
+FWSEC register: reg=0x111668 value=0x1 sentinel_like=0
+FWSEC register: reg=0x111180 value=0x1 sentinel_like=0
+FWSEC register: reg=0x111198 value=0x9 sentinel_like=0
+FWSEC register: reg=0x11119c value=0x400 sentinel_like=0
+FWSEC register: reg=0x111210 value=0x5a4 sentinel_like=0
+FWSEC register: reg=0x110108 value=0x80420100 sentinel_like=0
+FWSEC register: reg=0x110110 value=0x82784a sentinel_like=0
+FWSEC register: reg=0x110114 value=0x700 sentinel_like=0
+FWSEC register: reg=0x11011c value=0x700 sentinel_like=0
+FWSEC register: reg=0x110128 value=0 sentinel_like=0
+Falcon start: base=0x110000 cpuctl=0x10 code_va=0 sig_dmem=0x5a4 engine_mask=0x400 ucode=9 mailbox=0:0
+FWSEC halt observation: first=0 last=0x10 samples=4041 observed_nonhalt=1 requested_wait_us=202000 error=0
+FWSEC snapshot: phase=post-halt samples=21/21 error=0
+FWSEC register: reg=0x110100 value=0x10 sentinel_like=0
+FWSEC register: reg=0x110008 value=0x10 sentinel_like=0
+FWSEC register: reg=0x110040 value=0 sentinel_like=0
+FWSEC register: reg=0x110044 value=0 sentinel_like=0
+FWSEC register: reg=0x110094 value=0xda550000 sentinel_like=0
+FWSEC register: reg=0x1100f4 value=0x47f7 sentinel_like=0
+FWSEC register: reg=0x110104 value=0 sentinel_like=0
+FWSEC register: reg=0x11010c value=0x80 sentinel_like=0
+FWSEC register: reg=0x110118 value=0x602 sentinel_like=0
+FWSEC register: reg=0x110600 value=0x115 sentinel_like=0
+FWSEC register: reg=0x110624 value=0x190 sentinel_like=0
+FWSEC register: reg=0x111668 value=0x1 sentinel_like=0
+FWSEC register: reg=0x111180 value=0x1 sentinel_like=0
+FWSEC register: reg=0x111198 value=0x9 sentinel_like=0
+FWSEC register: reg=0x11119c value=0x400 sentinel_like=0
+FWSEC register: reg=0x111210 value=0x5a4 sentinel_like=0
+FWSEC register: reg=0x110108 value=0x80420100 sentinel_like=0
+FWSEC register: reg=0x110110 value=0x82784a sentinel_like=0
+FWSEC register: reg=0x110114 value=0x700 sentinel_like=0
+FWSEC register: reg=0x11011c value=0x700 sentinel_like=0
+FWSEC register: reg=0x110128 value=0 sentinel_like=0
+FWSEC result: scratch=0 expected_hi16=0
+FWSEC WPR2: low=0x5ffe000 high=0x5ffee00 expected_page=0x5ffe00 end=0x5fff00000
+Falcon reset begin: base=0x840000
+poll timeout tolerated: reg=0x8400f4 last=0x67f7 mask=0x80000000 expected=0x80000000 budget_us=1000
+Falcon pre-reset timeout tolerated per HW bug 3419321
+Falcon reset done: base=0x840000 hwcfg=0x67f7 chip=0xb72000a1
+Falcon DMA: base=0x840000 dest=0 offset=0x100 src=0x827ed000 size=0x8900 cmd=0x614
+Falcon DMA: base=0x840000 dest=0 offset=0 src=0x827f5a00 size=0x6200 cmd=0x600
+Falcon start: base=0x840000 cpuctl=0x10 code_va=0x100 sig_dmem=0x10 engine_mask=0x1 ucode=3 mailbox=0:0x82b9c000
+selector read: SS0=0x50004006 expected_unlock=0x88888888
+selector write: SS0=0x88888888
+selector read: SS1=0x6 expected_unlock=0x8
+selector write: SS1=0x8
+pre-FLR selectors: ss0=0x88888888 expected=0x88888888 ss1=0x8 expected=0x8
+GOP enumeration: status=0 handles=1
+GOP[0] path_status=0 route=1 framebuffer=0xf810000000 bytes=3145728 mode=2 max_mode=15 info_bytes=36 console=0 target=0
+GOP[0] format=1 size=1024x768 stride=1024
+GOP result: valid=1 console_gops=1
+PCIe FLR begin: BME=0 DMA retained, chip=0xb72000a1
+PCIe FLR returned: result=0
+post-FLR BAR ready: chip=0xb72000a1
+post-FLR GFW result: error=0 pci=0x220410de plm=0x8b8f boot=0x3ff cpuctl=0x10 budget_us=2050000
+engine reset assert: phase=post-FLR base=0x840000 before=0 write=0x1
+engine reset propagation: phase=post-FLR base=0x840000 first=0x1 tenth=0x1
+engine reset asserted: phase=post-FLR base=0x840000 error=0 last=0x1
+engine reset release: phase=post-FLR base=0x840000 before=0x1 write=0
+engine reset released: phase=post-FLR base=0x840000 engine=0 hwcfg2=0x67f7
+post-FLR SEC2 reset released, GSP halted, BME=0 pending=0 WPR2=1ffffe00:00000000 SS0=88888888 SS1=00000008
+driver probe resources: phase=handoff empty=1
+restore streaming mask: actual=0xffffffff expected=0xffffffff
+restore coherent mask: actual=0xffffffff expected=0xffffffff
+restore PCI command: actual=0x2 original=0x2 mask=0x6
+BME containment: attribute_status=0 hardware_status=0 command=0x2 cached=0x200 pending=0
+transaction result=0 containment=0 started=1 quiesced=1 fault=0 retained=0 maps=0 FLR=1
+FINAL status=0 stage=transaction attempted=1 driver_release=1 clean=1
