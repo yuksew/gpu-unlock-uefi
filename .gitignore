@@ -28,3 +28,4 @@ __pycache__/
 *.key
 .DS_Store
 Thumbs.db
+/unlock/profiles/*.local.h

@@ -4,40 +4,61 @@
 #include <Protocol/DevicePath.h>
 #include <stddef.h>
 
-/* Board profile. Defaults describe the validated MSI RTX 3080 10GB
-   (10de:2206 / 1462:3890). -DGU_BOARD_220A selects the MSI RTX 3080 12GB
-   (10de:220a / 1462:3896); never mix the two, every expected value below is
-   taken from one card's own firmware dump. */
-#if defined(GU_BOARD_220A)
-#define GU_BOARD_ID 0x220a10deU
-#define GU_BOARD_SUBSYSTEM 0x38961462U
-#define GU_BOARD_LABEL "MSI RTX 3080 12GB"
-/* Live BAR0+0x300000, byte-identical over three consecutive probe boots. */
-#define GU_BOARD_PROM_SHA256 \
-  "799d147bfc7ef2c094668b5197c0425eb6692c6b623435a2803b15f9aee80a97"
-/* 12288 MiB, read back from FEAT 0x001183a4. */
-#define GU_BOARD_FB_MB 0x3000U
-/* SS0 (0x0082381c) is boot-unstable: 0x01521103, 0x01521013 and 0x01521003
-   were observed over three boots. Only the bits common to all three are a
-   gate, so a re-boot cannot reject the card for a volatile bit. */
-#define GU_BOARD_SS0_MASK 0x01521003U
-#define GU_BOARD_SS0_VALUE 0x01521003U
-/* SS1 (0x00823820) was 5 in every probe boot; the 10GB profile accepts 2 or 3. */
-#define GU_BOARD_SS1_BITS 0x00000020U
-#else
-#define GU_BOARD_ID 0x220610deU
-#define GU_BOARD_SUBSYSTEM 0x38901462U
-#define GU_BOARD_LABEL "MSI RTX 3080 10GB"
-#define GU_BOARD_PROM_SHA256 \
-  "f3dc8f07b0b8c9856d192df172dfa7f7f84ac17ef6edfdb448ad7fa94efd2789"
-#define GU_BOARD_FB_MB 0x2800U
-#define GU_BOARD_SS0_MASK 0xffffffffU
-#define GU_BOARD_SS0_VALUE 0x46254040U
-#define GU_BOARD_SS1_BITS 0x0000000cU
+/* Board profile. One profile per physical board, selected at compile time;
+   every expected value in it was read from that board's own firmware dump and
+   cold-state probe, so two profiles must never be mixed. The default is the
+   first card validated end to end (MSI RTX 3080 10GB).
+     -DGU_BOARD_2206          MSI RTX 3080 10GB  (10de:2206 / 1462:3890)
+     -DGU_BOARD_220A          MSI RTX 3080 12GB  (10de:220a / 1462:3896)
+     -DGU_BOARD_GA106_2504    RTX 3060 12GB      (10de:2504, unconfirmed)
+   Profiles live in unlock/profiles/; docs/BOARD-PROFILE.md lists the fields. */
+#if defined(GU_BOARD_2206) + defined(GU_BOARD_220A) + defined(GU_BOARD_GA106_2504) > 1
+#error "Select exactly one GU_BOARD_* profile"
 #endif
-/* GA102 die ID at BAR0+0; 0xb72000a1 in every probe boot of both cards. */
+#if defined(GU_BOARD_GA106_2504)
+#include "profiles/ga106_2504.h"
+#elif defined(GU_BOARD_220A)
+#include "profiles/ga102_220a.h"
+#else
+#include "profiles/ga102_2206.h"
+#endif
 
-#define GU_BOARD_CHIP 0xb72000a1U
+/* GU_TARGET_PCI_ID is the dword at config 0x00 (vendor | device << 16) that
+   the retained vendor transaction re-checks during the FLR. Deriving it from
+   the profile removes the second place a board could be named wrongly. */
+#ifndef GU_TARGET_PCI_ID
+#define GU_TARGET_PCI_ID GU_BOARD_ID
+#elif GU_TARGET_PCI_ID != GU_BOARD_ID
+#error "GU_TARGET_PCI_ID and GU_BOARD_ID name different boards"
+#endif
+
+/* A profile is complete when every gate value has been read off the card
+   itself, not copied from another board or assumed from the SKU. Only a
+   complete profile may be built into a write-capable image: the read-only
+   preflight exists to turn an incomplete profile into a complete one. A
+   HAVE flag the profile forgot to define reads as 0 here, so an omission
+   makes the profile incomplete rather than silently trusted. */
+#if GU_BOARD_HAVE_CHIP && GU_BOARD_HAVE_SUBSYSTEM && GU_BOARD_HAVE_PROM &&     GU_BOARD_HAVE_SS0 && GU_BOARD_HAVE_SS1 && GU_BOARD_HAVE_CAP &&              GU_BOARD_HAVE_CLASS && GU_BOARD_HAVE_FB
+#define GU_PROFILE_COMPLETE 1
+#else
+#define GU_PROFILE_COMPLETE 0
+#endif
+#if !GU_PROFILE_COMPLETE && !defined(GU_PREFLIGHT)
+#error "This board profile is not confirmed on a card yet. Build the GU_PREFLIGHT image, run tools/gen_profile.py on its REPORT.TXT, then rebuild."
+#endif
+
+/* GU_PROFILE_GATE(Have, Match) is the value of one per-board gate. A
+   confirmed field must match. An unconfirmed field cannot be a gate - there
+   is nothing to compare against - so the preflight lets it through to record
+   the card's own value; anywhere else it rejects. The #error above already
+   makes that branch unreachable outside the preflight; the 0 is the backstop. */
+#if defined(GU_PREFLIGHT)
+#define GU_PROFILE_PENDING_OK 1
+#else
+#define GU_PROFILE_PENDING_OK 0
+#endif
+#define GU_PROFILE_GATE(Have, Match) ((Have) ? (Match) : GU_PROFILE_PENDING_OK)
+
 typedef struct GU_DMA GU_DMA;
 struct GU_DMA {
   GU_DMA *next;
