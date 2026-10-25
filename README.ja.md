@@ -37,12 +37,12 @@ NVIDIA GA10x の GeForce カードで、FP16/BF16 テンソルの発行レート
 
 FP32 accumulate の GEMM を各状態 3 回、4096³、中央値の中央値:
 
-| 経路 | 変更前 | 変更後 | 変化 | クロック当たり |
-| --- | --- | --- | --- | --- |
-| FP16 tensor, FP32 accumulate | 25.74 TFLOPS | 47.26 TFLOPS | ×1.84 | ×1.87 |
-| BF16 tensor, FP32 accumulate | 25.60 TFLOPS | 48.42 TFLOPS | ×1.89 | ×1.92 |
-| FP16 tensor, FP16 accumulate（対照） | 46.55 TFLOPS | 46.55 TFLOPS | ×1.00 | — |
-| FP32（対照） | 8.04 TFLOPS | 8.04 TFLOPS | ×1.00 | — |
+| 経路 | 変更前 | 変更後 | 変化 | クロック当たり | 消費電力 |
+| --- | --- | --- | --- | --- | --- |
+| FP16 tensor, FP32 accumulate | 25.74 TFLOPS | 47.26 TFLOPS | ×1.84 | ×1.87 | 103.1 → 131.4 W |
+| BF16 tensor, FP32 accumulate | 25.60 TFLOPS | 48.42 TFLOPS | ×1.89 | ×1.92 | 102.5 → 141.0 W |
+| FP16 tensor, FP16 accumulate（対照） | 46.55 TFLOPS | 46.55 TFLOPS | ×1.00 | — | 119.4 → 120.1 W |
+| FP32（対照） | 8.04 TFLOPS | 8.04 TFLOPS | ×1.00 | — | 140.3 → 142.0 W |
 
 対照 2 行が要点です。動いたのは FP32 accumulate のテンソル経路だけで、したがってこの差はクロックや測定の揺れではなく、戻った発行レートそのものです。消費電力は 170 W の上限内（131 W と 141 W）でした。
 
@@ -60,12 +60,12 @@ ComfyUI、Anima turbo のワークフロー 1 本、832×1216、4 step と 8 ste
 
 各状態 3 回、3060 と同じハーネス・同じフラグで、4096³・FP32 accumulate:
 
-| 経路 | 変更前 | 変更後 | 変化 | クロック当たり |
-| --- | --- | --- | --- | --- |
-| FP16 tensor, FP32 accumulate | 70.95 TFLOPS | 122.49 TFLOPS | ×1.73 | ×1.92 |
-| BF16 tensor, FP32 accumulate | 70.29 TFLOPS | 127.30 TFLOPS | ×1.81 | ×1.91 |
-| FP16 tensor, FP16 accumulate（対照） | 129.26 TFLOPS | 129.52 TFLOPS | ×1.00 | — |
-| FP32（対照） | 24.78 TFLOPS | 24.74 TFLOPS | ×1.00 | — |
+| 経路 | 変更前 | 変更後 | 変化 | クロック当たり | 消費電力 |
+| --- | --- | --- | --- | --- | --- |
+| FP16 tensor, FP32 accumulate | 70.95 TFLOPS | 122.49 TFLOPS | ×1.73 | ×1.92 | 315.6 → 296.5 W |
+| BF16 tensor, FP32 accumulate | 70.29 TFLOPS | 127.30 TFLOPS | ×1.81 | ×1.91 | 320.7 → 337.2 W |
+| FP16 tensor, FP16 accumulate（対照） | 129.26 TFLOPS | 129.52 TFLOPS | ×1.00 | — | 298.1 → 298.8 W |
+| FP32（対照） | 24.78 TFLOPS | 24.74 TFLOPS | ×1.00 | — | 285.6 → 284.9 W |
 
 傾向は 3060 と同じで、理由も同じです。クロック当たりではパッチ対象の経路が 2 倍になり、絶対値の伸びが小さいのは、そのぶんカードが 350 W の上限に張り付いて（実測 296〜337 W）低いクロックに落ちるためです（1980 → FP16 1785 MHz、BF16 1860 MHz）。
 
@@ -75,14 +75,16 @@ prefill と decode は別のハーネス（LLM サーバー、各ケース 3 回
 
 ## 消費電力と効率
 
-同じ実行を NVML で 15 秒間サンプリングした平均消費電力と、1 W あたりの TFLOPS です。
+経路ごとの消費電力は上の 2 つの表の最終列です。同じ実行を 1 J あたりの仕事で見ると:
 
 | カード | 経路 | 変更前 | 変更後 | 1 J あたりの仕事 |
 | --- | --- | --- | --- | --- |
-| RTX 3060 12GB | FP16 tensor, FP32 accumulate | 103.1 W、249.4 GFLOPS/W | 131.4 W、360.5 GFLOPS/W | ×1.45 |
-| RTX 3060 12GB | BF16 tensor, FP32 accumulate | 102.5 W、249.7 GFLOPS/W | 141.0 W、343.4 GFLOPS/W | ×1.38 |
-| RTX 3090 | FP16 tensor, FP32 accumulate | 315.6 W、222.8 GFLOPS/W | 296.5 W、413.1 GFLOPS/W | ×1.85 |
-| RTX 3090 | BF16 tensor, FP32 accumulate | 320.7 W、219.2 GFLOPS/W | 337.2 W、377.5 GFLOPS/W | ×1.72 |
+| RTX 3060 12GB | FP16 tensor, FP32 accumulate | 249.4 GFLOPS/W | 360.5 GFLOPS/W | ×1.45 |
+| RTX 3060 12GB | BF16 tensor, FP32 accumulate | 249.7 GFLOPS/W | 343.4 GFLOPS/W | ×1.38 |
+| RTX 3090 | FP16 tensor, FP32 accumulate | 222.8 GFLOPS/W | 413.1 GFLOPS/W | ×1.85 |
+| RTX 3090 | BF16 tensor, FP32 accumulate | 219.2 GFLOPS/W | 377.5 GFLOPS/W | ×1.72 |
+
+対照もここでは動きません。スループットの対照と同じ論拠です: FP16 accumulate は 3060 で 389.0 → 387.7 GFLOPS/W、3090 で 433.6 → 433.4、FP32 は 57.1 → 56.6 と 86.7 → 86.8。
 
 3060 は変更後に電力を増やします。上限 170 W に対して余裕があり、131〜141 W に収まるからです。3090 はすでに上限 350 W に張り付いているので、クロック当たり 2 倍になった仕事を低いクロックで賄う形になり、電力はほとんど動きません。どちらでも 1 J あたりの仕事は 1.4〜1.9 倍になり、SM クロックはすべてのケースで下がります（3060 は 1920 → 1882/1890 MHz、3090 は 1980 → 1785/1860 MHz）。
 

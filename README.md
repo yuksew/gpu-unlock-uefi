@@ -37,12 +37,12 @@ Every gate compares against values read from that card and that PC. Anything tha
 
 Three GEMM runs per state with FP32 accumulation, 4096³, medians of medians:
 
-| Path | Before | After | Change | Per clock |
-| --- | --- | --- | --- | --- |
-| FP16 tensor, FP32 accumulate | 25.74 TFLOPS | 47.26 TFLOPS | ×1.84 | ×1.87 |
-| BF16 tensor, FP32 accumulate | 25.60 TFLOPS | 48.42 TFLOPS | ×1.89 | ×1.92 |
-| FP16 tensor, FP16 accumulate (control) | 46.55 TFLOPS | 46.55 TFLOPS | ×1.00 | — |
-| FP32 (control) | 8.04 TFLOPS | 8.04 TFLOPS | ×1.00 | — |
+| Path | Before | After | Change | Per clock | Power |
+| --- | --- | --- | --- | --- | --- |
+| FP16 tensor, FP32 accumulate | 25.74 TFLOPS | 47.26 TFLOPS | ×1.84 | ×1.87 | 103.1 → 131.4 W |
+| BF16 tensor, FP32 accumulate | 25.60 TFLOPS | 48.42 TFLOPS | ×1.89 | ×1.92 | 102.5 → 141.0 W |
+| FP16 tensor, FP16 accumulate (control) | 46.55 TFLOPS | 46.55 TFLOPS | ×1.00 | — | 119.4 → 120.1 W |
+| FP32 (control) | 8.04 TFLOPS | 8.04 TFLOPS | ×1.00 | — | 140.3 → 142.0 W |
 
 The two controls are the point: only the FP32-accumulate tensor path moves, so the gain is the restored issue rate and not a clock or measurement artifact. Power stayed inside the 170 W limit (131 W and 141 W).
 
@@ -60,12 +60,12 @@ ComfyUI, one Anima turbo workflow at 832×1216, four and eight steps, five runs 
 
 Three GEMM runs per state, same harness and flags as the 3060 set, 4096³ with FP32 accumulation:
 
-| Path | Before | After | Change | Per clock |
-| --- | --- | --- | --- | --- |
-| FP16 tensor, FP32 accumulate | 70.95 TFLOPS | 122.49 TFLOPS | ×1.73 | ×1.92 |
-| BF16 tensor, FP32 accumulate | 70.29 TFLOPS | 127.30 TFLOPS | ×1.81 | ×1.91 |
-| FP16 tensor, FP16 accumulate (control) | 129.26 TFLOPS | 129.52 TFLOPS | ×1.00 | — |
-| FP32 (control) | 24.78 TFLOPS | 24.74 TFLOPS | ×1.00 | — |
+| Path | Before | After | Change | Per clock | Power |
+| --- | --- | --- | --- | --- | --- |
+| FP16 tensor, FP32 accumulate | 70.95 TFLOPS | 122.49 TFLOPS | ×1.73 | ×1.92 | 315.6 → 296.5 W |
+| BF16 tensor, FP32 accumulate | 70.29 TFLOPS | 127.30 TFLOPS | ×1.81 | ×1.91 | 320.7 → 337.2 W |
+| FP16 tensor, FP16 accumulate (control) | 129.26 TFLOPS | 129.52 TFLOPS | ×1.00 | — | 298.1 → 298.8 W |
+| FP32 (control) | 24.78 TFLOPS | 24.74 TFLOPS | ×1.00 | — | 285.6 → 284.9 W |
 
 Same shape as the 3060 and the same reason: per clock the patched path doubles, while the absolute gain is smaller because the card then sits against its 350 W limit (296–337 W measured) and settles at a lower clock (1980 → 1785 MHz on FP16, → 1860 MHz on BF16).
 
@@ -75,14 +75,16 @@ A normal reboot is enough to undo it: after one, the same GEMM probe read 72.0 T
 
 ## Power and efficiency
 
-Same runs, sampled from NVML over the same 15 s window: average power, and TFLOPS per watt.
+Power per path is the last column of the two tables above; the same runs, as work per joule:
 
 | Card | Path | Before | After | Work per joule |
 | --- | --- | --- | --- | --- |
-| RTX 3060 12GB | FP16 tensor, FP32 accumulate | 103.1 W, 249.4 GFLOPS/W | 131.4 W, 360.5 GFLOPS/W | ×1.45 |
-| RTX 3060 12GB | BF16 tensor, FP32 accumulate | 102.5 W, 249.7 GFLOPS/W | 141.0 W, 343.4 GFLOPS/W | ×1.38 |
-| RTX 3090 | FP16 tensor, FP32 accumulate | 315.6 W, 222.8 GFLOPS/W | 296.5 W, 413.1 GFLOPS/W | ×1.85 |
-| RTX 3090 | BF16 tensor, FP32 accumulate | 320.7 W, 219.2 GFLOPS/W | 337.2 W, 377.5 GFLOPS/W | ×1.72 |
+| RTX 3060 12GB | FP16 tensor, FP32 accumulate | 249.4 GFLOPS/W | 360.5 GFLOPS/W | ×1.45 |
+| RTX 3060 12GB | BF16 tensor, FP32 accumulate | 249.7 GFLOPS/W | 343.4 GFLOPS/W | ×1.38 |
+| RTX 3090 | FP16 tensor, FP32 accumulate | 222.8 GFLOPS/W | 413.1 GFLOPS/W | ×1.85 |
+| RTX 3090 | BF16 tensor, FP32 accumulate | 219.2 GFLOPS/W | 377.5 GFLOPS/W | ×1.72 |
+
+The controls stay flat here too, which is the same argument as the throughput controls: FP16-accumulate reads 389.0 → 387.7 GFLOPS/W on the 3060 and 433.6 → 433.4 on the 3090, and FP32 57.1 → 56.6 and 86.7 → 86.8.
 
 The 3060 draws more afterwards because it has the headroom: its limit is 170 W and it settles at 131–141 W. The 3090 is already at its 350 W limit, so it spends the doubled work per clock on a lower clock instead and its power barely moves. Either way the work per joule rises by 1.4–1.9×, and the SM clock falls in every case (1920 → 1882/1890 MHz on the 3060, 1980 → 1785/1860 MHz on the 3090).
 
