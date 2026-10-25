@@ -30,3 +30,5 @@ __pycache__/
 Thumbs.db
 /unlock/profiles/*.local.h
 /unlock/hosts/*.local.h
+/analysis/*.lib
+/analysis/*.exp
