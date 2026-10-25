@@ -59,7 +59,7 @@
     },
     {
       "path": "analysis/bench_comfyui.py",
-      "sha256": "e89adee15ccaafe37f2a238c2e5f61fffdea66e37d9b223912121cae3747c374"
+      "sha256": "6939aec48c6a2e9222bb888fa398f2bc506b3476a2cbcaeb91fa82388c67aaa6"
     },
     {
       "path": "analysis/build-benchmark.cmd",
@@ -2659,7 +2659,7 @@
     },
     {
       "path": "docs/BENCHMARK.md",
-      "sha256": "bafbd3a8bbeec37add9c7faeea494e199acbf11fc0a76f2e4a7abecb8524afb0"
+      "sha256": "1f13979b2dc50e779cbee08b7f4ab9f36b45f377f2416858afcb5e74fbbe0fc0"
     },
     {
       "path": "docs/BOARD-PROFILE.md",
@@ -2716,6 +2716,26 @@
     {
       "path": "results/pytorch-matrix.json",
       "sha256": "aec76cb132a7c5fee0ac5298492efac6e0c7144c468a20348ead6f08d11245f6"
+    },
+    {
+      "path": "results/rtx3060/comfyui-steps8/comfyui-before-fp16acc-20261025T091111Z.json",
+      "sha256": "6b98bf13b7a5a297e085e25a093e8c9877c4896ca982c5b4744e55147b5a4505"
+    },
+    {
+      "path": "results/rtx3060/comfyui-steps8/workflow-3734adae2775.json",
+      "sha256": "edda855863fa73b894efc9f11d846b98ae9cbdf963eb1c0d264b126dd0a558c1"
+    },
+    {
+      "path": "results/rtx3060/comfyui/comfyui-before-default-20261025T091608Z.json",
+      "sha256": "6facb23fa5b8a32eb1c734d091ebe3a9f572f1dab8d7ef2f8dea99582c4ea4c0"
+    },
+    {
+      "path": "results/rtx3060/comfyui/comfyui-before-fp16acc-20261025T091407Z.json",
+      "sha256": "e571e5eaa003060a710243ddbaf07172889bd2287512288d5670affb27b3e33a"
+    },
+    {
+      "path": "results/rtx3060/comfyui/workflow-38e76970d1c4.json",
+      "sha256": "e58ba21bcd6514b456286adb80df6f361174473ff632e020802aa4124fce02fa"
     },
     {
       "path": "results/rtx3060/gemm/before-20261025T084622Z-run01.json",
