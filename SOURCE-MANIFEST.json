@@ -30,28 +30,12 @@
       "sha256": "c83f0e32786652a67625fb0770db09ee46fe1ebefba4790600a5ffce52dbde1d"
     },
     {
-      "path": "README.ja.md",
-      "sha256": "578b9342239998f7e4e21eda222dedef2a96e620494132569758a4c7ba991ef9"
-    },
-    {
-      "path": "README.ko.md",
-      "sha256": "c96120d22577a0c239958d73aeea3fe6328b4fba654a707db0137d8242097f4b"
-    },
-    {
       "path": "README.md",
-      "sha256": "799e1091cf4e9bbd61847fd7a4c4d58544cfa1885a26371676e50fa81c60082a"
-    },
-    {
-      "path": "TESTING.ja.md",
-      "sha256": "95064a34d660e7c8c8f8bf00a59c3c10abc9eb2293f240f7ad06ed812d1fac92"
-    },
-    {
-      "path": "TESTING.ko.md",
-      "sha256": "49c27bfe57a109badf09c48d91cd3ffe0a45c577f73faae34bb33353d0237933"
+      "sha256": "101d528f747ef0004d09a10d4a87c2eeada5fa88a600f001e12eb2cef15d2265"
     },
     {
       "path": "TESTING.md",
-      "sha256": "d247a8107196c1ec4f756678ac86fa4a35906f94c9663690e0b138c605a52363"
+      "sha256": "51e8dcbca8233fbdd675eb6c8662d5ea2f4ec666ddedd9b548c7e2b026b79957"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -2663,19 +2647,11 @@
     },
     {
       "path": "docs/BOARD-PROFILE.md",
-      "sha256": "acf97248794b6df792fb0402b5d27e13a81929e6616526495a7476aa50a9bcc2"
-    },
-    {
-      "path": "docs/USB-BOOT.ja.md",
-      "sha256": "5d885524cc9cc55b0283778600fafd6d6f645192eb7573c548cc05ba627e9254"
-    },
-    {
-      "path": "docs/USB-BOOT.ko.md",
-      "sha256": "01ea59ecaebd7882f551a364ae0a3507c2e5eb501ed36121fd47ad147680d08f"
+      "sha256": "d32c6a6e3cde35215b162ee053dbe20be0cf0cd05d3993eb85a94fe1eca78bae"
     },
     {
       "path": "docs/USB-BOOT.md",
-      "sha256": "830ede1aeae8e6d8a869f0bf2ac18c0f608c5849637e18c6b47d56b059baf8cc"
+      "sha256": "1abeeb94e932f31451c20393a5be90e203b7a0591081c4588d364b30b178a4bf"
     },
     {
       "path": "efi_runtime.c",
@@ -2700,6 +2676,10 @@
     {
       "path": "evidence/preflight-3060-04/REPORT.TXT",
       "sha256": "606b3c1c860cb08fc00451c0bffedd017510035ac2e0ccdc00925d15096f7d2f"
+    },
+    {
+      "path": "evidence/unlock-3060-01/REPORT.TXT",
+      "sha256": "f590eec30006375d80b6b974b3d8fc491d72e9e552d67064e4f6d5201cf46933"
     },
     {
       "path": "evidence/unlock-boot-09/REPORT.TXT",
@@ -2738,10 +2718,6 @@
       "sha256": "6b98bf13b7a5a297e085e25a093e8c9877c4896ca982c5b4744e55147b5a4505"
     },
     {
-      "path": "results/rtx3060/comfyui-steps8/workflow-3734adae2775.json",
-      "sha256": "edda855863fa73b894efc9f11d846b98ae9cbdf963eb1c0d264b126dd0a558c1"
-    },
-    {
       "path": "results/rtx3060/comfyui/comfyui-after-default-20261025T101825Z.json",
       "sha256": "a849501347d1937905b7280af7080c6437fd92a5b92fc5bf2ea515a61b0bdd0a"
     },
@@ -2756,10 +2732,6 @@
     {
       "path": "results/rtx3060/comfyui/comfyui-before-fp16acc-20261025T091407Z.json",
       "sha256": "e571e5eaa003060a710243ddbaf07172889bd2287512288d5670affb27b3e33a"
-    },
-    {
-      "path": "results/rtx3060/comfyui/workflow-38e76970d1c4.json",
-      "sha256": "e58ba21bcd6514b456286adb80df6f361174473ff632e020802aa4124fce02fa"
     },
     {
       "path": "results/rtx3060/gemm/after-20261025T101108Z-run01.json",
@@ -2835,7 +2807,7 @@
     },
     {
       "path": "unlock/build.ps1",
-      "sha256": "a69821bfe89fda0a7542b463ab6733ecc752b864162041fda8c74b9145be49f4"
+      "sha256": "2528c5eef641a925d62d9b256f070f15ec2f8a245ff159efed3849dab9816f3b"
     },
     {
       "path": "unlock/checks.c",
@@ -2914,16 +2886,16 @@
       "sha256": "03b8c257be5f78462d006d8563cea9a623d7b6d5fe50e793e021ca9077330417"
     },
     {
-      "path": "unlock/hosts/amd_bus5.h",
-      "sha256": "6f7efa90a9d0894fadbcc71d8fc2ec60d31a791e6a7561e8067bb496c14f664a"
-    },
-    {
       "path": "unlock/hosts/discovery.h",
       "sha256": "f49cafded87f47da12e36f28f7a3109538a1a70bc5efa2f82c78caed5c248b45"
     },
     {
       "path": "unlock/hosts/intel_bus1.h",
       "sha256": "59b022497b84e6dd689922eb22fa7b67fed04d670b48af50ccfa209a9d24bcd5"
+    },
+    {
+      "path": "unlock/hosts/nvidia_bus5.h",
+      "sha256": "01d10583f3c8126b7d5ec59d6268969702de57c14896428a4af29d5ae9254104"
     },
     {
       "path": "unlock/ownership.c",
@@ -2939,7 +2911,7 @@
     },
     {
       "path": "unlock/port.h",
-      "sha256": "073b54d92bc50709fcba87ba260663e382567019efa34b3c423b1a86fbe8bd68"
+      "sha256": "63e26d5387c1158973908ffde80587876f4ad1b37bdf9e916daf991af80a82e1"
     },
     {
       "path": "unlock/profiles/ga102_2206.h",
@@ -2999,7 +2971,7 @@
     },
     {
       "path": "unlock/test-port.cmd",
-      "sha256": "56811790d63200faacc5732fc2e18ca00ad5a51789451da4297af82a54eb56c5"
+      "sha256": "47678c1f623d1008671338f3820707c142a1f6bed31731a68c7e168635c2efc6"
     },
     {
       "path": "unlock/test-runtime.cmd",

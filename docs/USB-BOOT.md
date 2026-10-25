@@ -1,15 +1,13 @@
 # USB preparation and booting
 
-**English** | [日本語](USB-BOOT.ja.md) | [한국어](USB-BOOT.ko.md)
-
-This guide targets the MSI RTX 3080 experimental environment stated in the README. Existing runs are confirmed, but booting from a freshly prepared FAT32 USB stick has not been validated yet.
+This guide targets the card and host listed in the README. The run in `evidence/unlock-3060-01/` booted from a freshly prepared FAT32 stick, but other sticks and other PCs remain your own test.
 
 ## Preparation
 
-- An x64 UEFI environment, Secure Boot disabled, and the display connected to the Intel integrated graphics.
+- An x64 UEFI environment with Secure Boot disabled and CSM off, and the monitor on the card that is **not** the target (the console has to survive the target's reset).
 - An empty FAT32 USB stick. If it needs formatting, back up the files already on the stick first and confirm which device you are about to write.
 - The built `BOOTX64.EFI`, or the provided USB template.
-- The five assets whose names, sizes and SHA256 values match `unlock/assets.json`. For how to prepare the assets, see the [firmware documentation of the upstream project](https://github.com/Zagitta/gpu-unlock/tree/0ebdb1c6308b6a2072be5bf04513472942541956/firmware).
+- For a transaction run, the five assets whose names, sizes and SHA256 values match `unlock/assets.json`. A preflight run needs none. For how to prepare the assets, see the [firmware documentation of the upstream project](https://github.com/Zagitta/gpu-unlock/tree/0ebdb1c6308b6a2072be5bf04513472942541956/firmware).
 
 On a PC that uses Windows device encryption / BitLocker, check your recovery key before changing firmware settings.
 
@@ -64,8 +62,8 @@ The RTX 3060 12GB (`10de:2504`) profile is confirmed only for the card and host 
 The confirmed machine, all three commands:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile amd_bus5 -Preflight
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile amd_bus5
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile nvidia_bus5 -Preflight
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile nvidia_bus5
 python .\tools\package_usb.py --assets .\assets --output .\usb-package-3060
 ```
 
@@ -79,7 +77,7 @@ python .\tools\package_usb.py --output .\usb-package-3060
 The preflight reads config space, the firmware BAR descriptor, the cold-state registers and the PROM window, writes nothing to the GPU, loads no assets and never asks for U. On Linux, `./preflight-linux.sh usb-3060` stages the image as `unlock/build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI`; create an empty, writable `RTX3080-UNLOCK` folder on the USB root yourself.
 
 1. The folder keeps the name `RTX3080-UNLOCK` for every board: the application writes its reports only there.
-2. Connect the monitor to a display that is **not** the RTX 3060. The preflight rejects a console GOP on the target GPU, and it needs exactly one physical GOP, so leave every other output disconnected. On the confirmed machine that is the AMD iGPU at `01:00.0`; a console on another NVIDIA card is accepted by the preflight but has never been used for a transaction.
+2. Connect the monitor to a display that is **not** the RTX 3060. The preflight rejects a console GOP on the target GPU, and it needs exactly one physical GOP, so leave every other output disconnected. On the confirmed machine that is a second NVIDIA card at `01:00.0`, and a transaction ran in exactly that configuration; a console on the target itself is always refused.
 3. Power the PC off completely, boot the **UEFI USB** entry, and let the preflight finish. It returns to the firmware by itself; on a confirmed profile the report has no `PENDING` line and ends with `complete=1`.
 4. Repeat from a cold start at least twice more while discovering. Each run adds `RTX3080-UNLOCK/RUNxx/REPORT.TXT`.
 5. A transaction run needs the five assets in `RTX3080-UNLOCK/ASSETS`; the preflight does not. `unlock/assets.json` lists their names, sizes and SHA256, and `package_usb.py` refuses a package whose assets do not match.

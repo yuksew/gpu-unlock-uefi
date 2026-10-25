@@ -18,7 +18,7 @@ if errorlevel 1 exit /b 1
 build\test-port-220a.exe
 if errorlevel 1 exit /b 1
 rem Confirmed RTX 3060 profile on its confirmed host: the write-capable path.
-"%GU_CLANG%" %PORT_FLAGS% -DGU_BOARD_GA106_2504 -DGU_HOST_AMD_BUS5 tests\test_port.c port.c -o build\test-port-3060.exe
+"%GU_CLANG%" %PORT_FLAGS% -DGU_BOARD_GA106_2504 -DGU_HOST_NVIDIA_BUS5 tests\test_port.c port.c -o build\test-port-3060.exe
 if errorlevel 1 exit /b 1
 build\test-port-3060.exe
 if errorlevel 1 exit /b 1

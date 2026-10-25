@@ -55,14 +55,14 @@
    keeps the console while the target is reset. The default is the host the
    two GA102 boards were validated on.
      (default)                Intel iGPU console, GPU at 0:1:0.0
-     -DGU_HOST_AMD_BUS5       AMD iGPU console at 01:00.0, GPU at 0:5:0.0
+     -DGU_HOST_NVIDIA_BUS5    second NVIDIA card holds the console, target 0:5:0.0
      -DGU_HOST_DISCOVERY      unconfirmed; preflight only
    Host profiles live in unlock/hosts/. */
-#if defined(GU_HOST_AMD_BUS5) + defined(GU_HOST_DISCOVERY) > 1
+#if defined(GU_HOST_NVIDIA_BUS5) + defined(GU_HOST_DISCOVERY) > 1
 #error "Select exactly one GU_HOST_* profile"
 #endif
-#if defined(GU_HOST_AMD_BUS5)
-#include "hosts/amd_bus5.h"
+#if defined(GU_HOST_NVIDIA_BUS5)
+#include "hosts/nvidia_bus5.h"
 #elif defined(GU_HOST_DISCOVERY)
 #include "hosts/discovery.h"
 #else

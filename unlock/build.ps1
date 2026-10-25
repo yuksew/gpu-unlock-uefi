@@ -1,7 +1,7 @@
 param(
     # Board profile (unlock/profiles/) and host profile (unlock/hosts/); see docs/BOARD-PROFILE.md.
     [ValidateSet('2206','220a','ga106_2504')][string]$Board = '2206',
-    [ValidateSet('intel_bus1','amd_bus5','discovery')][string]$HostProfile = 'intel_bus1',
+    [ValidateSet('intel_bus1','nvidia_bus5','discovery')][string]$HostProfile = 'intel_bus1',
     # Read-only image. An unconfirmed board or host profile builds only with this.
     [switch]$Preflight
 )
@@ -12,7 +12,7 @@ $llvmRoot = if ($env:GU_LLVM_ROOT) { $env:GU_LLVM_ROOT } else { 'C:/Program File
 New-Item -ItemType Directory -Path 'build' -Force | Out-Null
 $profileFlags = @(switch ($Board) { '220a' { '-DGU_BOARD_220A' } 'ga106_2504' { '-DGU_BOARD_GA106_2504' } })
 if ($HostProfile -eq 'discovery') { $profileFlags += '-DGU_HOST_DISCOVERY' }
-if ($HostProfile -eq 'amd_bus5') { $profileFlags += '-DGU_HOST_AMD_BUS5' }
+if ($HostProfile -eq 'nvidia_bus5') { $profileFlags += '-DGU_HOST_NVIDIA_BUS5' }
 if ($Preflight) { $profileFlags += '-DGU_PREFLIGHT' }
 $includes = @('-I','compat','-I','../deps/edk2/MdePkg/Include','-I','../deps/edk2/MdePkg/Include/X64')
 # Ask port.h itself what it selected: the manifest must not carry a second,

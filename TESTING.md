@@ -1,7 +1,5 @@
 # Build and test
 
-**English** | [日本語](TESTING.ja.md) | [한국어](TESTING.ko.md)
-
 ## Basic checks
 
 Install the compilers and Python listed in the README on Windows, then run this from the repository root.
