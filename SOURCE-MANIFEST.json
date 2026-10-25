@@ -2955,7 +2955,7 @@
     },
     {
       "path": "unlock/ownership.c",
-      "sha256": "d4d1ccc9befeadde70bc6ee9461894a8397be6d2f35287110f283bf836d2aeee"
+      "sha256": "3635585c44f0623c88d2c98fa3143812d93d2f880ab0c9b3cd02bcef389006f1"
     },
     {
       "path": "unlock/ownership.h",
