@@ -57,23 +57,32 @@ If the USB application opens again, leave it with Esc. Do not press U a second t
 
 If `STOP / POWER OFF` appears, turn the PC off with the power button. Do not continue into Windows from that screen. Inspect `RTX3080-UNLOCK/RUNxx/REPORT.TXT` before trying again.
 
-## RTX 3060 12GB: read-only preflight first
+## RTX 3060 12GB
 
-The RTX 3060 12GB (`10de:2504`) profile is unvalidated and starts unconfirmed, so the only image it builds is the read-only preflight. That image reads config space, the firmware BAR descriptor, the cold-state registers and the PROM window, writes nothing to the GPU, loads no assets and never asks for U. The procedure that turns its reports into a confirmed profile is in [BOARD-PROFILE.md](BOARD-PROFILE.md).
+The RTX 3060 12GB (`10de:2504`) profile is confirmed only for the card and host whose values it records (see the README table). On that machine both images build; on any other 3060 the profile has to be discovered first, because the subsystem, VBIOS hash and cold selectors are per card, not per SKU. The procedure is in [BOARD-PROFILE.md](BOARD-PROFILE.md).
 
-1. Build the preflight for the 3060 on a host whose topology is not yet confirmed:
+The confirmed machine, all three commands:
 
-   ```powershell
-   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile discovery -Preflight
-   python .\tools\package_usb.py --output .\usb-package-3060
-   ```
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile amd_bus5 -Preflight
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile amd_bus5
+python .\tools\package_usb.py --assets .\assets --output .\usb-package-3060
+```
 
-   The assets are not needed for the preflight, so `--assets` can be omitted. On Linux, `./preflight-linux.sh usb-3060` stages the image as `unlock/build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI`; then create an empty, writable `RTX3080-UNLOCK` folder on the USB root yourself.
-2. The folder keeps the name `RTX3080-UNLOCK` for every board: the application writes its reports only there.
-3. Connect the monitor to a display that is **not** the RTX 3060. The preflight rejects a console GOP on the target GPU, and it needs exactly one physical GOP, so leave every other output disconnected. The validated configuration is the Intel iGPU; a console on another NVIDIA card is accepted by the preflight but has never been used for a transaction.
-4. Power the PC off completely, boot the **UEFI USB** entry, and let the preflight finish. It returns to the firmware by itself; `PREFLIGHT passed` means every confirmed gate passed and the unconfirmed ones were recorded as `PENDING`.
-5. Repeat from a cold start at least twice more. Each run adds `RTX3080-UNLOCK/RUNxx/REPORT.TXT`.
-6. Copy the reports to the PC and confirm the profiles as described in [BOARD-PROFILE.md](BOARD-PROFILE.md). Until both `ga106_2504.local.h` and `hosts/discovery.local.h` exist with every field confirmed, `build.ps1` without `-Preflight` stops on an `#error` and no transaction image exists.
+A different 3060 starts with `-HostProfile discovery -Preflight` and a package without `--assets`:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile discovery -Preflight
+python .\tools\package_usb.py --output .\usb-package-3060
+```
+
+The preflight reads config space, the firmware BAR descriptor, the cold-state registers and the PROM window, writes nothing to the GPU, loads no assets and never asks for U. On Linux, `./preflight-linux.sh usb-3060` stages the image as `unlock/build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI`; create an empty, writable `RTX3080-UNLOCK` folder on the USB root yourself.
+
+1. The folder keeps the name `RTX3080-UNLOCK` for every board: the application writes its reports only there.
+2. Connect the monitor to a display that is **not** the RTX 3060. The preflight rejects a console GOP on the target GPU, and it needs exactly one physical GOP, so leave every other output disconnected. On the confirmed machine that is the AMD iGPU at `01:00.0`; a console on another NVIDIA card is accepted by the preflight but has never been used for a transaction.
+3. Power the PC off completely, boot the **UEFI USB** entry, and let the preflight finish. It returns to the firmware by itself; on a confirmed profile the report has no `PENDING` line and ends with `complete=1`.
+4. Repeat from a cold start at least twice more while discovering. Each run adds `RTX3080-UNLOCK/RUNxx/REPORT.TXT`.
+5. A transaction run needs the five assets in `RTX3080-UNLOCK/ASSETS`; the preflight does not. `unlock/assets.json` lists their names, sizes and SHA256, and `package_usb.py` refuses a package whose assets do not match.
 
 ## Scope
 

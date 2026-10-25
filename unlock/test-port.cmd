@@ -17,19 +17,23 @@ if errorlevel 1 exit /b 1
 if errorlevel 1 exit /b 1
 build\test-port-220a.exe
 if errorlevel 1 exit /b 1
-rem RTX 3060 discovery profile on an unconfirmed host. GU_PROFILE_DISCOVERY
-rem ignores any hand-written *.local.h so this always tests the placeholders.
-set "DISCOVERY=-DGU_BOARD_GA106_2504 -DGU_HOST_DISCOVERY -DGU_PROFILE_DISCOVERY"
-"%GU_CLANG%" %PORT_FLAGS% %DISCOVERY% -DGU_PREFLIGHT tests\test_port.c port.c -o build\test-port-3060.exe
+rem Confirmed RTX 3060 profile on its confirmed host: the write-capable path.
+"%GU_CLANG%" %PORT_FLAGS% -DGU_BOARD_GA106_2504 -DGU_HOST_AMD_BUS5 tests\test_port.c port.c -o build\test-port-3060.exe
 if errorlevel 1 exit /b 1
 build\test-port-3060.exe
 if errorlevel 1 exit /b 1
+rem Unconfirmed board (test fixture) on an unconfirmed host.
+set "DISCOVERY=-DGU_BOARD_UNCONFIRMED -DGU_HOST_DISCOVERY"
+"%GU_CLANG%" %PORT_FLAGS% %DISCOVERY% -DGU_PREFLIGHT tests\test_port.c port.c -o build\test-port-unconfirmed.exe
+if errorlevel 1 exit /b 1
+build\test-port-unconfirmed.exe
+if errorlevel 1 exit /b 1
 rem An unconfirmed board or host must not compile into a write-capable image.
-"%GU_CLANG%" %PORT_FLAGS% -DGU_BOARD_GA106_2504 -DGU_PROFILE_DISCOVERY -fsyntax-only port.c >build\refuse-board.log 2>&1
+"%GU_CLANG%" %PORT_FLAGS% -DGU_BOARD_UNCONFIRMED -fsyntax-only port.c >build\refuse-board.log 2>&1
 if not errorlevel 1 (echo FAIL: unconfirmed board compiled without GU_PREFLIGHT& exit /b 1)
 findstr /c:"board profile is not confirmed" build\refuse-board.log >nul
 if errorlevel 1 (echo FAIL: unconfirmed board refused for another reason& type build\refuse-board.log& exit /b 1)
-"%GU_CLANG%" %PORT_FLAGS% -DGU_HOST_DISCOVERY -DGU_PROFILE_DISCOVERY -fsyntax-only port.c >build\refuse-host.log 2>&1
+"%GU_CLANG%" %PORT_FLAGS% -DGU_HOST_DISCOVERY -fsyntax-only port.c >build\refuse-host.log 2>&1
 if not errorlevel 1 (echo FAIL: unconfirmed host compiled without GU_PREFLIGHT& exit /b 1)
 findstr /c:"host profile is not confirmed" build\refuse-host.log >nul
 if errorlevel 1 (echo FAIL: unconfirmed host refused for another reason& type build\refuse-host.log& exit /b 1)
@@ -37,7 +41,7 @@ if errorlevel 1 (echo FAIL: unconfirmed host refused for another reason& type bu
 if not errorlevel 1 (echo FAIL: mismatched GU_TARGET_PCI_ID compiled& exit /b 1)
 findstr /c:"name different boards" build\refuse-target.log >nul
 if errorlevel 1 (echo FAIL: target mismatch refused for another reason& type build\refuse-target.log& exit /b 1)
-"%GU_CLANG%" %PORT_FLAGS% -DGU_BOARD_220A -DGU_BOARD_GA106_2504 -DGU_PREFLIGHT -fsyntax-only port.c >build\refuse-two.log 2>&1
+"%GU_CLANG%" %PORT_FLAGS% -DGU_BOARD_220A -DGU_BOARD_UNCONFIRMED -DGU_PREFLIGHT -fsyntax-only port.c >build\refuse-two.log 2>&1
 if not errorlevel 1 (echo FAIL: two board profiles compiled& exit /b 1)
 findstr /c:"exactly one GU_BOARD" build\refuse-two.log >nul
 if errorlevel 1 (echo FAIL: two boards refused for another reason& type build\refuse-two.log& exit /b 1)

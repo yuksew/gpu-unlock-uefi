@@ -114,17 +114,33 @@ Every board-specific expectation lives in a board profile (`unlock/profiles/`), 
 
 The five firmware assets do not change per board. They are GA10x-family files: the upstream module (`kernel/gpu_unlock/unlock_610.c`) loads the same `gsp_ga10x.bin` and `*_ga102.bin` set for every GA10x card it supports, and an RTX 3060 12GB (`10de:2504`, GA106) has been reported working with it there. `unlock/assets.json` and the asset hashes stay as they are.
 
-**RTX 3060 12GB (`ga106_2504`): unvalidated.** The profile is a discovery profile. Only the device ID and the 12288 MiB frame buffer are fixed; the subsystem, die ID, PROM hash, capability dword, class/revision and cold SS0/SS1 are unconfirmed until a preflight has read them off the card. On a host other than the validated Intel-iGPU one, use `-HostProfile discovery` as well.
+**RTX 3060 12GB (`ga106_2504`): preflight confirmed on hardware, no transaction run yet.** Confirmed on 2026-10-25 from three read-only cold boots on a Gigabyte B850 AORUS ELITE WIFI7 ICE:
+
+| Field | Value | Source line in `REPORT.TXT` |
+| --- | --- | --- |
+| subsystem | `0x153610de` | `identity: pci=0x250410de subsystem=0x153610de` |
+| class/revision | `0x030000a1` | `identity: ... class_rev=0x30000a1` |
+| die ID | `0xb76000a1` | `chip: actual=0xb76000a1` |
+| PROM SHA256 | `b1608213…` | `live PROM hash sha256=b1608213…` |
+| cold SS0 | `0x12210024` / `0x12011024` | `cold state: … SS0=…` |
+| cold SS1 | `3` | `cold state: … SS1=0x3` |
+| capability dword | `0xc8 = 0x00050011` | `config[c0]=… 00050011 …` |
+| frame buffer | `0x3000` = 12288 MiB | `cold state: … fb_mb=0x3000` |
+
+SS0 is boot-unstable on this card, exactly as on the 12GB GA102 board, so only the bits common to every observed cold boot are a gate (`0x12010024`). The card sits at `0:5:0.0`, which is not the validated host's bus, and the console runs on the AMD iGPU at `Pci(0x1,0x1)/Pci(0x0,0x0)` — hence the `amd_bus5` host profile. No transaction has been run on a 3060: the write-capable image builds and every gate is confirmed, but nothing has been written to the card yet.
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile discovery -Preflight
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile amd_bus5 -Preflight
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile amd_bus5
 ```
 
 ```bash
 ./preflight-linux.sh preflight-3060     # build/preflight-3060/BOOTX64.EFI
 ./preflight-linux.sh usb-3060           # build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI
-./preflight-linux.sh transaction-3060   # refused until both profiles are confirmed
+./preflight-linux.sh transaction-3060   # build/transaction-3060/BOOTX64.EFI
 ```
+
+Another 3060 12GB (different AIB, different VBIOS) must not reuse those values: it runs `-HostProfile discovery -Preflight`, and its own `ga106_2504.local.h` / `hosts/discovery.local.h` override the shipped files. `-DGU_BOARD_UNCONFIRMED` is a test fixture, never a board.
 
 ## Provenance and license
 

@@ -1,80 +1,78 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * NVIDIA RTX 3060 12GB (GA106-300), PCI 10de:2504, 12288 MiB.
+ * NVIDIA RTX 3060 12GB (GA106-300), PCI 10de:2504, subsystem 10de:1536,
+ * 12288 MiB.
  *
- * This is the discovery profile. The device ID and the frame-buffer size are
- * properties of the SKU; everything else is a property of one physical card -
- * its AIB subsystem ID, its VBIOS (PROM hash and capability layout), its die
- * ID and its cold speed-selector bits - and is therefore left unconfirmed
- * until the read-only preflight has read it off the card:
+ * Confirmed on hardware 2026-10-25 from three read-only preflight boots
+ * (evidence/preflight-3060-01..03/REPORT.TXT). Each value and the line it was
+ * read from:
  *
- *   1. build the preflight image for this profile
- *   2. boot it once (twice more if SS0 differs between boots)
- *   3. copy the reported values into ga106_2504.local.h, all HAVE_* = 1,
- *      as docs/BOARD-PROFILE.md describes
- *   4. rebuild; the transaction image is only buildable from a confirmed profile
+ *   subsystem 0x153610de  identity: pci=0x250410de subsystem=0x153610de ...
+ *   class/rev 0x030000a1  identity: ... class_rev=0x30000a1
+ *   chip      0xb76000a1  chip: actual=0xb76000a1 (GA106 candidate confirmed)
+ *   PROM      b1608213... live PROM hash sha256=b1608213...
+ *   SS0       0x12210024 (RUN00) / 0x12011024 (RUN01, RUN02)
+ *   SS1       3 in every boot
+ *   cap       0xc8 = 0x00050011
+ *   fb        0x3000 = 12288 MiB at FEAT 0x001183a4
+ *   BDF       0:5:0.0, behind Pci(0x2,0x1)/Pci(0x0,0x0)/Pci(0x0,0x0)
  *
- * Until step 3 creates ga106_2504.local.h, this header keeps every unconfirmed
- * field flagged 0 and the transaction build refuses to compile. GU_BOARD_CHIP
- * carries the GA10x-family candidate for GA106 so the probe can report
- * match/mismatch, not so it can be trusted: the die ID still has to be read.
+ * SS0 is boot-unstable on this card, exactly like the 12GB GA102 board: RUN00
+ * differed from RUN01/RUN02 in bits 0x00200000 and 0x00001000. Only the bits
+ * common to every observed cold boot are a gate (0x12010024), so a re-boot
+ * cannot reject the card for a volatile bit. If a later cold boot differs in
+ * yet another bit, re-merge the mask from all reports rather than widening it
+ * by guesswork.
  *
- * The five firmware assets are family-wide: the upstream module loads the same
- * gsp_ga10x.bin / *_ga102.bin set for GA102, GA104 and GA106, and the RTX 3060
- * 12GB is the one GA106 board reported working there. Only this profile changes.
+ * SS1 is a set of accepted cold values, not an equality: only 3 has been
+ * observed on this card. The two GA102 boards accept 2 or 3, so widen
+ * GU_BOARD_SS1_BITS to 0x0000000c if a cold boot ever reports 2.
+ *
+ * Another 3060 12GB - different AIB, different VBIOS - must not reuse these
+ * values. Such a card runs the discovery profile and writes its own
+ * ga106_2504.local.h, which overrides this file; see docs/BOARD-PROFILE.md.
  */
 #pragma once
 
-/* GU_PROFILE_DISCOVERY forces the fallback below even when a local
-   profile exists, so the host tests can prove that an unconfirmed profile
-   still refuses to build a write-capable image. */
-#if __has_include("ga106_2504.local.h") && !defined(GU_PROFILE_DISCOVERY)
-/* Filled in from this card's own preflight reports (docs/BOARD-PROFILE.md). */
+#if __has_include("ga106_2504.local.h")
 #include "ga106_2504.local.h"
 #else
 
-#define GU_BOARD_PROFILE_NAME "ga106_2504 (NVIDIA RTX 3060 12GB, unconfirmed)"
-#define GU_BOARD_LABEL "NVIDIA RTX 3060 12GB"
+#define GU_BOARD_PROFILE_NAME "ga106_2504 (RTX 3060 12GB, confirmed on hardware)"
+#define GU_BOARD_LABEL "RTX 3060 12GB"
 
 #define GU_BOARD_ID 0x250410deU
-
-/* Read from config 0x2c by the preflight: AIB-specific. */
-#define GU_BOARD_SUBSYSTEM 0x00000000U
-#define GU_BOARD_HAVE_SUBSYSTEM 0
-
-/* GA10x parts report 0x030000a1; the preflight prints what this one reports. */
+#define GU_BOARD_SUBSYSTEM 0x153610deU
 #define GU_BOARD_CLASS_REV 0x030000a1U
-#define GU_BOARD_HAVE_CLASS 0
 
-/* GA10x-family candidate for the GA106 die ID at BAR0+0. Not confirmed. */
 #define GU_BOARD_CHIP 0xb76000a1U
-#define GU_BOARD_HAVE_CHIP 0
 
-/* Live BAR0+0x300000: one VBIOS per board model, so this is per card. */
-#define GU_BOARD_PROM_SHA256 ""
-#define GU_BOARD_HAVE_PROM 0
+#define GU_BOARD_PROM_SHA256 \
+  "b16082136f37930db1a7eace9d30a3473679b966ff3ab4253d08f1cf6eefa4da"
 
-/* 12288 MiB at FEAT 0x001183a4. This one is a SKU property, so it is a live
-   gate even in the preflight: a card that reports anything else is not the
-   board this profile describes, and its report cannot confirm the profile. */
 #define GU_BOARD_FB_MB 0x3000U
-#define GU_BOARD_HAVE_FB 1
 
-/* Cold speed selectors: observed values, not assumptions. */
-#define GU_BOARD_SS0_MASK 0xffffffffU
-#define GU_BOARD_SS0_VALUE 0x00000000U
-#define GU_BOARD_HAVE_SS0 0
+/* Only the bits common to every observed cold boot are a gate. */
+#define GU_BOARD_SS0_MASK 0x12010024U
+#define GU_BOARD_SS0_VALUE 0x12010024U
 
-#define GU_BOARD_SS1_BITS 0x00000000U
-#define GU_BOARD_HAVE_SS1 0
+/* SS1 < 32 is an index into this mask; 3 is the only value seen so far. */
+#define GU_BOARD_SS1_BITS 0x00000008U
 
 #define GU_BOARD_BAR0_SIZE 0x1000000U
 #define GU_BOARD_PROM_OFFSET 0x300000U
 #define GU_BOARD_PROM_SIZE 0x100000U
 
-/* VBIOS-placed capability dword; the preflight dumps all 256 config bytes. */
 #define GU_BOARD_CAP_OFFSET 0x0c8U
-#define GU_BOARD_CAP_VALUE 0x00000000U
-#define GU_BOARD_HAVE_CAP 0
+#define GU_BOARD_CAP_VALUE 0x00050011U
+
+#define GU_BOARD_HAVE_CHIP 1
+#define GU_BOARD_HAVE_SUBSYSTEM 1
+#define GU_BOARD_HAVE_PROM 1
+#define GU_BOARD_HAVE_SS0 1
+#define GU_BOARD_HAVE_SS1 1
+#define GU_BOARD_HAVE_CAP 1
+#define GU_BOARD_HAVE_CLASS 1
+#define GU_BOARD_HAVE_FB 1
 
 #endif

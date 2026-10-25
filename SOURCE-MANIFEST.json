@@ -39,7 +39,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "ada145ece0ed96b729102e9e0770ef97c7d3769fc412f314fa07b3026542af28"
+      "sha256": "799e1091cf4e9bbd61847fd7a4c4d58544cfa1885a26371676e50fa81c60082a"
     },
     {
       "path": "TESTING.ja.md",
@@ -2663,7 +2663,7 @@
     },
     {
       "path": "docs/BOARD-PROFILE.md",
-      "sha256": "c2075962114378c59f9fdc0eb181661fe521ceb8b45c917649475634dcfc5317"
+      "sha256": "acf97248794b6df792fb0402b5d27e13a81929e6616526495a7476aa50a9bcc2"
     },
     {
       "path": "docs/USB-BOOT.ja.md",
@@ -2675,7 +2675,7 @@
     },
     {
       "path": "docs/USB-BOOT.md",
-      "sha256": "3341f8563175618de3352d6c55d15507615ff8a2c7f1adf3eba431c8ee3e8256"
+      "sha256": "830ede1aeae8e6d8a869f0bf2ac18c0f608c5849637e18c6b47d56b059baf8cc"
     },
     {
       "path": "efi_runtime.c",
@@ -2684,6 +2684,18 @@
     {
       "path": "evidence/boot-03/REPORT.TXT",
       "sha256": "186f3ae73a67e960c3a97ad4beeb71452d11c8631e7a47cc1cdc01392a4ba655"
+    },
+    {
+      "path": "evidence/preflight-3060-01/REPORT.TXT",
+      "sha256": "95cb2f4c3cdfbb91f3427141a7e71b312358b94e64a1b6ded9ce8793e8f131a1"
+    },
+    {
+      "path": "evidence/preflight-3060-02/REPORT.TXT",
+      "sha256": "3c72b9b3eac5c926cefcc7af31c82d5675927759c2930e8c7ca17c0b281ecd40"
+    },
+    {
+      "path": "evidence/preflight-3060-03/REPORT.TXT",
+      "sha256": "39e61082a0546f3ccdfdbd10734c4f5d85bde9b639ba73aca8d872488ccf9e09"
     },
     {
       "path": "evidence/unlock-boot-09/REPORT.TXT",
@@ -2751,7 +2763,7 @@
     },
     {
       "path": "test.cmd",
-      "sha256": "ab120c106978fdec0304727c82280baf60c003c977668c0f253dcd649075c0f8"
+      "sha256": "d1173f24b50d704ab76c5fd6748dce10a497b59343586025237e4481243ee882"
     },
     {
       "path": "test_core.c",
@@ -2799,7 +2811,7 @@
     },
     {
       "path": "unlock/build.ps1",
-      "sha256": "123dcf9a18b07da3daea6178ae15fa87b6d325c92cbfe85c9cb437305f1e8c9e"
+      "sha256": "a69821bfe89fda0a7542b463ab6733ecc752b864162041fda8c74b9145be49f4"
     },
     {
       "path": "unlock/checks.c",
@@ -2878,6 +2890,10 @@
       "sha256": "03b8c257be5f78462d006d8563cea9a623d7b6d5fe50e793e021ca9077330417"
     },
     {
+      "path": "unlock/hosts/amd_bus5.h",
+      "sha256": "a0e23673562712499c5efb18d98ead23ad0ded16978e6434392bbf298a846280"
+    },
+    {
       "path": "unlock/hosts/discovery.h",
       "sha256": "f49cafded87f47da12e36f28f7a3109538a1a70bc5efa2f82c78caed5c248b45"
     },
@@ -2899,7 +2915,7 @@
     },
     {
       "path": "unlock/port.h",
-      "sha256": "4d3caaad388e483790431ee6749309172a570d6abca7a9bd4787ddd42ab6b328"
+      "sha256": "073b54d92bc50709fcba87ba260663e382567019efa34b3c423b1a86fbe8bd68"
     },
     {
       "path": "unlock/profiles/ga102_2206.h",
@@ -2911,7 +2927,11 @@
     },
     {
       "path": "unlock/profiles/ga106_2504.h",
-      "sha256": "0c51d9a9819415dcf1f6ab1a0ec788ac2d47fca249a6a18e0870f7002a6392a2"
+      "sha256": "f0f52f0deb928264108e84b7c2b787d49de34fe935b7b98715a5e7cdf8073cf1"
+    },
+    {
+      "path": "unlock/profiles/unconfirmed.h",
+      "sha256": "75d68e6ec6146335bd14505c8ec0e4d7eebc1b99cc10815af1ab833555c7fb04"
     },
     {
       "path": "unlock/runtime.c",
@@ -2939,7 +2959,7 @@
     },
     {
       "path": "unlock/test-checks.cmd",
-      "sha256": "9c37b7cbb0df0cd1e9d505ad47c99a70ef6da0a3aa0eee5d01aad029d8afc8dd"
+      "sha256": "35a59db71e988bcbdf9c1431c9624149b8ea68f717ec83477b1d2044dbdd9cec"
     },
     {
       "path": "unlock/test-efi-transaction.cmd",
@@ -2955,15 +2975,15 @@
     },
     {
       "path": "unlock/test-port.cmd",
-      "sha256": "680434a0c160cac55cc8e35c62dbde335742527953ec4856d41ee765392f6b18"
+      "sha256": "56811790d63200faacc5732fc2e18ca00ad5a51789451da4297af82a54eb56c5"
     },
     {
       "path": "unlock/test-runtime.cmd",
-      "sha256": "5bcdb4a733c06663cc821e4f7bc8eb05be5b6ba9f608eaa2132d82fe4b17a20f"
+      "sha256": "4fd2c5ba5958acacce77e0f736a0152e565c6b0aa214ac3731fb3fdc6c61760e"
     },
     {
       "path": "unlock/test-sha.cmd",
-      "sha256": "eefc33449cf758c35c071e7cadfdd23a42c32457056a183b98ce283326d1c861"
+      "sha256": "df7eab788c364613f6a3f5c6eece5dc06e8c4e46b656445c09afdb2b81370076"
     },
     {
       "path": "unlock/test-transaction.cmd",

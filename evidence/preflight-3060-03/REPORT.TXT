@@ -1,0 +1,90 @@
+RTX3080 UEFI unlock PREFLIGHT v0.11 (read-only)
+RUN02
+Read-only gates only: no bus-master enable, no FLR, no GPU write, no asset loads.
+PciIo ownership is opened exclusive for the ownership check and released before return.
+PIO readback is not an execution gate. This path does not independently verify TCM contents; FWSEC scratch/WPR results are required.
+CHECK stage=secure-boot status=0
+CHECK stage=watchdog status=0
+PCI enumeration: status=0 handles=50
+PCI target matches=1 status=0
+target pci_path=Pci(0x2,0x1)/Pci(0x0,0x0)/Pci(0x0,0x0)/Pci(0x0,0x0) status=0
+target location: status=0
+identity: pci=0x250410de subsystem=0x153610de class_rev=0x30000a1
+gate subsystem: PENDING (profile value not confirmed on this card)
+gate target-bdf: PENDING (profile value not confirmed on this card)
+gate class: PENDING (profile value not confirmed on this card)
+gate cap: PENDING (profile value not confirmed on this card)
+config[00]=250410de 00100003 030000a1 00800010
+config[10]=dc000000 0000000c 000000f4 0000000c
+config[20]=000000f8 0000d001 00000000 153610de
+config[30]=dd000000 00000060 00000000 000001ff
+config[40]=153610de 00000000 00000000 00000000
+config[50]=00000000 00000001 0023d6ce 00000000
+config[60]=48036801 00000008 00807805 00000000
+config[70]=00000000 00000000 0012b410 10688de1
+config[80]=00092930 00454d04 10140000 00000000
+config[90]=00000000 00000000 00000000 00070813
+config[a0]=00000400 0180001e 001e0004 00000000
+config[b0]=00000000 01140009 00000000 00000000
+config[c0]=00000000 00000000 00050011 00b90000
+config[d0]=00ba0000 00000000 00000000 00000000
+config[e0]=00000000 00000000 00000000 00000000
+config[f0]=00000000 00000000 00000000 00000000
+target BDF=0:5:0.0 checks=1 pm=0x60 pcie=0x78 msi=0x68 msix=0
+CHECK stage=target status=0
+GOP enumeration: status=0 handles=1
+GOP[0] path_status=0 route=0 framebuffer=0xe800000000 bytes=3145728 mode=3 max_mode=14 info_bytes=36 console=0
+GOP[0] pci_path=Pci(0x1,0x1)/Pci(0x0,0x0)
+GOP[0] format=1 size=1024x768 stride=1024
+gate display: PENDING (profile value not confirmed on this card)
+GOP result: valid=1 intel_physical=1
+CHECK stage=display status=0
+ownership: records=9 exclusive=0 status=0x800000000000000f
+owner[0] protocol=fe47349a attributes=0x2 count=3 agent=0x85ccf298 controller=0x843ddf18
+owner[1] protocol=fe47349a attributes=0x2 count=1 agent=0x828206c0 controller=0x843ddf18
+owner[2] protocol=3bc1b285 attributes=0x1 count=2 agent=0x877f4b18 controller=0
+owner[3] protocol=09576e91 attributes=0x1 count=79 agent=0x877f4b18 controller=0
+owner[4] protocol=09576e91 attributes=0x2 count=7 agent=0x85ccf298 controller=0x843ddf18
+owner[5] protocol=09576e91 attributes=0x4 count=2 agent=0x848be918 controller=0x843ddf18
+owner[6] protocol=09576e91 attributes=0x2 count=2 agent=0x85c33698 controller=0x843ddf18
+owner[7] protocol=4cf5b200 attributes=0x1 count=21 agent=0x877f4b18 controller=0
+owner[8] protocol=4cf5b200 attributes=0x10 count=1 agent=0x85ccf298 controller=0x843ddf18
+ownership: records=9 exclusive=0 status=0
+owner[0] protocol=fe47349a attributes=0x2 count=3 agent=0x85ccf298 controller=0x843ddf18
+owner[1] protocol=fe47349a attributes=0x2 count=1 agent=0x828206c0 controller=0x843ddf18
+owner[2] protocol=3bc1b285 attributes=0x1 count=2 agent=0x877f4b18 controller=0
+owner[3] protocol=09576e91 attributes=0x1 count=79 agent=0x877f4b18 controller=0
+owner[4] protocol=09576e91 attributes=0x2 count=7 agent=0x85ccf298 controller=0x843ddf18
+owner[5] protocol=09576e91 attributes=0x4 count=2 agent=0x848be918 controller=0x843ddf18
+owner[6] protocol=09576e91 attributes=0x2 count=2 agent=0x85c33698 controller=0x843ddf18
+owner[7] protocol=4cf5b200 attributes=0x1 count=21 agent=0x877f4b18 controller=0
+owner[8] protocol=4cf5b200 attributes=0x10 count=1 agent=0x85ccf298 controller=0x843ddf18
+release candidate: agent=0x85ccf298 image=0x85ccf298 source=0x843ddf18 base=0x827fc000 bytes=179776 version=0x6000a code_type=3 children=0
+Exclusive ownership deferred until manual U and explicit driver release.
+CHECK stage=ownership status=0
+target location: status=0
+identity: pci=0x250410de subsystem=0x153610de class_rev=0x30000a1
+gate subsystem: PENDING (profile value not confirmed on this card)
+gate target-bdf: PENDING (profile value not confirmed on this card)
+gate class: PENDING (profile value not confirmed on this card)
+gate cap: PENDING (profile value not confirmed on this card)
+target BDF=0:5:0.0 checks=1 pm=0x60 pcie=0x78 msi=0x68 msix=0
+CHECK stage=config-recheck status=0
+bar0 query: status=0
+bar0 descriptor: type=0 granularity=32 min=0xdc000000 max=0xdcffffff length=0x1000000 translation=0
+bar0 cross-check: config_base=0xdc000000 descriptor_base=0xdc000000 agree=1
+CHECK stage=bar0 status=0
+chip: actual=0xb76000a1 expected=0xb76000a1 pass=1
+gate chip: PENDING (profile value not confirmed on this card)
+cold state: chip=0xb76000a1 plm=0xffffff8f gfw=0x8b8f/0x3ff/0x10 WPR2_HI=0 SS0=0x12011024 SS1=0x3 fb_mb=0x3000
+gate ss0: PENDING (profile value not confirmed on this card)
+gate ss1: PENDING (profile value not confirmed on this card)
+cold gates: gfw=1 plm=1 wpr2_hi=1 ss0=1 ss1=1 fb_mb=1
+CHECK stage=cold-state status=0
+gate prom: PENDING (profile value not confirmed on this card)
+live PROM hash sha256=b16082136f37930db1a7eace9d30a3473679b966ff3ab4253d08f1cf6eefa4da matched=1 base=0xdc000000 expected=unconfirmed
+CHECK stage=prom status=0
+PREFLIGHT: read-only gates complete; nothing was written to the GPU.
+PREFLIGHT result=pass board=NVIDIA RTX 3060 12GB pci=0x250410de subsystem=0x153610de bar0=0xdc000000 command=0x3
+PREFLIGHT profile=ga106_2504 (NVIDIA RTX 3060 12GB, unconfirmed) host=discovery (host topology unconfirmed) complete=0
+FINAL status=0 stage=preflight-summary attempted=0 driver_release=0 clean=1

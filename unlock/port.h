@@ -10,12 +10,16 @@
    first card validated end to end (MSI RTX 3080 10GB).
      -DGU_BOARD_2206          MSI RTX 3080 10GB  (10de:2206 / 1462:3890)
      -DGU_BOARD_220A          MSI RTX 3080 12GB  (10de:220a / 1462:3896)
-     -DGU_BOARD_GA106_2504    RTX 3060 12GB      (10de:2504, unconfirmed)
+     -DGU_BOARD_GA106_2504    RTX 3060 12GB      (10de:2504)
+     -DGU_BOARD_UNCONFIRMED   test fixture only, never a board
    Profiles live in unlock/profiles/; docs/BOARD-PROFILE.md lists the fields. */
-#if defined(GU_BOARD_2206) + defined(GU_BOARD_220A) + defined(GU_BOARD_GA106_2504) > 1
+#if defined(GU_BOARD_2206) + defined(GU_BOARD_220A) + defined(GU_BOARD_GA106_2504) + \
+    defined(GU_BOARD_UNCONFIRMED) > 1
 #error "Select exactly one GU_BOARD_* profile"
 #endif
-#if defined(GU_BOARD_GA106_2504)
+#if defined(GU_BOARD_UNCONFIRMED)
+#include "profiles/unconfirmed.h"
+#elif defined(GU_BOARD_GA106_2504)
 #include "profiles/ga106_2504.h"
 #elif defined(GU_BOARD_220A)
 #include "profiles/ga102_220a.h"
@@ -51,9 +55,15 @@
    keeps the console while the target is reset. The default is the host the
    two GA102 boards were validated on.
      (default)                Intel iGPU console, GPU at 0:1:0.0
+     -DGU_HOST_AMD_BUS5       AMD iGPU console at 01:00.0, GPU at 0:5:0.0
      -DGU_HOST_DISCOVERY      unconfirmed; preflight only
    Host profiles live in unlock/hosts/. */
-#if defined(GU_HOST_DISCOVERY)
+#if defined(GU_HOST_AMD_BUS5) + defined(GU_HOST_DISCOVERY) > 1
+#error "Select exactly one GU_HOST_* profile"
+#endif
+#if defined(GU_HOST_AMD_BUS5)
+#include "hosts/amd_bus5.h"
+#elif defined(GU_HOST_DISCOVERY)
 #include "hosts/discovery.h"
 #else
 #include "hosts/intel_bus1.h"
