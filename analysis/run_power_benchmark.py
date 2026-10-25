@@ -43,6 +43,8 @@ def main():
     parser.add_argument('--idle', type=float, default=5)
     parser.add_argument('--cooldown', type=float, default=30, help='seconds to rest between runs')
     parser.add_argument('--note', default='', help='free text stored with every run (boot, slot, ambient...)')
+    parser.add_argument('--allow-busy', action='store_true',
+                        help='measure even with other processes on the GPU, recording them in each run')
     parser.add_argument('--exe', type=Path, default=HERE / 'power-benchmark.exe')
     args = parser.parse_args()
     if args.runs < 1 or not args.label.replace('-', '').replace('_', '').isalnum():
@@ -51,8 +53,9 @@ def main():
         parser.error('%s not found; run analysis/build-power-benchmark.cmd first' % args.exe)
 
     busy = busy_processes(args.pci)
-    if busy:
-        sys.exit('other compute processes are using %s:\n  %s' % (args.pci, '\n  '.join(busy)))
+    if busy and not args.allow_busy:
+        sys.exit('other compute processes are using %s:\n  %s\n(a GPU that drives the display always has '
+                 'some; --allow-busy measures anyway and records them)' % (args.pci, '\n  '.join(busy)))
     exe_sha = hashlib.sha256(args.exe.read_bytes()).hexdigest()
     command = [str(args.exe), '--pci', args.pci, '--seconds', str(args.seconds),
                '--warmup', str(args.warmup), '--idle', str(args.idle)]
@@ -61,6 +64,7 @@ def main():
         if run > 1:
             time.sleep(args.cooldown)
         started = datetime.datetime.now(datetime.timezone.utc)
+        sharing = busy_processes(args.pci) if args.allow_busy else []
         proc = subprocess.run(command, capture_output=True, text=True)
         if proc.returncode != 0:
             sys.exit('run %d failed (exit %d):\n%s' % (run, proc.returncode, proc.stderr.strip()))
@@ -73,6 +77,10 @@ def main():
             'note': args.note,
             'executable_sha256': exe_sha,
             'arguments': command[1:],
+            # Other processes holding a context on the card when this run began
+            # (only with --allow-busy): display, browser and desktop apps on a GPU
+            # that drives a monitor.
+            'shared_with': sharing,
             'result': result,
         }
         name = '%s-%s-run%02d.json' % (args.label, started.strftime('%Y%m%dT%H%M%SZ'), run)

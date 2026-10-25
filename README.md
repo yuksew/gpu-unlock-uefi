@@ -12,13 +12,14 @@ Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlo
 | --- | --- | --- | --- |
 | `ga102_2206` | default | RTX 3080 10GB, `10de:2206` | confirmed and measured upstream |
 | `ga102_220a` | `-Board 220a` | RTX 3080 12GB, `10de:220a` | confirmed upstream, one transaction |
-| `ga102_2204` | `-Board 2204` | RTX 3090, `10de:2204` | discovery: unconfirmed |
+| `ga102_2204` | `-Board 2204` | MSI RTX 3090, `10de:2204` | confirmed here, no transaction yet |
 | `ga106_2504` | `-Board ga106_2504` | RTX 3060 12GB, `10de:2504` | confirmed and measured here |
 
 | Host profile | Select with | Console GOP | Target |
 | --- | --- | --- | --- |
 | `intel_bus1` | default | Intel iGPU at `00:02.0` | `0:1:0.0` |
 | `nvidia_bus5` | `-HostProfile nvidia_bus5` | second NVIDIA card at `01:00.0` | `0:5:0.0` |
+| `console_bus8` | `-HostProfile console_bus8` | adapter at `08:00.0` | `0:1:0.0` |
 | `discovery` | `-HostProfile discovery` | recorded, not required | recorded, not required |
 
 Every gate compares against values read from that card and that PC. Anything that does not match is refused before a write, and a profile with an unconfirmed field cannot build a transaction image at all.

@@ -31,11 +31,11 @@
     },
     {
       "path": "README.ja.md",
-      "sha256": "daab55452555f0782e3460f67e0a253ee52256bf2354afec08ae5d29c23c566e"
+      "sha256": "a3e65349c385185e15b9ca40dc4cf7f48cb6172fd973fbc4aa953347f11318e8"
     },
     {
       "path": "README.md",
-      "sha256": "8d0f21a4dd7aabe185935aaa5f575583ae81f3e7e55695a4ce51e7aefd19759e"
+      "sha256": "860a3a68a368ff7781eb00cfe4b78ff454e245b1056aedabb4609a508cd4e786"
     },
     {
       "path": "TESTING.md",
@@ -75,7 +75,7 @@
     },
     {
       "path": "analysis/run_power_benchmark.py",
-      "sha256": "0cf3ed0f8678c0423873688c43c7c76850ccd47984a063926979e489cccddef4"
+      "sha256": "ac2338212c1cb1e153ae37cb57e9670d9145004ebaf56d881020cafe024908a3"
     },
     {
       "path": "build-linux.sh",
@@ -2651,7 +2651,7 @@
     },
     {
       "path": "docs/BOARD-PROFILE.md",
-      "sha256": "6d0c8d980784205010649cd68664a80ba9c656bc6950ae37843e3b08e31d9720"
+      "sha256": "1e1d977a30b7b1849aa060659aa5c52383776c91d0eb7a28afa9349bb6591849"
     },
     {
       "path": "docs/USB-BOOT.md",
@@ -2680,6 +2680,18 @@
     {
       "path": "evidence/preflight-3060-04/REPORT.TXT",
       "sha256": "606b3c1c860cb08fc00451c0bffedd017510035ac2e0ccdc00925d15096f7d2f"
+    },
+    {
+      "path": "evidence/preflight-3090-01/REPORT.TXT",
+      "sha256": "adac7d1a3016c66ec7f90716b86c5782b0ece3ebee39cba87c2c8e86e57c6eae"
+    },
+    {
+      "path": "evidence/preflight-3090-02/REPORT.TXT",
+      "sha256": "6bfe3cc1f2d72d4b284887996a22cec971205aa51a56bea77b7b7fec7cd840a5"
+    },
+    {
+      "path": "evidence/preflight-3090-03/REPORT.TXT",
+      "sha256": "9c65830f52844258f0a363f6265a2a3d44545eec930449e04bd0843c0e82859c"
     },
     {
       "path": "evidence/unlock-3060-01/REPORT.TXT",
@@ -2799,7 +2811,7 @@
     },
     {
       "path": "unlock/build.ps1",
-      "sha256": "9ed3ad0e48b8557c76e82931d140e0b4b15a6e9d48be23082b581c3b211a6426"
+      "sha256": "54ed0906be2637f7e6eb8cd118ad87119e48fde4de9ee0c4dbeb6b0d7e8c177b"
     },
     {
       "path": "unlock/checks.c",
@@ -2878,6 +2890,10 @@
       "sha256": "03b8c257be5f78462d006d8563cea9a623d7b6d5fe50e793e021ca9077330417"
     },
     {
+      "path": "unlock/hosts/console_bus8.h",
+      "sha256": "b2c3b6694611498b8205c72fb474d3bc7d63d4ae7a84ccd441de119154c642df"
+    },
+    {
       "path": "unlock/hosts/discovery.h",
       "sha256": "f49cafded87f47da12e36f28f7a3109538a1a70bc5efa2f82c78caed5c248b45"
     },
@@ -2903,11 +2919,11 @@
     },
     {
       "path": "unlock/port.h",
-      "sha256": "8578ce0bf43f2a4d8a04fe3cfe7dbde996beaf15b928c9dd12592ec68cde1b9a"
+      "sha256": "a03c5e53ddae96d83fbc2b9f867b1e278dcb8cd111597915819d15386d188cd4"
     },
     {
       "path": "unlock/profiles/ga102_2204.h",
-      "sha256": "b9d4b693074153acc1a710ee25846f0da91476f0f1edd731d218507287378d8a"
+      "sha256": "8f4c3b18861e4c550edaaeada397aff5d23c838ae00438f715a806ffea428914"
     },
     {
       "path": "unlock/profiles/ga102_2206.h",
@@ -2967,7 +2983,7 @@
     },
     {
       "path": "unlock/test-port.cmd",
-      "sha256": "47678c1f623d1008671338f3820707c142a1f6bed31731a68c7e168635c2efc6"
+      "sha256": "49e953423583a5510a1909957e1f380545a0d39966d9cace6b74ac6b1a75cec8"
     },
     {
       "path": "unlock/test-runtime.cmd",

@@ -22,6 +22,11 @@ rem Confirmed RTX 3060 profile on its confirmed host: the write-capable path.
 if errorlevel 1 exit /b 1
 build\test-port-3060.exe
 if errorlevel 1 exit /b 1
+rem Confirmed RTX 3090 profile on the host where it is the target.
+"%GU_CLANG%" %PORT_FLAGS% -DGU_BOARD_2204 -DGU_HOST_CONSOLE_BUS8 tests\test_port.c port.c -o build\test-port-3090.exe
+if errorlevel 1 exit /b 1
+build\test-port-3090.exe
+if errorlevel 1 exit /b 1
 rem Unconfirmed board (test fixture) on an unconfirmed host.
 set "DISCOVERY=-DGU_BOARD_UNCONFIRMED -DGU_HOST_DISCOVERY"
 "%GU_CLANG%" %PORT_FLAGS% %DISCOVERY% -DGU_PREFLIGHT tests\test_port.c port.c -o build\test-port-unconfirmed.exe

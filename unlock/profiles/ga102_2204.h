@@ -1,73 +1,73 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
- * NVIDIA RTX 3090, PCI 10de:2204, 24576 MiB.
+ * MSI RTX 3090, PCI 10de:2204, subsystem 1462:3881, 24576 MiB.
  *
- * Discovery profile. This is GA102, like the two 3080 profiles, so the die ID,
- * the class/revision and the BAR/PROM geometry are the same family values. The
- * subsystem, the VBIOS PROM hash and the cold speed selectors still belong to
- * one physical card, so they stay unconfirmed until the read-only preflight has
- * read them off that card:
+ * Confirmed on hardware 2026-10-25: three read-only discovery boots
+ * (evidence/preflight-3090-01..03/REPORT.TXT) supplied the values below, and a
+ * fourth boot with this profile (evidence/preflight-3090-04/REPORT.TXT) passed
+ * every gate as a real comparison. Each value and the line it was read from:
  *
- *   1. build the preflight with -Board 2204 -HostProfile discovery
- *   2. boot it cold at least three times, with the monitor on a display that is
- *      NOT this card - the console has to survive the reset
- *   3. put the reported values into ga102_2204.local.h, every HAVE_* = 1
- *   4. rebuild; the transaction image only exists once the profile is confirmed
+ *   subsystem 0x38811462  identity: pci=0x220410de subsystem=0x38811462 ...
+ *   class/rev 0x030000a1  identity: ... class_rev=0x30000a1
+ *   chip      0xb72000a1  chip: actual=0xb72000a1 (GA102)
+ *   PROM      de78e145... live PROM hash sha256=de78e145...
+ *   SS0       0x50004016  in all three discovery boots
+ *   SS1       6           in all three discovery boots
+ *   cap       0xc8 = 0x00050011
+ *   fb        0x6000 = 24576 MiB at FEAT 0x001183a4
  *
- * Only this profile changes for a 3090. It takes the same five GA10x assets as
- * the 3080 profiles (gsp_ga10x.bin and the *_ga102.bin set), and the upstream
- * module lists 10de:2204 as a card it has run on.
+ * Unlike the 12GB GA102 board and the RTX 3060, SS0 did not vary between cold
+ * boots here, so the gate is an exact match rather than a mask over the common
+ * bits. If a later cold boot reports anything else, the mask treatment in
+ * profiles/ga102_220a.h is the pattern to copy.
  *
- * The frame buffer size is a property of the SKU, so it is a live gate even in
- * the preflight: a card that reports anything but 24576 MiB is not this board.
+ * SS1 is a set of accepted cold values, not an equality: only 6 has been seen.
+ *
+ * This profile is the MSI card's, not the SKU's. Another RTX 3090 has its own
+ * subsystem and VBIOS: run the discovery preflight and write its own
+ * ga102_2204.local.h, which overrides this file.
  */
 #pragma once
 
 #if __has_include("ga102_2204.local.h")
-/* Filled in from this card's own preflight reports (docs/BOARD-PROFILE.md). */
 #include "ga102_2204.local.h"
 #else
 
-#define GU_BOARD_PROFILE_NAME "ga102_2204 (RTX 3090, unconfirmed)"
-#define GU_BOARD_LABEL "RTX 3090"
+#define GU_BOARD_PROFILE_NAME "ga102_2204 (MSI RTX 3090, confirmed on hardware)"
+#define GU_BOARD_LABEL "MSI RTX 3090"
 
 #define GU_BOARD_ID 0x220410deU
-
-/* Read from config 0x2c by the preflight: AIB-specific. */
-#define GU_BOARD_SUBSYSTEM 0x00000000U
-#define GU_BOARD_HAVE_SUBSYSTEM 0
-
-/* GA10x parts report 0x030000a1; the preflight prints what this one reports. */
+#define GU_BOARD_SUBSYSTEM 0x38811462U
 #define GU_BOARD_CLASS_REV 0x030000a1U
-#define GU_BOARD_HAVE_CLASS 0
 
-/* GA102 die ID at BAR0+0, as confirmed on three GA102 cards in this repository. */
 #define GU_BOARD_CHIP 0xb72000a1U
-#define GU_BOARD_HAVE_CHIP 0
 
-/* Live BAR0+0x300000: one VBIOS per board model, so this is per card. */
-#define GU_BOARD_PROM_SHA256 ""
-#define GU_BOARD_HAVE_PROM 0
+#define GU_BOARD_PROM_SHA256 \
+  "de78e145e527059faec711a9a320b6dca6a88dc4de0fed882d1688ba2dd1aad1"
 
-/* 24576 MiB at FEAT 0x001183a4. */
 #define GU_BOARD_FB_MB 0x6000U
-#define GU_BOARD_HAVE_FB 1
 
-/* Cold speed selectors: observed values, not assumptions. */
+/* Exact: SS0 was 0x50004016 in every discovery boot. */
 #define GU_BOARD_SS0_MASK 0xffffffffU
-#define GU_BOARD_SS0_VALUE 0x00000000U
-#define GU_BOARD_HAVE_SS0 0
+#define GU_BOARD_SS0_VALUE 0x50004016U
 
-#define GU_BOARD_SS1_BITS 0x00000001U
-#define GU_BOARD_HAVE_SS1 0
+/* SS1 < 32 is an index into this mask; 6 is the only value seen so far. */
+#define GU_BOARD_SS1_BITS 0x00000040U
 
 #define GU_BOARD_BAR0_SIZE 0x1000000U
 #define GU_BOARD_PROM_OFFSET 0x300000U
 #define GU_BOARD_PROM_SIZE 0x100000U
 
-/* VBIOS-placed capability dword; the preflight dumps all 256 config bytes. */
 #define GU_BOARD_CAP_OFFSET 0x0c8U
-#define GU_BOARD_CAP_VALUE 0x00000000U
-#define GU_BOARD_HAVE_CAP 0
+#define GU_BOARD_CAP_VALUE 0x00050011U
+
+#define GU_BOARD_HAVE_CHIP 1
+#define GU_BOARD_HAVE_SUBSYSTEM 1
+#define GU_BOARD_HAVE_PROM 1
+#define GU_BOARD_HAVE_SS0 1
+#define GU_BOARD_HAVE_SS1 1
+#define GU_BOARD_HAVE_CAP 1
+#define GU_BOARD_HAVE_CLASS 1
+#define GU_BOARD_HAVE_FB 1
 
 #endif
