@@ -2702,6 +2702,10 @@
       "sha256": "f590eec30006375d80b6b974b3d8fc491d72e9e552d67064e4f6d5201cf46933"
     },
     {
+      "path": "evidence/unlock-3090-01/REPORT.TXT",
+      "sha256": "aae59d0146912e384b97260d0849e102022eb617bb92dabbcc04396440c30299"
+    },
+    {
       "path": "evidence/unlock-boot-09/REPORT.TXT",
       "sha256": "61996fd7bb47bdec6ffa0fd9aafed27e5e8ee4c337afb4cb0df003678c458ec9"
     },
@@ -2772,6 +2776,18 @@
     {
       "path": "results/rtx3090/comfyui/comfyui-before-fp16acc-20261025T113407Z.json",
       "sha256": "d61b203400aa075abe38158a3054dff35b17476b410c34eeef7e8b9fcc63e27b"
+    },
+    {
+      "path": "results/rtx3090/gemm/after-20261025T120359Z-run01.json",
+      "sha256": "d921aa2738b752cb8e1ad6e324932ea873f14e58f6eb0e00500352959bafded6"
+    },
+    {
+      "path": "results/rtx3090/gemm/after-20261025T120615Z-run02.json",
+      "sha256": "3eeea6935750c385fbf1b3014db249eecc9e433eae7fd3442427e7c1d28ad572"
+    },
+    {
+      "path": "results/rtx3090/gemm/after-20261025T120831Z-run03.json",
+      "sha256": "c44d52d01a3024201fd1d847efda843db9efb19aab83bb554a9711d4f3d727bf"
     },
     {
       "path": "results/rtx3090/gemm/before-20261025T112342Z-run01.json",
