@@ -2694,6 +2694,10 @@
       "sha256": "9c65830f52844258f0a363f6265a2a3d44545eec930449e04bd0843c0e82859c"
     },
     {
+      "path": "evidence/preflight-3090-04/REPORT.TXT",
+      "sha256": "c0ba388e916c76669970150c574779e36b256d2e1b71c2ee591068a5a9cc68c6"
+    },
+    {
       "path": "evidence/unlock-3060-01/REPORT.TXT",
       "sha256": "f590eec30006375d80b6b974b3d8fc491d72e9e552d67064e4f6d5201cf46933"
     },
