@@ -2895,7 +2895,7 @@
     },
     {
       "path": "unlock/hosts/nvidia_bus5.h",
-      "sha256": "01d10583f3c8126b7d5ec59d6268969702de57c14896428a4af29d5ae9254104"
+      "sha256": "d4f4a722e1e0169e96a024ef8ea133f06f1173cb5a55b80db90ebfbfd1609c52"
     },
     {
       "path": "unlock/ownership.c",

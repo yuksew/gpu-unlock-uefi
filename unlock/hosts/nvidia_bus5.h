@@ -20,6 +20,13 @@
  *   target pci_path=Pci(0x2,0x1)/Pci(0x0,0x0)/Pci(0x0,0x0)/Pci(0x0,0x0)
  *   console GOP pci_path=Pci(0x1,0x1)/Pci(0x0,0x0)      (01:00.0)
  *
+ * The profile first shipped as `amd_bus5`, labelled as an AMD iGPU console, on
+ * the assumption that 01:00.0 was the platform's integrated graphics. The
+ * measurement note for the benchmark set ("monitor on the second card") showed
+ * otherwise, and evidence/preflight-3060-04/REPORT.TXT still carries the old
+ * name because a log is not edited after the fact. The values and gates are
+ * unchanged; only the name and the description of what holds the console are.
+ *
  * The console therefore sits two PCI nodes below the root, behind a root port
  * at 00:01.1, so the match is exact on depth and on every node. Keep the
  * monitor on that card: a GOP on the target itself is never a console
