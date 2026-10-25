@@ -3,7 +3,7 @@
   "label": "before",
   "run": 1,
   "started_utc": "2026-10-25T11:23:42+00:00",
-  "note": "boot 2026-10-25 20:21; RTX 3090 never unlocked; it drives the monitor (desktop apps share it); Steam idle",
+  "note": "boot 2026-10-25 20:21; RTX 3090 never unlocked; not driving the monitor; Steam idle",
   "executable_sha256": "3e3b4becfcd722151515cfeed4c90de899018b1ceb1ddd3abd0e17333e548884",
   "arguments": [
     "--pci",

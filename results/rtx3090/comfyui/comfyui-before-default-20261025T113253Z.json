@@ -2,7 +2,7 @@
   "schema": 1,
   "kind": "comfyui",
   "label": "before-default",
-  "note": "boot 2026-10-25 20:21; RTX 3090 never unlocked, drives the monitor; ComfyUI default (FP32 accumulation), CUDA_VISIBLE_DEVICES=RTX 3090 UUID; same workflow as the RTX 3060 runs",
+  "note": "boot 2026-10-25 20:21; RTX 3090 never unlocked, not driving the monitor; ComfyUI default (FP32 accumulation), CUDA_VISIBLE_DEVICES=RTX 3090 UUID; same workflow as the RTX 3060 runs",
   "started_utc": "2026-10-25T11:32:53+00:00",
   "gpu": "NVIDIA GeForce RTX 3090",
   "pci": "0000:01:00.0",
