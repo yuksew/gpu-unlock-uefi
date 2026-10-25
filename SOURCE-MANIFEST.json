@@ -7,7 +7,7 @@
     },
     {
       "path": ".gitignore",
-      "sha256": "0e376355d639b6ba1bd1edaa51e7c6c4fb796f52b19905c9be0cdbddfcde387a"
+      "sha256": "ad831a21852fe3b7e0d91399228edcf589935c1d67e7b2653bea3a6444a71c4b"
     },
     {
       "path": "LICENSE",
@@ -39,7 +39,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "50530950c6503a0463915d922d11bbb59441469a3dd5e80ca5b253c9ef8c6627"
+      "sha256": "ada145ece0ed96b729102e9e0770ef97c7d3769fc412f314fa07b3026542af28"
     },
     {
       "path": "TESTING.ja.md",
@@ -2634,6 +2634,10 @@
       "sha256": "20b43822b0737cbd0f692ad8200cba4cfc47c192431827a98056c8a0068efb19"
     },
     {
+      "path": "docs/BOARD-PROFILE.md",
+      "sha256": "c2075962114378c59f9fdc0eb181661fe521ceb8b45c917649475634dcfc5317"
+    },
+    {
       "path": "docs/USB-BOOT.ja.md",
       "sha256": "5d885524cc9cc55b0283778600fafd6d6f645192eb7573c548cc05ba627e9254"
     },
@@ -2643,7 +2647,7 @@
     },
     {
       "path": "docs/USB-BOOT.md",
-      "sha256": "89601d73d51ac2b88a1fb08e18638a46be021253c62090c5ed8f101ed43ebe89"
+      "sha256": "3341f8563175618de3352d6c55d15507615ff8a2c7f1adf3eba431c8ee3e8256"
     },
     {
       "path": "efi_runtime.c",
@@ -2659,7 +2663,7 @@
     },
     {
       "path": "preflight-linux.sh",
-      "sha256": "2f90d54e791638d60348c5ef794b709510a6867b861f8cf8fa6cbf9b5045a9de"
+      "sha256": "033075fc36b590242435180accf98335f1078cff0fe3561870d3ef597a0f3f64"
     },
     {
       "path": "probe_app.c",
@@ -2715,7 +2719,7 @@
     },
     {
       "path": "unlock/app.c",
-      "sha256": "d1b1518ea2b501e89d4d38cba1bb900006d9ccd885bd07e5e6ec2908589416c7"
+      "sha256": "9d2afed88ed579417bf6153934f780fd132662df89ea83a1ee401c68c12753d2"
     },
     {
       "path": "unlock/app.h",
@@ -2735,15 +2739,15 @@
     },
     {
       "path": "unlock/build.ps1",
-      "sha256": "778049423ced30485c79c532aa76989fb20061a73a14dd0ef67a79fe50b5d768"
+      "sha256": "123dcf9a18b07da3daea6178ae15fa87b6d325c92cbfe85c9cb437305f1e8c9e"
     },
     {
       "path": "unlock/checks.c",
-      "sha256": "584c580606b66f5517c66f9e71055a41a8b4b46c4a9f5c6b74015aa3d61be82c"
+      "sha256": "bb8e85e025de532723ee08dce8697f0b4fbe3753fa545d768a7a842ad05ec06c"
     },
     {
       "path": "unlock/checks.h",
-      "sha256": "11608aad4c15e4f670a67789f1b8e3b1e6085f5011e6ae44af55e1ae28936b14"
+      "sha256": "f7974911b5381bbc1dd9abbd7578ad99041de84e3c0fed3462bc0d61237291b4"
     },
     {
       "path": "unlock/compat.c",
@@ -2814,6 +2818,14 @@
       "sha256": "03b8c257be5f78462d006d8563cea9a623d7b6d5fe50e793e021ca9077330417"
     },
     {
+      "path": "unlock/hosts/discovery.h",
+      "sha256": "f49cafded87f47da12e36f28f7a3109538a1a70bc5efa2f82c78caed5c248b45"
+    },
+    {
+      "path": "unlock/hosts/intel_bus1.h",
+      "sha256": "59b022497b84e6dd689922eb22fa7b67fed04d670b48af50ccfa209a9d24bcd5"
+    },
+    {
       "path": "unlock/ownership.c",
       "sha256": "d4d1ccc9befeadde70bc6ee9461894a8397be6d2f35287110f283bf836d2aeee"
     },
@@ -2823,11 +2835,23 @@
     },
     {
       "path": "unlock/port.c",
-      "sha256": "f83a8f4e27544ea87f357e1403a108b094f996fb163fb1f3ecf2c19520851875"
+      "sha256": "58a6803ca295f9a38bad3727d9061cb383199ad616fc0e7a47623d9d130f3d9d"
     },
     {
       "path": "unlock/port.h",
-      "sha256": "24fad5599ea8548936b29c786117068b8ccd48967cc2608cc68c63d109601779"
+      "sha256": "4d3caaad388e483790431ee6749309172a570d6abca7a9bd4787ddd42ab6b328"
+    },
+    {
+      "path": "unlock/profiles/ga102_2206.h",
+      "sha256": "6de6b8100dbe8dda4617c280f52d2a6421183cca0341b1f7be7281bd58cba12b"
+    },
+    {
+      "path": "unlock/profiles/ga102_220a.h",
+      "sha256": "8a64227d3f991baaa388e528e816bec111d8f5f5f38beff2123c084956807b5e"
+    },
+    {
+      "path": "unlock/profiles/ga106_2504.h",
+      "sha256": "0c51d9a9819415dcf1f6ab1a0ec788ac2d47fca249a6a18e0870f7002a6392a2"
     },
     {
       "path": "unlock/runtime.c",
@@ -2839,11 +2863,11 @@
     },
     {
       "path": "unlock/sha256.c",
-      "sha256": "5b707487e2aef3e582d689e36e1650b7f017180991c841dcd0cc2d115cdda567"
+      "sha256": "3ca7ff4260209f9983a19869271d6c318c83dca817000b5f62b6dfee93e2accb"
     },
     {
       "path": "unlock/sha256.h",
-      "sha256": "d58d123865b2df9c425ebea850d4c802e8c8fc1e0b6a0ce88a457c1535e11830"
+      "sha256": "769b3e023b0110222e179d0c71ed262d619b8c050f8c535f7423c571c36c737f"
     },
     {
       "path": "unlock/test-all.ps1",
@@ -2867,11 +2891,11 @@
     },
     {
       "path": "unlock/test-master-attributes.cmd",
-      "sha256": "557edabdef0306eabf1f995cc4c675ed527bf6382e0dced09d5bc6d9fbdbd2c8"
+      "sha256": "dafdb76cad180df741c3b5233b96e89c050e77fa95a43eb1e19577b638572c84"
     },
     {
       "path": "unlock/test-port.cmd",
-      "sha256": "62af5fd9e692c3a61f2106c8939b2afd728fc06a8274b702accf8d91e0595461"
+      "sha256": "680434a0c160cac55cc8e35c62dbde335742527953ec4856d41ee765392f6b18"
     },
     {
       "path": "unlock/test-runtime.cmd",
@@ -2899,7 +2923,7 @@
     },
     {
       "path": "unlock/tests/test_checks.c",
-      "sha256": "93ff0e46af06063a09c3bc9a1c9874ffd48714154fb8ed0a00accbedd6d02884"
+      "sha256": "94b3d2b3b566ecaf1bcf43b483d99a0844165f24ccd29838717bf44e6ace37da"
     },
     {
       "path": "unlock/tests/test_efi_transaction.c",
@@ -2919,7 +2943,7 @@
     },
     {
       "path": "unlock/tests/test_port.c",
-      "sha256": "254f925c200541b39cc476eaffb76c10ccc06fa8187c6644ba54cdda00aacc38"
+      "sha256": "1262418dd2d41e86af5dfa95b93e0fae09e60ba4dded0e7324d19e826e90cb43"
     },
     {
       "path": "unlock/tests/test_runtime.c",
@@ -2927,7 +2951,7 @@
     },
     {
       "path": "unlock/tests/test_sha256.c",
-      "sha256": "4b33f2a18388c01052cd2036050a413d5b8fa6480fb56df8ec76c35d4ce0e2c1"
+      "sha256": "0e2c8f142916ecd522b15d1c8d44418b1ad5b2689b1fa317c8a745ee59f7a898"
     },
     {
       "path": "unlock/tests/test_transaction_3080.c",
@@ -3023,7 +3047,7 @@
     },
     {
       "path": "unlock/vendor/unlock_610.c",
-      "sha256": "2871597e59584c5cf6280952f9efbbcc7d09129cd063f57fc5a7d6a34e004bee"
+      "sha256": "c7b99e5ea976441864d6130c25be39ebc2c3011270ccc3bb6719e08cbdf99b52"
     },
     {
       "path": "unlock/vendor/unlock_610.h",
