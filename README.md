@@ -4,7 +4,7 @@
 
 A UEFI application that restores the full FP16/BF16 tensor issue rate on NVIDIA GA10x GeForce cards: the ones shipped with FP32-accumulate tensor maths at half the rate of their professional siblings. It runs from a FAT32 USB stick before Windows starts, writes nothing to the VBIOS, and hands control straight back to Windows Boot Manager without a reboot in between.
 
-Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlock-12g), which is a UEFI port of [Zagitta/gpu-unlock](https://github.com/Zagitta/gpu-unlock). This fork adds the GA106 / RTX 3060 12GB board profile, an RTX 3090 discovery profile, a host profile for a console on a second NVIDIA card, and the measured result of one unlock on real hardware.
+Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlock-12g), which is a UEFI port of [Zagitta/gpu-unlock](https://github.com/Zagitta/gpu-unlock). This fork adds the GA106 / RTX 3060 12GB board profile, the RTX 3090 profile, two host profiles beyond the inherited one (console on a second NVIDIA card, console on the AMD iGPU), and the measured result of one unlock on each card.
 
 ## Boards and hosts
 
@@ -19,7 +19,7 @@ Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlo
 | --- | --- | --- | --- |
 | `intel_bus1` | default | Intel iGPU at `00:02.0` | `0:1:0.0` |
 | `nvidia_bus5` | `-HostProfile nvidia_bus5` | second NVIDIA card at `01:00.0` | `0:5:0.0` |
-| `console_bus8` | `-HostProfile console_bus8` | adapter at `08:00.0` | `0:1:0.0` |
+| `amd_igpu_bus1` | `-HostProfile amd_igpu_bus1` | AMD iGPU at `08:00.0` | `0:1:0.0` |
 | `discovery` | `-HostProfile discovery` | recorded, not required | recorded, not required |
 
 Every gate compares against values read from that card and that PC. Anything that does not match is refused before a write, and a profile with an unconfirmed field cannot build a transaction image at all.

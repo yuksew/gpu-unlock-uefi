@@ -86,11 +86,11 @@ preflight は config space、ファームウェアの BAR 記述子、コール�
 
 ## RTX 3090
 
-RTX 3090 のプロファイルは、その値を記録した MSI のカードとホストに対して確定しています。ここでは 3090 が普段コンソールを握っているカードでもあるため、unlock するにはコンソールを別に移す必要があります。確定済みの配置では、モニタは `08:00.0` のアダプタにあり、3090 は `0:1:0.0` のターゲットです（`-HostProfile console_bus8`）。モニタを 3090 に戻すとコンソールがターゲット上になり、表示ゲートが拒否します。
+RTX 3090 のプロファイルは、その値を記録した MSI のカードとホストに対して確定しています。ここでは 3090 が普段コンソールを握っているカードでもあるため、unlock するにはコンソールを別に移す必要があります。確定済みの配置では、モニタはマザーボード側の出力（ファームウェアが `08:00.0` と報告する AMD iGPU）にあり、3090 は `0:1:0.0` のターゲットです（`-HostProfile amd_igpu_bus1`）。モニタを 3090 に戻すとコンソールがターゲット上になり、表示ゲートが拒否します。
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile console_bus8 -Preflight
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile console_bus8
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile amd_igpu_bus1 -Preflight
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile amd_igpu_bus1
 python .\tools\package_usb.py --assets .\assets --output .\usb-package-3090
 ```
 

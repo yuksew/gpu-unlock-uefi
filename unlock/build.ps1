@@ -1,7 +1,7 @@
 param(
     # Board profile (unlock/profiles/) and host profile (unlock/hosts/); see docs/BOARD-PROFILE.md.
     [ValidateSet('2206','220a','2204','ga106_2504')][string]$Board = '2206',
-    [ValidateSet('intel_bus1','nvidia_bus5','console_bus8','discovery')][string]$HostProfile = 'intel_bus1',
+    [ValidateSet('intel_bus1','nvidia_bus5','amd_igpu_bus1','discovery')][string]$HostProfile = 'intel_bus1',
     # Read-only image. An unconfirmed board or host profile builds only with this.
     [switch]$Preflight
 )
@@ -13,7 +13,7 @@ New-Item -ItemType Directory -Path 'build' -Force | Out-Null
 $profileFlags = @(switch ($Board) { '220a' { '-DGU_BOARD_220A' } '2204' { '-DGU_BOARD_2204' } 'ga106_2504' { '-DGU_BOARD_GA106_2504' } })
 if ($HostProfile -eq 'discovery') { $profileFlags += '-DGU_HOST_DISCOVERY' }
 if ($HostProfile -eq 'nvidia_bus5') { $profileFlags += '-DGU_HOST_NVIDIA_BUS5' }
-if ($HostProfile -eq 'console_bus8') { $profileFlags += '-DGU_HOST_CONSOLE_BUS8' }
+if ($HostProfile -eq 'amd_igpu_bus1') { $profileFlags += '-DGU_HOST_AMD_IGPU_BUS1' }
 if ($Preflight) { $profileFlags += '-DGU_PREFLIGHT' }
 $includes = @('-I','compat','-I','../deps/edk2/MdePkg/Include','-I','../deps/edk2/MdePkg/Include/X64')
 # Ask port.h itself what it selected: the manifest must not carry a second,

@@ -18,10 +18,10 @@ UEFI アプリが GPU に書き込む前に比較する値は、すべてコン�
 | テスト用フィクスチャ（未確定） | `profiles/unconfirmed.h` | `-DGU_BOARD_UNCONFIRMED` | ボードではない |
 | Intel iGPU がコンソール、GPU は `0:1:0.0` | `hosts/intel_bus1.h` | 既定 | 確定 |
 | 2 枚目の NVIDIA カードがコンソール `01:00.0`、ターゲット `0:5:0.0` | `hosts/nvidia_bus5.h` | `-DGU_HOST_NVIDIA_BUS5` | 2026-10-25 に確定 |
-| コンソール `08:00.0`、ターゲット `0:1:0.0` | `hosts/console_bus8.h` | `-DGU_HOST_CONSOLE_BUS8` | 2026-10-25 に確定 |
+| AMD iGPU コンソール `08:00.0`、ターゲット `0:1:0.0` | `hosts/amd_igpu_bus1.h` | `-DGU_HOST_AMD_IGPU_BUS1` | 2026-10-25 に確定 |
 | それ以外のホスト | `hosts/discovery.h` | `-DGU_HOST_DISCOVERY` | 探索用: 未確定 |
 
-`unlock/build.ps1` は `-Board 2206|220a|2204|ga106_2504`、`-HostProfile intel_bus1|nvidia_bus5|console_bus8|discovery`、`-Preflight` を取り、3 つとも `build/build-manifest.json` に記録します。
+`unlock/build.ps1` は `-Board 2206|220a|2204|ga106_2504`、`-HostProfile intel_bus1|nvidia_bus5|amd_igpu_bus1|discovery`、`-Preflight` を取り、3 つとも `build/build-manifest.json` に記録します。
 
 ## 未確定のプロファイルがトランザクション用イメージをビルドできない理由
 
@@ -76,7 +76,7 @@ FLR をまたいでベンダーのトランザクションが再確認する ID�
 
 Windows のバス番号は手がかりにすぎません。意味を持つのは、UEFI が preflight で報告する値です。
 
-**検証済みのホスト:** `intel_bus1`（Intel iGPU コンソール）は GA102 の 2 枚を動かしました。`nvidia_bus5`（2 枚目の NVIDIA カード `01:00.0` がコンソール、ターゲット `0:5:0.0`）は 2026-10-25 に RTX 3060 のトランザクションを実行し、ターゲットの UEFI ドライバを解放してカードをリセットしつつ、コンソールはもう 1 枚の上で動き続けました。`console_bus8` は同じ PC の逆配置で、RTX 3090 の preflight とそのトランザクションで確認済みです（3090 がターゲット `0:1:0.0`、コンソールは `08:00.0`）。どちらも重要なのは、トランザクションが**ターゲット**コントローラを所有するドライバインスタンスに対して `DisconnectController` を呼び、同じドライバイメージが別のカードでコンソールを提供し続けるからです。
+**検証済みのホスト:** `intel_bus1`（Intel iGPU コンソール）は GA102 の 2 枚を動かしました。`nvidia_bus5`（2 枚目の NVIDIA カード `01:00.0` がコンソール、ターゲット `0:5:0.0`）は 2026-10-25 に RTX 3060 のトランザクションを実行し、ターゲットの UEFI ドライバを解放してカードをリセットしつつ、コンソールはもう 1 枚の上で動き続けました。`amd_igpu_bus1` は同じ PC の逆配置で、RTX 3090 の preflight とそのトランザクションで確認済みです（3090 がターゲット `0:1:0.0`、コンソールはファームウェアが `08:00.0` と報告する AMD 内蔵 GPU）。こちらが推奨構成で、コンソールはターゲットとドライバもカードも共有しません。どちらも重要なのは、トランザクションが**ターゲット**コントローラを所有するドライバインスタンスに対して `DisconnectController` を呼び、同じドライバイメージが別のカードでコンソールを提供し続けるからです。
 
 ## プロファイルを確定する: preflight、その後に再ビルド
 

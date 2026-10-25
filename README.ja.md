@@ -19,7 +19,7 @@ NVIDIA GA10x の GeForce カードで、FP16/BF16 テンソルの発行レート
 | --- | --- | --- | --- |
 | `intel_bus1` | 既定 | Intel iGPU `00:02.0` | `0:1:0.0` |
 | `nvidia_bus5` | `-HostProfile nvidia_bus5` | 2 枚目の NVIDIA カード `01:00.0` | `0:5:0.0` |
-| `console_bus8` | `-HostProfile console_bus8` | `08:00.0` のアダプタ | `0:1:0.0` |
+| `amd_igpu_bus1` | `-HostProfile amd_igpu_bus1` | AMD iGPU `08:00.0` | `0:1:0.0` |
 | `discovery` | `-HostProfile discovery` | 記録のみ（未確定で可） | 記録のみ（未確定で可） |
 
 すべてのゲートは、そのカードとその PC から読み取った値と比較します。一致しない場合は書き込み前に拒否され、未確定のフィールドが 1 つでもあるプロファイルはトランザクション用イメージをビルドできません。

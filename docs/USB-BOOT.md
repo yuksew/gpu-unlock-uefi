@@ -86,11 +86,11 @@ The preflight reads config space, the firmware BAR descriptor, the cold-state re
 
 ## RTX 3090
 
-The RTX 3090 profile is confirmed for the MSI card and the host whose values it records. Because the 3090 here is also the card that usually holds the console, unlocking it needs the console somewhere else: in the confirmed layout the monitor sits on the adapter at `08:00.0` and the 3090 is the target at `0:1:0.0` (`-HostProfile console_bus8`). Moving the monitor back to the 3090 puts the console on the target, which the display gate refuses.
+The RTX 3090 profile is confirmed for the MSI card and the host whose values it records. Because the 3090 here is also the card that usually holds the console, unlocking it needs the console somewhere else: in the confirmed layout the monitor sits on the motherboard output — the AMD iGPU the firmware reports at `08:00.0` — and the 3090 is the target at `0:1:0.0` (`-HostProfile amd_igpu_bus1`). Moving the monitor back to the 3090 puts the console on the target, which the display gate refuses.
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile console_bus8 -Preflight
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile console_bus8
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile amd_igpu_bus1 -Preflight
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile amd_igpu_bus1
 python .\tools\package_usb.py --assets .\assets --output .\usb-package-3090
 ```
 

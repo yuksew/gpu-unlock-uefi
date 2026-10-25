@@ -18,10 +18,10 @@ Each field has a `GU_BOARD_HAVE_*` or `GU_HOST_HAVE_*` flag. A field is *confirm
 | Test fixture, unconfirmed | `profiles/unconfirmed.h` | `-DGU_BOARD_UNCONFIRMED` | never a board |
 | Intel iGPU console, GPU at `0:1:0.0` | `hosts/intel_bus1.h` | default | confirmed |
 | Second NVIDIA card holds the console at `01:00.0`, target at `0:5:0.0` | `hosts/nvidia_bus5.h` | `-DGU_HOST_NVIDIA_BUS5` | confirmed 2026-10-25 |
-| Console at `08:00.0`, target at `0:1:0.0` | `hosts/console_bus8.h` | `-DGU_HOST_CONSOLE_BUS8` | confirmed 2026-10-25 |
+| AMD iGPU console at `08:00.0`, target at `0:1:0.0` | `hosts/amd_igpu_bus1.h` | `-DGU_HOST_AMD_IGPU_BUS1` | confirmed 2026-10-25 |
 | Any other host | `hosts/discovery.h` | `-DGU_HOST_DISCOVERY` | discovery: unconfirmed |
 
-`unlock/build.ps1` takes `-Board 2206|220a|2204|ga106_2504`, `-HostProfile intel_bus1|nvidia_bus5|console_bus8|discovery` and `-Preflight`, and records all three in `build/build-manifest.json`.
+`unlock/build.ps1` takes `-Board 2206|220a|2204|ga106_2504`, `-HostProfile intel_bus1|nvidia_bus5|amd_igpu_bus1|discovery` and `-Preflight`, and records all three in `build/build-manifest.json`.
 
 ## Why an unconfirmed profile cannot build a transaction image
 
@@ -76,7 +76,7 @@ The display check still requires exactly one physical GOP, a valid mode and a ma
 
 Windows' bus numbers are only a hint. The values that count are the ones UEFI reports in the preflight.
 
-**Validated hosts:** `intel_bus1` (Intel iGPU console) ran the two GA102 boards. `nvidia_bus5` (console on a second NVIDIA card at `01:00.0`, target at `0:5:0.0`) ran an RTX 3060 transaction on 2026-10-25: the target's UEFI driver was released and the card reset while the console kept running on the other card. `console_bus8` is the inverse layout on the same PC, confirmed by the RTX 3090 preflight and then by its transaction: there the 3090 is the target at `0:1:0.0` and the console sits at `08:00.0`. Both cases matter because the transaction calls `DisconnectController` on the driver instance that owns the *target* controller while the same driver image keeps serving the console on a different card.
+**Validated hosts:** `intel_bus1` (Intel iGPU console) ran the two GA102 boards. `nvidia_bus5` (console on a second NVIDIA card at `01:00.0`, target at `0:5:0.0`) ran an RTX 3060 transaction on 2026-10-25: the target's UEFI driver was released and the card reset while the console kept running on the other card. `amd_igpu_bus1` is the inverse layout on the same PC, confirmed by the RTX 3090 preflight and then by its transaction: there the 3090 is the target at `0:1:0.0` and the console is the AMD integrated GPU the firmware reports at `08:00.0`. That is the configuration to prefer, since the console shares neither a driver nor a card with the target. Both cases matter because the transaction calls `DisconnectController` on the driver instance that owns the *target* controller while the same driver image keeps serving the console on a different card.
 
 ## Confirming a profile: preflight, then rebuild
 

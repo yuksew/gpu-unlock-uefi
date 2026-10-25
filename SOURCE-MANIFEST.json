@@ -31,11 +31,11 @@
     },
     {
       "path": "README.ja.md",
-      "sha256": "6e24436aa45fb8bcd3cc51ea4ad3dbb5577f6ba55f2b78d0ebe786dc1727b68b"
+      "sha256": "e0a2299405bb6df9af83292af9ea197a42269d1fddd196a022a5f2755024fb2c"
     },
     {
       "path": "README.md",
-      "sha256": "988b135544444f92623bf97c7eaccf2910f29a2aace3b3da248575bee0c8934f"
+      "sha256": "6f32086299aa288e7b93efc9eeb42e3506b48575c64e306debc2dc2284cca0fe"
     },
     {
       "path": "TESTING.md",
@@ -2651,19 +2651,19 @@
     },
     {
       "path": "docs/BOARD-PROFILE.ja.md",
-      "sha256": "928c6b0e31c7b0e28b952bb3766b656dc236fc35bb81a90aca0808b8642fbd84"
+      "sha256": "1f1d2ec3a8d5164366d33a8888ea60e6862fa142ee468ab0b85fb42ccbb43881"
     },
     {
       "path": "docs/BOARD-PROFILE.md",
-      "sha256": "c72e3e8c0026e61abf4074c118493f9012a7746618260dc62479ffc5cac865c7"
+      "sha256": "801c6f6411cbdba6f86e81498e4cbfea93fac541226f32d5ae79c25c913eb458"
     },
     {
       "path": "docs/USB-BOOT.ja.md",
-      "sha256": "eee54d2766be43172a4863c9de6195b399177a7a5ac0606113e2d34cc9503021"
+      "sha256": "b95c69b30c7bf9d3c175edda8ea8ac73eece91d65276604d0a5c211ee2288f46"
     },
     {
       "path": "docs/USB-BOOT.md",
-      "sha256": "47c12c8d9c1388a850100f2666c1ff1a8a6c18d65583b0cfac1bf3be68a38065"
+      "sha256": "cb089d56dd2918e11d9ab94ec6573cd849ce427e7255fb716a5f8e01bd26af55"
     },
     {
       "path": "efi_runtime.c",
@@ -2859,7 +2859,7 @@
     },
     {
       "path": "unlock/build.ps1",
-      "sha256": "54ed0906be2637f7e6eb8cd118ad87119e48fde4de9ee0c4dbeb6b0d7e8c177b"
+      "sha256": "0fb85bb23900548ef992118bbaf8e137fbd5c28598dab3f9cbe02758ede56444"
     },
     {
       "path": "unlock/checks.c",
@@ -2938,8 +2938,8 @@
       "sha256": "03b8c257be5f78462d006d8563cea9a623d7b6d5fe50e793e021ca9077330417"
     },
     {
-      "path": "unlock/hosts/console_bus8.h",
-      "sha256": "b2c3b6694611498b8205c72fb474d3bc7d63d4ae7a84ccd441de119154c642df"
+      "path": "unlock/hosts/amd_igpu_bus1.h",
+      "sha256": "21d6c05396aa7468e70848634a0b13399d8a11d3954f4d589f41c22fa8fb5561"
     },
     {
       "path": "unlock/hosts/discovery.h",
@@ -2967,7 +2967,7 @@
     },
     {
       "path": "unlock/port.h",
-      "sha256": "a03c5e53ddae96d83fbc2b9f867b1e278dcb8cd111597915819d15386d188cd4"
+      "sha256": "19a29803b88ef350a6743736678a929da91a6413040fa595c2d65fba3ed5e23a"
     },
     {
       "path": "unlock/profiles/ga102_2204.h",
@@ -3031,7 +3031,7 @@
     },
     {
       "path": "unlock/test-port.cmd",
-      "sha256": "49e953423583a5510a1909957e1f380545a0d39966d9cace6b74ac6b1a75cec8"
+      "sha256": "543a8144eca03f6ac94fc6889ddb97389d91733637ebf97a53be2c7bb2602f16"
     },
     {
       "path": "unlock/test-runtime.cmd",
