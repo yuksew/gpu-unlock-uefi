@@ -167,6 +167,14 @@ static void TestHashMatching(void)
     Text[64] = '0';
     Text[65] = '\0';
     Check("reject overlong hex", !GuHashMatches("abc", 3, Text));
+
+    memset(Text, 'x', sizeof(Text));
+    GuHashHex("abc", 3, Text);
+    Check("hex digest is lower-case and NUL-terminated",
+          memcmp(Text, AbcHash, 65) == 0 && Text[65] == 'x');
+    Check("hex digest round-trips through matching", GuHashMatches("abc", 3, Text));
+    GuHashHex(NULL, 0, Text);
+    Check("hex digest of empty data", memcmp(Text, EmptyHash, 65) == 0);
 }
 
 static void TestPinnedFile(const char *Path, const char *Expected)

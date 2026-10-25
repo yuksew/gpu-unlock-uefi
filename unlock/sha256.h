@@ -17,4 +17,12 @@ VOID GuSha256(const VOID *Data, UINTN Size, UINT8 Digest[32]);
  */
 BOOLEAN GuHashMatches(const VOID *Data, UINTN Size, const char *Hex64);
 
+/*
+ * Write the SHA-256 of Data as 64 lower-case hexadecimal digits plus a NUL
+ * into Hex. This is how a report records a hash nothing is compared against
+ * yet, such as the PROM of a board whose profile is still being discovered.
+ * Data and Size follow GuSha256; Hex must have room for 65 bytes.
+ */
+VOID GuHashHex(const VOID *Data, UINTN Size, char Hex[65]);
+
 #endif

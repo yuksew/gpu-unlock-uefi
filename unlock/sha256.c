@@ -165,3 +165,17 @@ BOOLEAN GuHashMatches(const VOID *Data, UINTN Size, const char *Hex64)
     }
     return Difference == 0 ? TRUE : FALSE;
 }
+
+VOID GuHashHex(const VOID *Data, UINTN Size, char Hex[65])
+{
+    static const char Digits[] = "0123456789abcdef";
+    UINT8 Digest[32];
+    unsigned Index;
+
+    GuSha256(Data, Size, Digest);
+    for (Index = 0; Index < 32; ++Index) {
+        Hex[2 * Index] = Digits[Digest[Index] >> 4];
+        Hex[2 * Index + 1] = Digits[Digest[Index] & 0x0f];
+    }
+    Hex[64] = '\0';
+}

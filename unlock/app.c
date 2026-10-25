@@ -40,6 +40,15 @@ static EFI_STATUS Step(EFI_STATUS Status) {
 #endif
   return !GuLogReady() && !EFI_ERROR(Status)?EFI_DEVICE_ERROR:Status;
 }
+/* A profile field not yet read off this card cannot be a gate. The preflight
+   records that it skipped the comparison and passes, so the report carries
+   the card's own value for tools/gen_profile.py; any other build rejects
+   (port.h already refuses to compile one from an incomplete profile). */
+static BOOLEAN Pending(const char *Name) {
+  GuLog("gate %s: PENDING (profile value not confirmed on this card)\n",Name);
+  return GU_PROFILE_PENDING_OK;
+}
+#define GATE(Have,Name,Match) ((Have)?(Match):Pending(Name))
 static VOID ConfigLog(const UINT32 *Config) {
   for(UINTN i=0;i<64;i+=4)GuLog("config[%02x]=%08x %08x %08x %08x\n",
     (unsigned)(i*4),Config[i],Config[i+1],Config[i+2],Config[i+3]);
@@ -137,11 +146,12 @@ static EFI_STATUS ReadConfig(UINT32 *Config) {
 }
 /* BAR0 (config 0x10) is placed by platform firmware, not by the card: the
    validated 10GB host put it at 0x84000000 and the 12GB host at 0x50000000.
-   Gate the shape - 16 MiB aligned, memory space, a real assignment - and let
-   BarCheck cross-check it against the firmware's own BAR descriptor. */
+   Gate the shape - aligned to the profile's BAR0 size, memory space, a real
+   assignment - and let BarCheck cross-check it against the firmware's own
+   BAR descriptor. */
 static BOOLEAN Bar0Shape(UINT32 Bar) {
   UINT32 base=Bar&0xfffffff0U;
-  return !(Bar&0x1U) && !(base&0x00ffffffU) && base!=0;
+  return !(Bar&0x1U) && !(base&(GU_BOARD_BAR0_SIZE-1U)) && base!=0;
 }
 static EFI_STATUS ConfigCheck(BOOLEAN Save) {
   UINT32 config[64];GU_CAPS caps;UINTN segment,bus,device,function;
@@ -149,8 +159,12 @@ static EFI_STATUS ConfigCheck(BOOLEAN Save) {
   GuLog("target location: status=%#llx\n",(unsigned long long)status);
   if(EFI_ERROR(status))return status;
   status=ReadConfig(config);if(EFI_ERROR(status))return status;
+  /* Measured, not expected, values: a new card's report must show its own. */
+  GuLog("identity: pci=%#x subsystem=%#x class_rev=%#x\n",config[0],config[0x2c/4],config[2]);
   BOOLEAN checked=GuCheckConfig(config,segment,bus,device,function,&caps);
-  BOOLEAN valid=checked && config[2]==0x030000a1 && config[0xc8/4]==0x00050011 &&
+  if(!GU_BOARD_HAVE_SUBSYSTEM)Pending("subsystem");
+  BOOLEAN valid=checked && GATE(GU_BOARD_HAVE_CLASS,"class",config[2]==GU_BOARD_CLASS_REV) &&
+    GATE(GU_BOARD_HAVE_CAP,"cap",config[GU_BOARD_CAP_OFFSET/4]==GU_BOARD_CAP_VALUE) &&
     Bar0Shape(config[0x10/4]) && !(config[(caps.pcie+8)/4]&0x00200000U);
   BOOLEAN same=Save || !memcmp(config,InitialConfig,sizeof(config));
   if(Save || !valid || !same)ConfigLog(config);
@@ -240,13 +254,13 @@ static EFI_STATUS BarCheck(VOID) {
        that invariant replaces the old hardcoded 0x84000000 assignment. */
     UINT64 expect=(UINT64)(InitialConfig[0x10/4]&0xfffffff0U);
     BOOLEAN base_ok=r && r->AddrRangeMin==expect &&
-      (r->AddrRangeMax==expect+0xffffffU || r->AddrRangeMax==0x00ffffffU);
+      (r->AddrRangeMax==expect+GU_BOARD_BAR0_SIZE-1U || r->AddrRangeMax==GU_BOARD_BAR0_SIZE-1U);
     GuLog("bar0 cross-check: config_base=%#llx descriptor_base=%#llx agree=%u\n",
       (unsigned long long)expect,(unsigned long long)(r?r->AddrRangeMin:0),(unsigned)base_ok);
     if(!r || r->Desc!=ACPI_ADDRESS_SPACE_DESCRIPTOR || r->Len!=sizeof(*r)-3 || r->ResType!=0 ||
-      !base_ok || r->AddrLen!=0x1000000 || r->AddrTranslationOffset ||
+      !base_ok || r->AddrLen!=GU_BOARD_BAR0_SIZE || r->AddrTranslationOffset ||
       /* UEFI describes an inclusive end; pinned EDK2 PciBusDxe instead returns
-         PciBar.Alignment. Both representations describe this exact 16 MiB BAR. */
+         PciBar.Alignment. Both representations describe this exact BAR. */
       r->AddrSpaceGranularity!=32 || ((UINT8 *)(r+1))[0]!=ACPI_END_TAG_DESCRIPTOR)status=EFI_UNSUPPORTED;
     else {
       UINT8 *raw=(UINT8 *)r,sum=0;
@@ -258,8 +272,11 @@ static EFI_STATUS BarCheck(VOID) {
   if(r)GuFree(r);return status;
 }
 static EFI_STATUS ColdCheck(VOID) {
-  UINT32 chip=GuRead32(0);BOOLEAN chip_ok=chip==GU_BOARD_CHIP;
-  GuLog("chip: actual=%#x expected=%#x pass=%u\n",chip,GU_BOARD_CHIP,(unsigned)chip_ok);
+  /* pass= is the comparison itself; for an unconfirmed die ID it only says
+     whether the candidate in the profile was right. */
+  UINT32 chip=GuRead32(0);
+  GuLog("chip: actual=%#x expected=%#x pass=%u\n",chip,GU_BOARD_CHIP,(unsigned)(chip==GU_BOARD_CHIP));
+  BOOLEAN chip_ok=GATE(GU_BOARD_HAVE_CHIP,"chip",chip==GU_BOARD_CHIP);
 #ifdef GU_PREFLIGHT
   /* Preflight never writes, so an unexpected die ID is reported and the rest
      of the read-only gates still run. The transaction build keeps the reject. */
@@ -275,20 +292,26 @@ static EFI_STATUS ColdCheck(VOID) {
     GU_BOARD_CHIP,plm,s.plm,s.boot,s.cpuctl,hi,ss0,ss1,fb_mb);
   /* Every expected value is per-board; the profile in port.h owns them. */
   BOOLEAN gfw_ok=!gpu_unlock_gfw_assess(&s),plm_ok=plm==0xffffff8f,hi_ok=!(hi>>4),
-    ss0_ok=(ss0&GU_BOARD_SS0_MASK)==GU_BOARD_SS0_VALUE,
-    ss1_ok=ss1<32 && ((GU_BOARD_SS1_BITS>>ss1)&1U),
-    fb_ok=fb_mb==GU_BOARD_FB_MB;
+    ss0_ok=GATE(GU_BOARD_HAVE_SS0,"ss0",(ss0&GU_BOARD_SS0_MASK)==GU_BOARD_SS0_VALUE),
+    ss1_ok=GATE(GU_BOARD_HAVE_SS1,"ss1",ss1<32 && ((GU_BOARD_SS1_BITS>>ss1)&1U)),
+    fb_ok=GATE(GU_BOARD_HAVE_FB,"fb",fb_mb==GU_BOARD_FB_MB);
   GuLog("cold gates: gfw=%u plm=%u wpr2_hi=%u ss0=%u ss1=%u fb_mb=%u\n",
     (unsigned)gfw_ok,(unsigned)plm_ok,(unsigned)hi_ok,(unsigned)ss0_ok,(unsigned)ss1_ok,(unsigned)fb_ok);
   if(Gu.fault || !gfw_ok || !plm_ok || !hi_ok || !ss0_ok || !ss1_ok || !fb_ok)return EFI_NOT_READY;
   return Gu.fault?EFI_DEVICE_ERROR:EFI_SUCCESS;
 }
 static EFI_STATUS PromCheck(VOID) {
-  VOID *prom=GuAlloc(1048576);if(!prom)return EFI_OUT_OF_RESOURCES;
-  GuCopyFromIo(prom,(VOID *)(UINTN)(Gu.bar_base+0x300000),1048576);
-  BOOLEAN good=!Gu.fault && GuHashMatches(prom,1048576,GU_BOARD_PROM_SHA256);
-  GuFree(prom);GuLog("live PROM hash matched=%u base=%#llx expected=%s\n",
-    (unsigned)good,(unsigned long long)Gu.bar_base,GU_BOARD_PROM_SHA256);return good?EFI_SUCCESS:EFI_CRC_ERROR;
+  VOID *prom=GuAlloc(GU_BOARD_PROM_SIZE);if(!prom)return EFI_OUT_OF_RESOURCES;
+  GuCopyFromIo(prom,(VOID *)(UINTN)(Gu.bar_base+GU_BOARD_PROM_OFFSET),GU_BOARD_PROM_SIZE);
+  /* Always record the observed hash: a matched=0 alone tells a new card
+     nothing. A faulted copy has no meaningful hash and never matches. */
+  char seen[65]="unreadable";
+  if(!Gu.fault)GuHashHex(prom,GU_BOARD_PROM_SIZE,seen);
+  BOOLEAN good=!Gu.fault &&
+    GATE(GU_BOARD_HAVE_PROM,"prom",GuHashMatches(prom,GU_BOARD_PROM_SIZE,GU_BOARD_PROM_SHA256));
+  GuFree(prom);GuLog("live PROM hash sha256=%s matched=%u base=%#llx expected=%s\n",
+    seen,(unsigned)good,(unsigned long long)Gu.bar_base,
+    GU_BOARD_HAVE_PROM?GU_BOARD_PROM_SHA256:"unconfirmed");return good?EFI_SUCCESS:EFI_CRC_ERROR;
 }
 GU_TX_ONLY static EFI_STATUS Arm(VOID) {
   if(!Table->ConIn || !Table->ConIn->Reset || !Table->ConIn->ReadKeyStroke)return EFI_UNSUPPORTED;
@@ -363,8 +386,10 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
   Stage="preflight-summary";
   GuLogText("PREFLIGHT: read-only gates complete; nothing was written to the GPU.\n");
   GuLog("PREFLIGHT result=pass board=%s pci=%#x subsystem=%#x bar0=%#llx command=%#x\n",
-    GU_BOARD_LABEL,GU_BOARD_ID,GU_BOARD_SUBSYSTEM,(unsigned long long)Gu.bar_base,
+    GU_BOARD_LABEL,InitialConfig[0],InitialConfig[0x2c/4],(unsigned long long)Gu.bar_base,
     (unsigned)(InitialConfig[1]&0xffff));
+  /* complete=0: the gates logged PENDING above were skipped, not passed. */
+  GuLog("PREFLIGHT profile=%s complete=%u\n",GU_BOARD_PROFILE_NAME,(unsigned)GU_PROFILE_COMPLETE);
   status=GuLogReady()?EFI_SUCCESS:EFI_DEVICE_ERROR;
   goto finish;
 #else

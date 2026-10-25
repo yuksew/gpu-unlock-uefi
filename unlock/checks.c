@@ -28,7 +28,9 @@ BOOLEAN GuCheckConfig(const UINT32 Config[64], UINTN Segment, UINTN Bus,
   *Out = Caps;
   if (Config == NULL || Segment != 0 || Bus != 1 || Device != 0 || Function != 0)
     return FALSE;
-  if (Config[0] != GU_BOARD_ID || Config[0x2c / 4] != GU_BOARD_SUBSYSTEM ||
+  /* An unconfirmed subsystem is skipped only by the preflight (port.h). */
+  if (Config[0] != GU_BOARD_ID ||
+      !GU_PROFILE_GATE(GU_BOARD_HAVE_SUBSYSTEM, Config[0x2c / 4] == GU_BOARD_SUBSYSTEM) ||
       ConfigByte(Config, 0x0b) != PCI_CLASS_DISPLAY ||
       (ConfigByte(Config, PCI_HEADER_TYPE_OFFSET) & 0x7fU) != HEADER_TYPE_DEVICE)
     return FALSE;
