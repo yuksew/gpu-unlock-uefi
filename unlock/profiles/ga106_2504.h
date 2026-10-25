@@ -3,9 +3,11 @@
  * NVIDIA RTX 3060 12GB (GA106-300), PCI 10de:2504, subsystem 10de:1536,
  * 12288 MiB.
  *
- * Confirmed on hardware 2026-10-25 from three read-only preflight boots
- * (evidence/preflight-3060-01..03/REPORT.TXT). Each value and the line it was
- * read from:
+ * Confirmed on hardware 2026-10-25: three read-only discovery boots
+ * (evidence/preflight-3060-01..03/REPORT.TXT) supplied the values below, and a
+ * fourth boot with this profile (evidence/preflight-3060-04/REPORT.TXT) passed
+ * every gate as a real comparison - no PENDING line, complete=1. Each value
+ * and the line it was read from:
  *
  *   subsystem 0x153610de  identity: pci=0x250410de subsystem=0x153610de ...
  *   class/rev 0x030000a1  identity: ... class_rev=0x30000a1

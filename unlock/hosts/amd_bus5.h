@@ -2,8 +2,10 @@
 /*
  * Host profile: Gigabyte B850 AORUS ELITE WIFI7 ICE with an RTX 3060 12GB.
  *
- * Confirmed on hardware 2026-10-25 from three read-only preflight boots
- * (evidence/preflight-3060-01..03/REPORT.TXT). This host is not the one the two
+ * Confirmed on hardware 2026-10-25: three read-only discovery boots supplied
+ * the paths below, and a fourth boot with this profile matched them as a real
+ * comparison (evidence/preflight-3060-01..04/REPORT.TXT; GOP[0] route=1). This
+ * host is not the one the two
  * GA102 boards were validated on, and it differs in both things a host profile
  * owns:
  *

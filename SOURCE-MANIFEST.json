@@ -7,7 +7,7 @@
     },
     {
       "path": ".gitignore",
-      "sha256": "c3e260ca14d41bc579197988753bbb1e56683a17e0ab9fc4002bcd9fc505fa34"
+      "sha256": "2c06ee7af6af268bc962600424290940c02785d43414926bf14dfa2642f5a263"
     },
     {
       "path": "LICENSE",
@@ -2698,6 +2698,10 @@
       "sha256": "39e61082a0546f3ccdfdbd10734c4f5d85bde9b639ba73aca8d872488ccf9e09"
     },
     {
+      "path": "evidence/preflight-3060-04/REPORT.TXT",
+      "sha256": "606b3c1c860cb08fc00451c0bffedd017510035ac2e0ccdc00925d15096f7d2f"
+    },
+    {
       "path": "evidence/unlock-boot-09/REPORT.TXT",
       "sha256": "61996fd7bb47bdec6ffa0fd9aafed27e5e8ee4c337afb4cb0df003678c458ec9"
     },
@@ -2891,7 +2895,7 @@
     },
     {
       "path": "unlock/hosts/amd_bus5.h",
-      "sha256": "a0e23673562712499c5efb18d98ead23ad0ded16978e6434392bbf298a846280"
+      "sha256": "6f7efa90a9d0894fadbcc71d8fc2ec60d31a791e6a7561e8067bb496c14f664a"
     },
     {
       "path": "unlock/hosts/discovery.h",
@@ -2927,7 +2931,7 @@
     },
     {
       "path": "unlock/profiles/ga106_2504.h",
-      "sha256": "f0f52f0deb928264108e84b7c2b787d49de34fe935b7b98715a5e7cdf8073cf1"
+      "sha256": "1a78d39e22fa4a78396ca76af52b0dac6c2cf3d29468e560be92dccc27572a2e"
     },
     {
       "path": "unlock/profiles/unconfirmed.h",

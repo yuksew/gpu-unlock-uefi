@@ -2,7 +2,7 @@
 **/build/
 /dist/
 /assets/
-/usb-package/
+/usb-package*/
 /analysis/pinned-assets/
 /evidence/boot-03/PROM.BIN
 /evidence/boot-03/ROMIMAGE.BIN
