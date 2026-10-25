@@ -115,7 +115,7 @@ static BOOLEAN ConsoleGopCheck(EFI_GRAPHICS_OUTPUT_PROTOCOL *Gop,UINTN Index,
   return valid;
 }
 static BOOLEAN DisplayCheck(VOID) {
-  EFI_HANDLE *handles=NULL;UINTN count=0,intel=0;BOOLEAN valid=TRUE;
+  EFI_HANDLE *handles=NULL;UINTN count=0,consoles=0;BOOLEAN valid=TRUE;
   EFI_GRAPHICS_OUTPUT_MODE_INFORMATION physical={0},forwarded={0};BOOLEAN forwarding=FALSE;
   EFI_STATUS status=Gu.bs->LocateHandleBuffer(ByProtocol,&GopGuid,NULL,&count,&handles);
   GuLog("GOP enumeration: status=%#llx handles=%zu\n",(unsigned long long)status,(size_t)count);
@@ -130,11 +130,16 @@ static BOOLEAN DisplayCheck(VOID) {
     EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE *mode=gop->Mode;
     status=Gu.bs->HandleProtocol(handles[i],&PathGuid,(VOID **)&path);
     int route=!EFI_ERROR(status) && path?GuDisplayPath(path,256):0;
-    GuLog("GOP[%u] path_status=%#llx route=%d framebuffer=%#llx bytes=%zu mode=%u max_mode=%u info_bytes=%zu console=%u\n",
-      (unsigned)i,(unsigned long long)status,route,(unsigned long long)mode->FrameBufferBase,
-      (size_t)mode->FrameBufferSize,mode->Mode,mode->MaxMode,(size_t)mode->SizeOfInfo,(unsigned)(handles[i]==Table->ConsoleOutHandle));
     UINT8 nodes[GU_PATH_MAX_PCI][2];
     UINTN depth=!EFI_ERROR(status) && path?GuPathPci(path,256,nodes):0;
+    /* At or below the target: an output on the card this run resets. */
+    BOOLEAN target=TargetDepth && depth>=TargetDepth;
+    for(UINTN n=0;target && n<TargetDepth;n++)
+      target=nodes[n][0]==TargetPath[n][0] && nodes[n][1]==TargetPath[n][1];
+    GuLog("GOP[%u] path_status=%#llx route=%d framebuffer=%#llx bytes=%zu mode=%u max_mode=%u info_bytes=%zu console=%u target=%u\n",
+      (unsigned)i,(unsigned long long)status,route,(unsigned long long)mode->FrameBufferBase,
+      (size_t)mode->FrameBufferSize,mode->Mode,mode->MaxMode,(size_t)mode->SizeOfInfo,
+      (unsigned)(handles[i]==Table->ConsoleOutHandle),(unsigned)target);
     if(!GU_HOST_HAVE_DISPLAY && depth) {
       char text[16*GU_PATH_MAX_PCI+1];PathText(nodes,depth,text);
       GuLog("GOP[%u] pci_path=%s\n",(unsigned)i,text);
@@ -146,7 +151,7 @@ static BOOLEAN DisplayCheck(VOID) {
         if(info.PixelFormat==PixelBltOnly)continue;
         /* EDK2 ConSplitter forwards QueryMode to its sole physical GOP. Accept
            that RGB/BGR result only on the system console, then match it against
-           the one validated Intel GOP after enumeration (handle order varies). */
+           the one validated console GOP after enumeration (handle order varies). */
         if(handles[i]==Table->ConsoleOutHandle && !forwarding) {
           forwarded=info;forwarding=TRUE;continue;
         }
@@ -155,24 +160,44 @@ static BOOLEAN DisplayCheck(VOID) {
     }
     if(!mode->Info || mode->SizeOfInfo<sizeof(*mode->Info)){valid=FALSE;break;}
     GopInfoLog(i,mode->Info);
-    if(EFI_ERROR(status) || !path || !DisplayRoute(i,route,nodes,depth) || !mode->FrameBufferBase ||
-       !mode->FrameBufferSize || mode->Info->PixelFormat>PixelBlueGreenRedReserved8BitPerColor ||
+    BOOLEAN console=GU_HOST_HAVE_DISPLAY?route==1:DisplayRoute(i,route,nodes,depth);
+    if(!console) {
+      /* Neither the confirmed console nor, on a discovery host, a candidate.
+         This is a spare output on some other adapter. Releasing the target's
+         driver only blanks the target's own outputs, so a spare there cannot
+         affect the console; it is recorded and ignored. */
+      GuLog("GOP[%u] not the console%s; ignored\n",(unsigned)i,
+        target?" (spare output on the target GPU)":"");
+      if(!GuLogReady()){valid=FALSE;break;}
+      continue;
+    }
+    if(target) {
+      /* Whatever the profile says, a console at or below the card that gets
+         reset cannot survive it. */
+      GuLog("GOP[%u] console is at or below the target GPU; refusing\n",(unsigned)i);
+      valid=FALSE;break;
+    }
+    if(!mode->FrameBufferBase || !mode->FrameBufferSize ||
+       mode->Info->PixelFormat>PixelBlueGreenRedReserved8BitPerColor ||
        !mode->Info->HorizontalResolution || !mode->Info->VerticalResolution ||
        mode->Info->PixelsPerScanLine<mode->Info->HorizontalResolution ||
        (UINT64)mode->Info->PixelsPerScanLine*mode->Info->VerticalResolution>mode->FrameBufferSize/4) {
       valid=FALSE;break;
     }
-    physical=*mode->Info;intel++;
+    physical=*mode->Info;consoles++;
   }
   if(forwarding) {
-    BOOLEAN match=intel==1 && forwarded.Version==physical.Version && forwarded.PixelFormat==physical.PixelFormat &&
+    BOOLEAN match=consoles==1 && forwarded.Version==physical.Version && forwarded.PixelFormat==physical.PixelFormat &&
       forwarded.HorizontalResolution==physical.HorizontalResolution && forwarded.VerticalResolution==physical.VerticalResolution &&
       forwarded.PixelsPerScanLine==physical.PixelsPerScanLine;
-    GuLog("GOP console forwarded Intel match=%u\n",match);valid=valid && match;
+    GuLog("GOP console forwarded match=%u\n",match);valid=valid && match;
   }
-  GuFree(handles);GuLog("GOP result: valid=%u intel_physical=%zu\n",valid,(size_t)intel);
-  return valid && intel==1 && GuLogReady();
+  GuFree(handles);GuLog("GOP result: valid=%u console_gops=%zu\n",valid,(size_t)consoles);
+  /* A confirmed host names exactly one console. A discovery host may still be
+     recording which of several candidates the firmware actually uses. */
+  return valid && (GU_HOST_HAVE_DISPLAY?consoles==1:consoles>=1) && GuLogReady();
 }
+
 static EFI_STATUS ReadConfig(UINT32 *Config) {
   for(UINTN i=0;i<64;i++)if(EFI_ERROR(GuConfigRead(EfiPciIoWidthUint32,(UINT32)i*4,&Config[i]))) {
     GuLog("PCI config read failed: offset=%#x valid_bytes=%u; snapshot incomplete\n",(unsigned)(i*4),(unsigned)(i*4));

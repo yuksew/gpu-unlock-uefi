@@ -2651,19 +2651,19 @@
     },
     {
       "path": "docs/BOARD-PROFILE.ja.md",
-      "sha256": "1f1d2ec3a8d5164366d33a8888ea60e6862fa142ee468ab0b85fb42ccbb43881"
+      "sha256": "e46b7d523c2b84dce26cc8463b001692f7744f519eea2748657210545276e0e9"
     },
     {
       "path": "docs/BOARD-PROFILE.md",
-      "sha256": "801c6f6411cbdba6f86e81498e4cbfea93fac541226f32d5ae79c25c913eb458"
+      "sha256": "4dfd313f66709fdcafd467c06ea46dc9cda06616648e0ad7a5c8733ab8226f3f"
     },
     {
       "path": "docs/USB-BOOT.ja.md",
-      "sha256": "b95c69b30c7bf9d3c175edda8ea8ac73eece91d65276604d0a5c211ee2288f46"
+      "sha256": "d5e8e83559536d522fb5bf28ba7d03f36801bb3e5b9595720f46e6950d0ddc15"
     },
     {
       "path": "docs/USB-BOOT.md",
-      "sha256": "cb089d56dd2918e11d9ab94ec6573cd849ce427e7255fb716a5f8e01bd26af55"
+      "sha256": "0ffe1d7a3246841506583a46cae1b88e42aeb00c4c71ddb5b976874e3c7d046b"
     },
     {
       "path": "efi_runtime.c",
@@ -2839,7 +2839,7 @@
     },
     {
       "path": "unlock/app.c",
-      "sha256": "9d2afed88ed579417bf6153934f780fd132662df89ea83a1ee401c68c12753d2"
+      "sha256": "c2af65e18cbc7d6e3ec7cb114a346b9a35060ea7d50e725d04ca3db9b5862359"
     },
     {
       "path": "unlock/app.h",

@@ -72,7 +72,7 @@ FLR をまたいでベンダーのトランザクションが再確認する ID�
 | `GU_HOST_TARGET_SEGMENT/BUS/DEVICE/FUNCTION` / `HAVE_TARGET` | ターゲット関数の `GetLocation()` | `target BDF=<seg>:<bus>:<dev>.<fn>` |
 | `GU_HOST_DISPLAY_DEPTH`、`GU_HOST_DISPLAY_PCI` / `HAVE_DISPLAY` | `PciRoot` より下のコンソール GOP のデバイスパス。`Pci()` ノードごとに `{device, function}` を、根から順に | 採用された GOP の `GOP[n] pci_path=` |
 
-表示チェックは引き続き、物理 GOP がちょうど 1 つ、有効なモード、転送されたコンソールモードの一致を要求します。ホストが未確定のときは加えて `target pci_path=` を記録し、ターゲット GPU 上またはその配下の GOP を拒否するので、トランザクションがリセットするカードがコンソールになることはありません。
+表示チェックは、コンソールのパスに一致する GOP がちょうど 1 つ、そのモードが有効、転送されたコンソールモードが一致することを要求します。別のアダプタにある 2 つ目の GOP は記録して無視します。ターゲットのドライバを解放しても消えるのはターゲット自身の出力だけだからです。許されないのはコンソール自身がターゲット GPU 上またはその配下にある場合で、プロファイルが何と言おうと拒否します。ホストが未確定のときは加えて `target pci_path=` と、各 GOP の `pci_path=` を記録します。
 
 Windows のバス番号は手がかりにすぎません。意味を持つのは、UEFI が preflight で報告する値です。
 

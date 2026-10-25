@@ -72,7 +72,7 @@ The family-level cold gates (GFW boot state, FEAT PLM `0xffffff8f`, WPR2 high) a
 | `GU_HOST_TARGET_SEGMENT/BUS/DEVICE/FUNCTION` / `HAVE_TARGET` | `GetLocation()` of the target function | `target BDF=<seg>:<bus>:<dev>.<fn>` |
 | `GU_HOST_DISPLAY_DEPTH`, `GU_HOST_DISPLAY_PCI` / `HAVE_DISPLAY` | the console GOP's device path below `PciRoot`, one `{device, function}` per `Pci()` node, root first | `GOP[n] pci_path=` of the accepted GOP |
 
-The display check still requires exactly one physical GOP, a valid mode and a matching forwarded console mode. With an unconfirmed host the preflight additionally logs `target pci_path=` and rejects any GOP at or below the target GPU, so the console can never be one that the transaction would reset.
+The display check requires exactly one GOP that matches the console path, a valid mode on it and a matching forwarded console mode. A second GOP on another adapter is logged and ignored, because releasing the target's driver only blanks the target's own outputs. What is never allowed is the console itself sitting at or below the target GPU, which is refused whatever the profile says. With an unconfirmed host the preflight additionally logs `target pci_path=` and logs `pci_path=` for every GOP.
 
 Windows' bus numbers are only a hint. The values that count are the ones UEFI reports in the preflight.
 
