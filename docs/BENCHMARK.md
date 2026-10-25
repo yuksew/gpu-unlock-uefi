@@ -21,7 +21,7 @@ The patch lives in VRAM for one boot, so "before" and "after" can never be measu
 - `fp16_tensor_fp16_accumulate_control` — already full rate on GeForce, so its ratio should stay near 1.00; if it moves, something other than the unlock changed;
 - `fp32_pedantic` — no tensor cores, also expected to stay.
 
-Baseline on the RTX 3060 12GB in this repository's test PC (normal boot, ComfyUI resident and idle, short 3 s windows): FP16/FP32-accumulate 25.6 TFLOPS at 98 W, the FP16-accumulate control 46.9 TFLOPS. A working unlock should move the first towards the second. Expect it to reach the 170 W power limit and lose clock when it does, which is why the table also shows TFLOPS/GHz and GFLOPS/W.
+Baseline on the RTX 3060 12GB in this repository's test PC (`results/rtx3060/gemm/before-*.json`: normal boot, no unlock, three runs of 15 s per precision, spread under 0.5%): FP16/FP32-accumulate 25.74 TFLOPS at 103 W and 1920 MHz, BF16/FP32-accumulate 25.60 TFLOPS, the FP16-accumulate control 46.46 TFLOPS at 119 W, FP32 8.01 TFLOPS. A working unlock should move the first two towards the control. Expect it to reach the 170 W power limit and lose clock when it does, which is why the table also shows TFLOPS/GHz and GFLOPS/W.
 
 ```powershell
 analysis\build-power-benchmark.cmd     # GU_VCVARS / GU_NVCC override the toolchain paths
@@ -48,7 +48,7 @@ python -I analysis\bench_comfyui.py compare results\rtx3060\comfyui --base befor
 
 A card in an x1 slot moves about 1.6 GB/s to and from the host (measured: Gen4 x1, pinned 256 MiB copies), against 20+ GB/s at x16. That does not limit either harness, and both record evidence of it:
 
-- the GEMM operands stay in VRAM, and each GEMM window records NVML's PCIe counters (`median_pcie_rx_kbs`, `median_pcie_tx_kbs`) so a result can show it;
+- the GEMM operands stay in VRAM; each GEMM window records NVML's PCIe counters, and the baseline shows about 73 MB/s received and 27 MB/s sent while computing (launches and control traffic), under 5% of the link;
 - ComfyUI keeps the model in VRAM between prompts; the baseline workflow above moved about 34 MB/s over the link while generating, about 2% of what x1 carries.
 
 What x1 does slow down is everything that streams over the link: model loading (excluded — warmup prompts load the model and are not measured), offloading layers to host memory, and splitting one model across two GPUs. Keep those out of a before/after comparison: one GPU, the whole model resident (`-ngl 99` for llama.cpp), `CUDA_VISIBLE_DEVICES` limited to the card under test. If `median_pcie_rx_mbs` during generation climbs towards 1,000 MB/s, the run is link-bound and will not show the unlock.
