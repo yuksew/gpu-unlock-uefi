@@ -40,15 +40,45 @@ static EFI_STATUS Step(EFI_STATUS Status) {
 #endif
   return !GuLogReady() && !EFI_ERROR(Status)?EFI_DEVICE_ERROR:Status;
 }
-/* A profile field not yet read off this card cannot be a gate. The preflight
-   records that it skipped the comparison and passes, so the report carries
-   the card's own value for tools/gen_profile.py; any other build rejects
-   (port.h already refuses to compile one from an incomplete profile). */
+/* A board or host profile field not yet confirmed cannot be a gate. The
+   preflight records that it skipped the comparison and passes, so the report
+   carries the card's or host's own value; any other build rejects (port.h
+   already refuses to compile one from an incomplete profile). */
 static BOOLEAN Pending(const char *Name) {
   GuLog("gate %s: PENDING (profile value not confirmed on this card)\n",Name);
   return GU_PROFILE_PENDING_OK;
 }
 #define GATE(Have,Name,Match) ((Have)?(Match):Pending(Name))
+/* The target's own PCI chain, read only while the host display is
+   unconfirmed: it is what keeps the preflight from taking a GOP on the GPU
+   it would later reset for the console. */
+static UINT8 TargetPath[GU_PATH_MAX_PCI][2];
+static UINTN TargetDepth;
+/* UEFI-shell spelling, "Pci(0x1,0x0)/Pci(0x0,0x0)"; Text holds 16 per node. */
+static VOID PathText(const UINT8 Nodes[GU_PATH_MAX_PCI][2],UINTN Count,char Text[16*GU_PATH_MAX_PCI+1]) {
+  static const char digits[]="0123456789abcdef";char *p=Text;
+  for(UINTN i=0;i<Count;i++) {
+    if(i)*p++='/';
+    memcpy(p,"Pci(0x",6);p+=6;
+    if(Nodes[i][0]>=16)*p++=digits[Nodes[i][0]>>4];
+    *p++=digits[Nodes[i][0]&15];memcpy(p,",0x",3);p+=3;
+    if(Nodes[i][1]>=16)*p++=digits[Nodes[i][1]>>4];
+    *p++=digits[Nodes[i][1]&15];*p++=')';
+  }
+  *p='\0';
+}
+/* Route 1 is the host profile's confirmed display. A host without one makes
+   the preflight take any well-formed PCI display instead - but never one at
+   or below the target GPU - so the report can name the host's real one. */
+static BOOLEAN DisplayRoute(UINTN Index,int Route,const UINT8 Nodes[GU_PATH_MAX_PCI][2],UINTN Count) {
+  if(GU_HOST_HAVE_DISPLAY)return Route==1;
+  if(!Count || !TargetDepth)return FALSE;
+  BOOLEAN below=Count>=TargetDepth;
+  for(UINTN i=0;below && i<TargetDepth;i++)
+    below=Nodes[i][0]==TargetPath[i][0] && Nodes[i][1]==TargetPath[i][1];
+  if(below){GuLog("GOP[%u] is on the target GPU; never a console candidate\n",(unsigned)Index);return FALSE;}
+  return Pending("display");
+}
 static VOID ConfigLog(const UINT32 *Config) {
   for(UINTN i=0;i<64;i+=4)GuLog("config[%02x]=%08x %08x %08x %08x\n",
     (unsigned)(i*4),Config[i],Config[i+1],Config[i+2],Config[i+3]);
@@ -103,6 +133,12 @@ static BOOLEAN DisplayCheck(VOID) {
     GuLog("GOP[%u] path_status=%#llx route=%d framebuffer=%#llx bytes=%zu mode=%u max_mode=%u info_bytes=%zu console=%u\n",
       (unsigned)i,(unsigned long long)status,route,(unsigned long long)mode->FrameBufferBase,
       (size_t)mode->FrameBufferSize,mode->Mode,mode->MaxMode,(size_t)mode->SizeOfInfo,(unsigned)(handles[i]==Table->ConsoleOutHandle));
+    UINT8 nodes[GU_PATH_MAX_PCI][2];
+    UINTN depth=!EFI_ERROR(status) && path?GuPathPci(path,256,nodes):0;
+    if(!GU_HOST_HAVE_DISPLAY && depth) {
+      char text[16*GU_PATH_MAX_PCI+1];PathText(nodes,depth,text);
+      GuLog("GOP[%u] pci_path=%s\n",(unsigned)i,text);
+    }
     if((status==EFI_UNSUPPORTED || status==EFI_NOT_FOUND) && !path && !mode->FrameBufferBase &&
        !mode->FrameBufferSize) {
       EFI_GRAPHICS_OUTPUT_MODE_INFORMATION info;
@@ -119,7 +155,7 @@ static BOOLEAN DisplayCheck(VOID) {
     }
     if(!mode->Info || mode->SizeOfInfo<sizeof(*mode->Info)){valid=FALSE;break;}
     GopInfoLog(i,mode->Info);
-    if(EFI_ERROR(status) || !path || route!=1 || !mode->FrameBufferBase ||
+    if(EFI_ERROR(status) || !path || !DisplayRoute(i,route,nodes,depth) || !mode->FrameBufferBase ||
        !mode->FrameBufferSize || mode->Info->PixelFormat>PixelBlueGreenRedReserved8BitPerColor ||
        !mode->Info->HorizontalResolution || !mode->Info->VerticalResolution ||
        mode->Info->PixelsPerScanLine<mode->Info->HorizontalResolution ||
@@ -163,6 +199,7 @@ static EFI_STATUS ConfigCheck(BOOLEAN Save) {
   GuLog("identity: pci=%#x subsystem=%#x class_rev=%#x\n",config[0],config[0x2c/4],config[2]);
   BOOLEAN checked=GuCheckConfig(config,segment,bus,device,function,&caps);
   if(!GU_BOARD_HAVE_SUBSYSTEM)Pending("subsystem");
+  if(!GU_HOST_HAVE_TARGET)Pending("target-bdf");
   BOOLEAN valid=checked && GATE(GU_BOARD_HAVE_CLASS,"class",config[2]==GU_BOARD_CLASS_REV) &&
     GATE(GU_BOARD_HAVE_CAP,"cap",config[GU_BOARD_CAP_OFFSET/4]==GU_BOARD_CAP_VALUE) &&
     Bar0Shape(config[0x10/4]) && !(config[(caps.pcie+8)/4]&0x00200000U);
@@ -239,6 +276,13 @@ static EFI_STATUS FindTarget(VOID) {
   }
   GuFree(handles);GuLog("PCI target matches=%zu status=%#llx\n",(size_t)found,(unsigned long long)status);
   if(EFI_ERROR(status) || found!=1)return EFI_UNSUPPORTED;
+  if(!GU_HOST_HAVE_DISPLAY) {
+    EFI_DEVICE_PATH_PROTOCOL *path=NULL;char text[16*GU_PATH_MAX_PCI+1]="none";
+    status=Gu.bs->HandleProtocol(Gu.handle,&PathGuid,(VOID **)&path);
+    TargetDepth=!EFI_ERROR(status) && path?GuPathPci(path,256,TargetPath):0;
+    if(TargetDepth)PathText(TargetPath,TargetDepth,text);
+    GuLog("target pci_path=%s status=%#llx\n",text,(unsigned long long)status);
+  }
   return ConfigCheck(TRUE);
 }
 static EFI_STATUS BarCheck(VOID) {
@@ -389,7 +433,8 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
     GU_BOARD_LABEL,InitialConfig[0],InitialConfig[0x2c/4],(unsigned long long)Gu.bar_base,
     (unsigned)(InitialConfig[1]&0xffff));
   /* complete=0: the gates logged PENDING above were skipped, not passed. */
-  GuLog("PREFLIGHT profile=%s complete=%u\n",GU_BOARD_PROFILE_NAME,(unsigned)GU_PROFILE_COMPLETE);
+  GuLog("PREFLIGHT profile=%s host=%s complete=%u\n",GU_BOARD_PROFILE_NAME,
+    GU_HOST_PROFILE_NAME,(unsigned)GU_PROFILE_COMPLETE);
   status=GuLogReady()?EFI_SUCCESS:EFI_DEVICE_ERROR;
   goto finish;
 #else

@@ -38,26 +38,56 @@
    preflight exists to turn an incomplete profile into a complete one. A
    HAVE flag the profile forgot to define reads as 0 here, so an omission
    makes the profile incomplete rather than silently trusted. */
-#if GU_BOARD_HAVE_CHIP && GU_BOARD_HAVE_SUBSYSTEM && GU_BOARD_HAVE_PROM &&     GU_BOARD_HAVE_SS0 && GU_BOARD_HAVE_SS1 && GU_BOARD_HAVE_CAP &&              GU_BOARD_HAVE_CLASS && GU_BOARD_HAVE_FB
-#define GU_PROFILE_COMPLETE 1
+#if GU_BOARD_HAVE_CHIP && GU_BOARD_HAVE_SUBSYSTEM && GU_BOARD_HAVE_PROM && \
+    GU_BOARD_HAVE_SS0 && GU_BOARD_HAVE_SS1 && GU_BOARD_HAVE_CAP && \
+    GU_BOARD_HAVE_CLASS && GU_BOARD_HAVE_FB
+#define GU_BOARD_COMPLETE 1
 #else
-#define GU_PROFILE_COMPLETE 0
-#endif
-#if !GU_PROFILE_COMPLETE && !defined(GU_PREFLIGHT)
-#error "This board profile is not confirmed on a card yet. Build the GU_PREFLIGHT image, run tools/gen_profile.py on its REPORT.TXT, then rebuild."
+#define GU_BOARD_COMPLETE 0
 #endif
 
-/* GU_PROFILE_GATE(Have, Match) is the value of one per-board gate. A
+/* Host profile, selected the same way. It owns what the platform firmware
+   decides rather than the card: where the target GPU sits and which GOP
+   keeps the console while the target is reset. The default is the host the
+   two GA102 boards were validated on.
+     (default)                Intel iGPU console, GPU at 0:1:0.0
+     -DGU_HOST_DISCOVERY      unconfirmed; preflight only
+   Host profiles live in unlock/hosts/. */
+#if defined(GU_HOST_DISCOVERY)
+#include "hosts/discovery.h"
+#else
+#include "hosts/intel_bus1.h"
+#endif
+#if GU_HOST_HAVE_TARGET && GU_HOST_HAVE_DISPLAY
+#define GU_HOST_COMPLETE 1
+#else
+#define GU_HOST_COMPLETE 0
+#endif
+
+#define GU_PROFILE_COMPLETE (GU_BOARD_COMPLETE && GU_HOST_COMPLETE)
+#if !GU_BOARD_COMPLETE && !defined(GU_PREFLIGHT)
+#error "This board profile is not confirmed on a card yet. Build the GU_PREFLIGHT image, confirm the profile from its REPORT.TXT (docs/BOARD-PROFILE.md), then rebuild."
+#endif
+#if !GU_HOST_COMPLETE && !defined(GU_PREFLIGHT)
+#error "This host profile is not confirmed yet. Build the GU_PREFLIGHT image, confirm the host from its REPORT.TXT (docs/BOARD-PROFILE.md), then rebuild."
+#endif
+
+/* GU_PROFILE_GATE(Have, Match) is the value of one board or host gate. A
    confirmed field must match. An unconfirmed field cannot be a gate - there
    is nothing to compare against - so the preflight lets it through to record
-   the card's own value; anywhere else it rejects. The #error above already
-   makes that branch unreachable outside the preflight; the 0 is the backstop. */
+   the card's or host's own value; anywhere else it rejects. The #errors above
+   make that branch unreachable outside the preflight; the 0 is the backstop. */
 #if defined(GU_PREFLIGHT)
 #define GU_PROFILE_PENDING_OK 1
 #else
 #define GU_PROFILE_PENDING_OK 0
 #endif
 #define GU_PROFILE_GATE(Have, Match) ((Have) ? (Match) : GU_PROFILE_PENDING_OK)
+/* The target function's GetLocation() against the host profile. */
+#define GU_HOST_TARGET_AT(S, B, D, F)                                       \
+  GU_PROFILE_GATE(GU_HOST_HAVE_TARGET,                                      \
+    (S) == GU_HOST_TARGET_SEGMENT && (B) == GU_HOST_TARGET_BUS &&            \
+    (D) == GU_HOST_TARGET_DEVICE && (F) == GU_HOST_TARGET_FUNCTION)
 
 typedef struct GU_DMA GU_DMA;
 struct GU_DMA {

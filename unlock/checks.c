@@ -26,7 +26,7 @@ BOOLEAN GuCheckConfig(const UINT32 Config[64], UINTN Segment, UINTN Bus,
 
   if (Out == NULL) return FALSE;
   *Out = Caps;
-  if (Config == NULL || Segment != 0 || Bus != 1 || Device != 0 || Function != 0)
+  if (Config == NULL || !GU_HOST_TARGET_AT(Segment, Bus, Device, Function))
     return FALSE;
   /* An unconfirmed subsystem is skipped only by the preflight (port.h). */
   if (Config[0] != GU_BOARD_ID ||
@@ -141,22 +141,14 @@ static UINT16 NodeLength(const UINT8 *Bytes, UINTN Remaining) {
   return Length;
 }
 
-static BOOLEAN TakePci(const UINT8 **Bytes, UINTN *Remaining, UINT8 Device) {
-  const UINT8 *Node = *Bytes;
-  if (NodeLength(Node, *Remaining) != sizeof(PCI_DEVICE_PATH) ||
-      Node[0] != HARDWARE_DEVICE_PATH || Node[1] != HW_PCI_DP ||
-      Node[4] != 0 || Node[5] != Device)
-    return FALSE;
-  *Bytes += sizeof(PCI_DEVICE_PATH);
-  *Remaining -= sizeof(PCI_DEVICE_PATH);
-  return TRUE;
-}
-
-int GuDisplayPath(const EFI_DEVICE_PATH_PROTOCOL *Path, UINTN MaxBytes) {
+UINTN GuPathPci(const EFI_DEVICE_PATH_PROTOCOL *Path, UINTN MaxBytes,
+                UINT8 Nodes[GU_PATH_MAX_PCI][2]) {
   const UINT8 *Bytes = (const UINT8 *)Path;
   UINT32 Hid;
-  int Route;
-  if (Path == NULL || NodeLength(Bytes, MaxBytes) != sizeof(ACPI_HID_DEVICE_PATH) ||
+  UINTN Count = 0;
+  BOOLEAN Outputs = FALSE;
+  if (Path == NULL || Nodes == NULL ||
+      NodeLength(Bytes, MaxBytes) != sizeof(ACPI_HID_DEVICE_PATH) ||
       Bytes[0] != ACPI_DEVICE_PATH || Bytes[1] != ACPI_DP)
     return 0;
   Hid = Read32(Bytes + 4);
@@ -166,26 +158,48 @@ int GuDisplayPath(const EFI_DEVICE_PATH_PROTOCOL *Path, UINTN MaxBytes) {
   Bytes += sizeof(ACPI_HID_DEVICE_PATH);
   MaxBytes -= sizeof(ACPI_HID_DEVICE_PATH);
 
-  if (TakePci(&Bytes, &MaxBytes, 2)) {
-    Route = 1;
-  } else if (TakePci(&Bytes, &MaxBytes, 1) && TakePci(&Bytes, &MaxBytes, 0)) {
-    Route = 2;
-  } else {
-    return 0;
-  }
   for (;;) {
     UINT16 Length = NodeLength(Bytes, MaxBytes);
     if (Length == 0) return 0;
-    if (Bytes[0] == END_DEVICE_PATH_TYPE) {
-      if (Bytes[1] != END_ENTIRE_DEVICE_PATH_SUBTYPE ||
+    if (Bytes[0] == HARDWARE_DEVICE_PATH && Bytes[1] == HW_PCI_DP) {
+      /* PCI nodes form one unbroken chain directly below the root. */
+      if (Length != sizeof(PCI_DEVICE_PATH) || Outputs || Count == GU_PATH_MAX_PCI)
+        return 0;
+      Nodes[Count][0] = Bytes[5];
+      Nodes[Count][1] = Bytes[4];
+      ++Count;
+    } else if (Bytes[0] == END_DEVICE_PATH_TYPE) {
+      if (Count == 0 || Bytes[1] != END_ENTIRE_DEVICE_PATH_SUBTYPE ||
           Length != sizeof(EFI_DEVICE_PATH_PROTOCOL))
         return 0;
-      return Route;
-    }
-    if (Bytes[0] != ACPI_DEVICE_PATH || Bytes[1] != ACPI_ADR_DP ||
-        Length < sizeof(ACPI_ADR_DEVICE_PATH) || (Length & 3U) != 0)
+      return Count;
+    } else if (Count == 0 || Bytes[0] != ACPI_DEVICE_PATH || Bytes[1] != ACPI_ADR_DP ||
+               Length < sizeof(ACPI_ADR_DEVICE_PATH) || (Length & 3U) != 0) {
       return 0;
+    } else {
+      Outputs = TRUE;
+    }
     Bytes += Length;
     MaxBytes -= Length;
   }
+}
+
+int GuDisplayPath(const EFI_DEVICE_PATH_PROTOCOL *Path, UINTN MaxBytes) {
+  static const UINT8 Display[][2] = GU_HOST_DISPLAY_PCI;
+  static const UINT8 Rtx[2][2] = {{0x01, 0x00}, {0x00, 0x00}};
+  UINT8 Nodes[GU_PATH_MAX_PCI][2];
+  UINTN Count = GuPathPci(Path, MaxBytes, Nodes), I;
+  BOOLEAN Same;
+
+  if (GU_HOST_HAVE_DISPLAY && Count == GU_HOST_DISPLAY_DEPTH &&
+      Count <= sizeof(Display) / sizeof(Display[0])) {
+    Same = TRUE;
+    for (I = 0; I < Count; ++I)
+      if (Nodes[I][0] != Display[I][0] || Nodes[I][1] != Display[I][1]) Same = FALSE;
+    if (Same) return 1;
+  }
+  if (Count == 2 && Nodes[0][0] == Rtx[0][0] && Nodes[0][1] == Rtx[0][1] &&
+      Nodes[1][0] == Rtx[1][0] && Nodes[1][1] == Rtx[1][1])
+    return 2;
+  return 0;
 }
