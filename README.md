@@ -73,6 +73,19 @@ Prefill and decode were measured separately with a different harness (an LLM ser
 
 A normal reboot is enough to undo it: after one, the same GEMM probe read 72.0 TFLOPS and 35.8 TFLOPS/GHz, the locked state.
 
+## Power and efficiency
+
+Same runs, sampled from NVML over the same 15 s window: average power, and TFLOPS per watt.
+
+| Card | Path | Before | After | Work per joule |
+| --- | --- | --- | --- | --- |
+| RTX 3060 12GB | FP16 tensor, FP32 accumulate | 103.1 W, 249.4 GFLOPS/W | 131.4 W, 360.5 GFLOPS/W | ×1.45 |
+| RTX 3060 12GB | BF16 tensor, FP32 accumulate | 102.5 W, 249.7 GFLOPS/W | 141.0 W, 343.4 GFLOPS/W | ×1.38 |
+| RTX 3090 | FP16 tensor, FP32 accumulate | 315.6 W, 222.8 GFLOPS/W | 296.5 W, 413.1 GFLOPS/W | ×1.85 |
+| RTX 3090 | BF16 tensor, FP32 accumulate | 320.7 W, 219.2 GFLOPS/W | 337.2 W, 377.5 GFLOPS/W | ×1.72 |
+
+The 3060 draws more afterwards because it has the headroom: its limit is 170 W and it settles at 131–141 W. The 3090 is already at its 350 W limit, so it spends the doubled work per clock on a lower clock instead and its power barely moves. Either way the work per joule rises by 1.4–1.9×, and the SM clock falls in every case (1920 → 1882/1890 MHz on the 3060, 1980 → 1785/1860 MHz on the 3090).
+
 ## What does not get faster
 
 VRAM bandwidth, FP32 throughput, INT8 kernels, and anything bound by memory bandwidth, including LLM token generation. Expect nothing in games. The gain is confined to workloads that spend their time in dense FP16/BF16 matmuls with FP32 accumulation: training and fine-tuning, prefill, attention kernels, diffusion.
