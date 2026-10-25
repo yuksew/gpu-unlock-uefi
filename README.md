@@ -24,14 +24,14 @@ Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlo
 
 Every gate compares against values read from that card and that PC. Anything that does not match is refused before a write, and a profile with an unconfirmed field cannot build a transaction image at all.
 
-## Status (RTX 3060 12GB, the only card measured here)
+## Status
 
-| Step | State |
-| --- | --- |
-| Read-only preflight, 3 discovery boots + 1 confirmation boot | pass, no `PENDING` line, `complete=1` |
-| Transaction, 1 run | `result=0 FLR=1 clean=1`, selectors rewritten |
-| Effect measured in Windows | yes, see below |
-| Cold-boot persistence | not tested: the patch lives in VRAM and is gone after a power cycle |
+| Step | RTX 3060 12GB (`ga106_2504`) | MSI RTX 3090 (`ga102_2204`) |
+| --- | --- | --- |
+| Read-only preflight | 3 discovery boots + 1 confirmation boot, no `PENDING` line, `complete=1` | same |
+| Transaction, 1 run | `result=0 FLR=1 clean=1`, selectors rewritten to `0x88888888` / `0x8` | same |
+| Effect measured in Windows | GEMM and ComfyUI | GEMM, prefill and decode |
+| Gone after a power cycle | yes: the before and after sets are separate boots | yes, measured directly: 72.0 TFLOPS and 35.8 TFLOPS/GHz after a normal reboot |
 
 ## Measured result (RTX 3060 12GB)
 
@@ -81,12 +81,18 @@ One open question: on the reference host the target GPU trained at **Gen4 x1** (
 
 ## Supported scope
 
-- Board: RTX 3060 12GB, PCI `10de:2504`, subsystem `10de:1536`, VBIOS PROM SHA256 `b1608213…a4da`, die ID `0xb76000a1`, 12288 MiB.
-- Host: target at `0:5:0.0`, console GOP on a second NVIDIA card at `01:00.0`. The transaction releases the *target's* UEFI driver and resets that card while the console keeps running on the other one.
-- Firmware: the five runtime assets are pinned to NVIDIA 610.43.03 (`unlock/assets.json` holds names, sizes and SHA256).
-- Scope of effect: one boot. A power cycle removes it; there is no persistence and no VBIOS write.
+Each confirmed card is one board profile plus one host profile. Neither is a general-purpose setting for the SKU.
 
-Another RTX 3060 12GB will almost certainly fail the subsystem or PROM gate: those values are per card, not per SKU. That is the intended behaviour, and the discovery procedure below is how you get your own. The same applies to the RTX 3090 profile, which ships unconfirmed with only the device ID and the 24576 MiB frame buffer asserted.
+| | RTX 3060 12GB | MSI RTX 3090 |
+| --- | --- | --- |
+| Board profile | `ga106_2504`: `10de:2504`, subsystem `10de:1536`, PROM `b1608213…a4da`, die `0xb76000a1`, 12288 MiB | `ga102_2204`: `10de:2204`, subsystem `1462:3881`, PROM `de78e145…2dd1aad1`, die `0xb72000a1`, 24576 MiB |
+| Host profile | `nvidia_bus5`: target `0:5:0.0`, console on a second NVIDIA card at `01:00.0` | `amd_igpu_bus1`: target `0:1:0.0`, console on the AMD iGPU at `08:00.0` |
+| Firmware | the five assets pinned to NVIDIA 610.43.03 | the same five assets |
+| Scope of effect | one boot, VRAM only, no VBIOS write | one boot, VRAM only, no VBIOS write |
+
+The transaction releases the UEFI driver of the *target* controller only, then resets that card; the console keeps running because it is on another adapter.
+
+Another card of either model will almost certainly fail the subsystem or PROM gate: those values are per card, not per SKU. That is the intended behaviour, and the discovery procedure below is how you get your own.
 
 ## Running it from USB
 
@@ -138,10 +144,12 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\test-all.ps1
 
 ## Data in this repository
 
-- `evidence/preflight-3060-01..03/` — the three discovery boots that supplied the profile values.
-- `evidence/preflight-3060-04/` — the confirmation boot: every gate a real comparison, `complete=1`.
-- `evidence/unlock-3060-01/` — the transaction: 305 lines, ends `result=0 … clean=1`.
-- `results/rtx3060/gemm/`, `results/rtx3060/comfyui/` — the before and after measurements above.
+| Card | Preflight | Transaction | Measurements |
+| --- | --- | --- | --- |
+| RTX 3060 12GB | `evidence/preflight-3060-01..03/` (discovery), `-04/` (confirmation) | `evidence/unlock-3060-01/` | `results/rtx3060/gemm/`, `results/rtx3060/comfyui/` |
+| MSI RTX 3090 | `evidence/preflight-3090-01..03/` (discovery), `-04/` (confirmation) | `evidence/unlock-3090-01/` | `results/rtx3090/gemm/` |
+
+Each preflight report is the application's own log; each transaction report ends with `FINAL status=0 stage=transaction attempted=1 driver_release=1 clean=1`. The LLM numbers in the 3090 section came from a separate harness whose raw data is not in this repository.
 
 ## Caveats
 
