@@ -96,11 +96,41 @@ static VOID setup(VOID) {
   GuInit(&bs,&pci);Gu.bar_base=0x84000000;Gu.bar_size=sizeof(registers);
   Gu.pcie_cap=0x78;Gu.pcie_version=2;Gu.pm_cap=0x60;Gu.armed=TRUE;Gu.owned=TRUE;Gu.display_ok=TRUE;
 }
-int main(void) {
+/* Built once per profile (test-port.cmd). A confirmed field must reject a
+   mismatch; an unconfirmed one exists only in a preflight build, which
+   records the value instead of gating on it. */
+#if !GU_BOARD_COMPLETE || !GU_HOST_COMPLETE
+#ifndef GU_PREFLIGHT
+#error "an incomplete profile can only be tested as a preflight build"
+#endif
+#endif
+_Static_assert(GU_TARGET_PCI_ID==GU_BOARD_ID,"vendor target follows the board profile");
+_Static_assert(GU_PROFILE_COMPLETE==(GU_BOARD_COMPLETE && GU_HOST_COMPLETE),"completeness covers board and host");
+static VOID profile_gates(VOID) {
   setup();
-  assert(GuTargetConfig((UINT32 *)config,0,1,0,0));
-  assert(!GuTargetConfig((UINT32 *)config,0,2,0,0));
-  *(UINT32 *)(config+0x2c)^=1;assert(!GuTargetConfig((UINT32 *)config,0,1,0,0));
+  UINTN bus=GU_HOST_HAVE_TARGET?GU_HOST_TARGET_BUS:1;
+  assert(GuTargetConfig((UINT32 *)config,0,bus,0,0));
+  /* Location: rejected elsewhere when confirmed, recorded when pending. */
+  assert(GuTargetConfig((UINT32 *)config,0,bus+1,0,0)==!GU_HOST_HAVE_TARGET);
+  assert(GuTargetConfig((UINT32 *)config,0,bus,1,0)==!GU_HOST_HAVE_TARGET);
+  /* Subsystem: the AIB-specific field a discovery profile lacks. */
+  *(UINT32 *)(config+0x2c)^=1;
+  assert(GuTargetConfig((UINT32 *)config,0,bus,0,0)==!GU_BOARD_HAVE_SUBSYSTEM);
+  *(UINT32 *)(config+0x2c)^=1;
+  /* The device ID is never pending: it is how the target was found. */
+  *(UINT32 *)(config+0)^=0x10000;assert(!GuTargetConfig((UINT32 *)config,0,bus,0,0));
+  *(UINT32 *)(config+0)^=0x10000;
+  /* Pending fields never relax the shape checks around them. */
+  config[11]=0;assert(!GuTargetConfig((UINT32 *)config,0,bus,0,0));
+  setup();assert(!GuTargetConfig(NULL,0,bus,0,0));
+  if(!GU_BOARD_HAVE_SUBSYSTEM) {
+    setup();*(UINT32 *)(config+0x2c)=0x12345678;assert(!EFI_ERROR(GuSavePci()));
+  }
+  printf("profile gates: %s host=%s complete=%u\n",GU_BOARD_PROFILE_NAME,GU_HOST_PROFILE_NAME,
+    (unsigned)GU_PROFILE_COMPLETE);
+}
+int main(void) {
+  profile_gates();
   setup(); VOID *cpu=NULL;UINT64 dma=0;
   assert(!EFI_ERROR(GuDmaAllocate(59136,&cpu,&dma)));
   assert(cpu && dma==0x12000000 && dma!=(UINTN)cpu && fake.maps==1);

@@ -341,6 +341,47 @@ static void TestPaths(void) {
   Check(Path(P, sizeof(P)) == 0, "zero-filled path rejected");
 }
 
+/* Root, then Count Pci(Device=Base+I, Function=I&7) nodes, then the end node. */
+static UINTN Chain(UINT8 *P, unsigned Count, UINT8 Base) {
+  UINTN N = 12;
+  unsigned I;
+  memcpy(P, Intel, 12);
+  for (I = 0; I < Count; ++I, N += 6) {
+    memcpy(P + N, Intel + 12, 6);
+    P[N + 4] = (UINT8)(I & 7U);
+    P[N + 5] = (UINT8)(Base + I);
+  }
+  memcpy(P + N, Intel + 26, 4);
+  return N + 4;
+}
+
+static void TestPciChains(void) {
+  UINT8 P[96], Nodes[GU_PATH_MAX_PCI][2];
+  UINTN N;
+  N = GuPathPci((const EFI_DEVICE_PATH_PROTOCOL *)Rtx, sizeof(Rtx), Nodes);
+  Check(N == 2 && Nodes[0][0] == 1 && Nodes[0][1] == 0 && Nodes[1][0] == 0 && Nodes[1][1] == 0,
+        "RTX route parses as Pci(0x1,0x0)/Pci(0x0,0x0)");
+  N = GuPathPci((const EFI_DEVICE_PATH_PROTOCOL *)Intel, sizeof(Intel), Nodes);
+  Check(N == 1 && Nodes[0][0] == 2 && Nodes[0][1] == 0, "Intel route with ADR parses as Pci(0x2,0x0)");
+  N = Chain(P, 3, 8);
+  Check(GuPathPci((const EFI_DEVICE_PATH_PROTOCOL *)P, N, Nodes) == 3 &&
+        Nodes[0][0] == 8 && Nodes[0][1] == 0 && Nodes[1][0] == 9 && Nodes[1][1] == 1 &&
+        Nodes[2][0] == 10 && Nodes[2][1] == 2, "switch-depth chain parses root first, function kept");
+  Check(Path(P, N) == 0, "unknown chain is neither the host display nor the RTX route");
+  N = Chain(P, GU_PATH_MAX_PCI, 0);
+  Check(GuPathPci((const EFI_DEVICE_PATH_PROTOCOL *)P, N, Nodes) == GU_PATH_MAX_PCI,
+        "chain at the PCI depth limit accepted");
+  N = Chain(P, GU_PATH_MAX_PCI + 1, 0);
+  Check(GuPathPci((const EFI_DEVICE_PATH_PROTOCOL *)P, N, Nodes) == 0,
+        "chain beyond the PCI depth limit rejected");
+  memcpy(P, Intel, 26); memcpy(P + 26, Intel + 12, 6); memcpy(P + 32, Intel + 26, 4);
+  Check(GuPathPci((const EFI_DEVICE_PATH_PROTOCOL *)P, 36, Nodes) == 0, "PCI node after ADR rejected");
+  memcpy(P, Rtx, 12); memcpy(P + 12, Rtx + 24, 4);
+  Check(GuPathPci((const EFI_DEVICE_PATH_PROTOCOL *)P, 16, Nodes) == 0, "root-only chain rejected");
+  Check(GuPathPci((const EFI_DEVICE_PATH_PROTOCOL *)Rtx, sizeof(Rtx), NULL) == 0,
+        "missing output array rejected");
+}
+
 int main(int Argc, char **Argv) {
   UINT32 Captured[64];
   if (Argc != 2 || !LoadCapture(Argv[1], Captured)) return 2;
@@ -349,6 +390,7 @@ int main(int Argc, char **Argv) {
   TestPowerAndPcie();
   TestCapabilities();
   TestPaths();
+  TestPciChains();
   if (Failures != 0) {
     fprintf(stderr, "%u/%u checks failed\n", Failures, Checks);
     return 1;
