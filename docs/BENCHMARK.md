@@ -42,6 +42,8 @@ python -I analysis\bench_comfyui.py run --pci 0000:05:00.0 --label before-fp16ac
 python -I analysis\bench_comfyui.py compare results\rtx3060\comfyui --base before-fp16acc --test after-fp16acc
 ```
 
+Baseline on the RTX 3060 12GB before any unlock (`results/rtx3060/comfyui/`: Anima turbo, 832x1216, euler, 4 vs 8 steps, five runs each): 0.761 s per step in ComfyUI's default mode and 0.605 s per step with `--fast fp16_accumulation`, 3.73 and 3.33 s per image. The fixed cost per image moved between ComfyUI launches (0.56 to 0.91 s for the same mode), and every unlocked boot is a new launch, so compare seconds per step first and measure more than one launch per state. `results/rtx3060/comfyui-steps8/` is a separate 8/16-step session, kept as measured.
+
 **Launch mode matters.** `--fast fp16_accumulation` makes PyTorch's FP16 matrix multiplies accumulate in FP16, which GeForce already runs at full rate, so the unlock has little to remove there. ComfyUI's default (FP32 accumulation, and BF16 models in any mode) is where the half-rate limit applies. Measure both modes, restarting ComfyUI between them; the record stores the launch arguments and `compare` prints them.
 
 ## PCIe x1
