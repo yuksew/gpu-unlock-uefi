@@ -1,5 +1,7 @@
 # RTX 3060 12GB UEFI unlock (GA106)
 
+**English** | [日本語](README.ja.md)
+
 A UEFI application that restores the full FP16/BF16 tensor issue rate on an NVIDIA RTX 3060 12GB. It runs from a FAT32 USB stick before Windows starts, writes nothing to the VBIOS, and hands control straight back to Windows Boot Manager without a reboot in between.
 
 Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlock-12g), which is a UEFI port of [Zagitta/gpu-unlock](https://github.com/Zagitta/gpu-unlock). This fork adds the GA106 / RTX 3060 12GB board profile, a host profile for a console on a second NVIDIA card, and the measured result of one unlock on real hardware.
