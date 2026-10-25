@@ -132,7 +132,14 @@ def run(args):
         sys.exit('several workflow-*.json in %s; pick one with --workflow' % args.out)
     else:
         source = latest_workflow(server)
+        # Our own runs carry the neutral prompt and a doubled step count: never
+        # mistake one of them for the user's workflow.
+        if any(n['class_type'] == 'CLIPTextEncode' and n['inputs'].get('text') == POSITIVE for n in source.values()):
+            sys.exit('the latest history entry is one of this benchmark\'s own prompts; '
+                     'pass --workflow and --steps')
     graph, sampler = sanitise(source)
+    if args.steps:
+        graph[sampler]['inputs']['steps'] = args.steps
     base_steps = int(graph[sampler]['inputs']['steps'])
     seed_key = 'seed' if 'seed' in graph[sampler]['inputs'] else 'noise_seed'
     graph[sampler]['inputs'][seed_key] = 0  # every measured prompt sets its own
@@ -260,6 +267,7 @@ def main():
     r.add_argument('--runs', type=int, default=5)
     r.add_argument('--warmup', type=int, default=2, help='warmup prompts per step count')
     r.add_argument('--rest', type=float, default=2.0, help='seconds idle before each measured prompt')
+    r.add_argument('--steps', type=int, help='base step count S (default: the workflow\'s own)')
     r.add_argument('--seed', type=int, default=1000)
     r.add_argument('--note', default='')
     c = sub.add_parser('compare')
