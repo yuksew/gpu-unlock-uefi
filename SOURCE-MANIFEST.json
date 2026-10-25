@@ -2762,6 +2762,26 @@
       "sha256": "59c273be1c76b665dd7c245eca04af9f8028803591b5024691d7c0dde45e6e06"
     },
     {
+      "path": "results/rtx3090/comfyui/comfyui-before-default-20261025T113253Z.json",
+      "sha256": "bd9633fd302e5f6f76105530decee0d3823dd9b14239fdd24275f26147f3e72d"
+    },
+    {
+      "path": "results/rtx3090/comfyui/comfyui-before-fp16acc-20261025T113407Z.json",
+      "sha256": "5af9cf835786915d425ea43c99e4b9ddb69d221ee0f98d821157fcf56eb3fb1b"
+    },
+    {
+      "path": "results/rtx3090/gemm/before-20261025T112342Z-run01.json",
+      "sha256": "9676b140e398ffe30734b5c9efe448c5fd1f0039caa530c342de010714c79ba1"
+    },
+    {
+      "path": "results/rtx3090/gemm/before-20261025T112600Z-run02.json",
+      "sha256": "42557bae22f6f3480c2941eee570e6b96331e6ef31b142bc17414fe0db14ddfa"
+    },
+    {
+      "path": "results/rtx3090/gemm/before-20261025T112816Z-run03.json",
+      "sha256": "32d05893638650d3cd045d2201ab3259c2deecc3989c59a163c05b3f8a807d8a"
+    },
+    {
       "path": "test.cmd",
       "sha256": "d1173f24b50d704ab76c5fd6748dce10a497b59343586025237e4481243ee882"
     },
