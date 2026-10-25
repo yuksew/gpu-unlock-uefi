@@ -12,7 +12,7 @@ Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlo
 | --- | --- | --- | --- |
 | `ga102_2206` | default | RTX 3080 10GB, `10de:2206` | confirmed and measured upstream |
 | `ga102_220a` | `-Board 220a` | RTX 3080 12GB, `10de:220a` | confirmed upstream, one transaction |
-| `ga102_2204` | `-Board 2204` | MSI RTX 3090, `10de:2204` | confirmed and unlocked here, not measured |
+| `ga102_2204` | `-Board 2204` | MSI RTX 3090, `10de:2204` | confirmed, unlocked and measured here |
 | `ga106_2504` | `-Board ga106_2504` | RTX 3060 12GB, `10de:2504` | confirmed and measured here |
 
 | Host profile | Select with | Console GOP | Target |
@@ -55,6 +55,21 @@ ComfyUI, one Anima turbo workflow at 832×1216, four and eight steps, five runs 
 | `--fast fp16_accumulation` | 0.605 s/step | 0.570 s/step | ×0.94 |
 
 `--fast fp16_accumulation` makes the sampler accumulate in FP16, which is not the patched path, so it barely moves. That is consistent with the GEMM controls and it is why forcing that flag is the wrong way to use this.
+
+## Measured result (MSI RTX 3090)
+
+Three GEMM runs per state, same harness and flags as the 3060 set, 4096³ with FP32 accumulation:
+
+| Path | Before | After | Change | Per clock |
+| --- | --- | --- | --- | --- |
+| FP16 tensor, FP32 accumulate | 70.95 TFLOPS | 122.49 TFLOPS | ×1.73 | ×1.92 |
+| BF16 tensor, FP32 accumulate | 70.29 TFLOPS | 127.30 TFLOPS | ×1.81 | ×1.91 |
+| FP16 tensor, FP16 accumulate (control) | 129.26 TFLOPS | 129.52 TFLOPS | ×1.00 | — |
+| FP32 (control) | 24.78 TFLOPS | 24.74 TFLOPS | ×1.00 | — |
+
+Same shape as the 3060 and the same reason: per clock the patched path doubles, while the absolute gain is smaller because the card then sits against its 350 W limit (296–337 W measured) and settles at a lower clock (1980 → 1785 MHz on FP16, → 1860 MHz on BF16).
+
+Prefill and decode were measured separately with a different harness (an LLM server, 3 repetitions per case): prompt throughput rose 8.4% at 4K and 12.5% at 16K, and decode stayed within a few percent at short and 4K contexts. Decode at 16K came out 13.8% lower, which is not something the unlock should cause; that run also spent 18% of its power samples above 330 W against 4% before (max 344.8 W, 72 °C), so read it as a result to repeat, not as an effect. That harness's raw data is not in this repository.
 
 ## What does not get faster
 
