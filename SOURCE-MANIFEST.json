@@ -2742,6 +2742,14 @@
       "sha256": "edda855863fa73b894efc9f11d846b98ae9cbdf963eb1c0d264b126dd0a558c1"
     },
     {
+      "path": "results/rtx3060/comfyui/comfyui-after-default-20261025T101825Z.json",
+      "sha256": "a849501347d1937905b7280af7080c6437fd92a5b92fc5bf2ea515a61b0bdd0a"
+    },
+    {
+      "path": "results/rtx3060/comfyui/comfyui-after-fp16acc-20261025T102008Z.json",
+      "sha256": "daca9059dff9bc7a9bb99dc5fb1c7404630f02838803453c61346eb1d8d0e0b5"
+    },
+    {
       "path": "results/rtx3060/comfyui/comfyui-before-default-20261025T091608Z.json",
       "sha256": "6facb23fa5b8a32eb1c734d091ebe3a9f572f1dab8d7ef2f8dea99582c4ea4c0"
     },
@@ -2752,6 +2760,18 @@
     {
       "path": "results/rtx3060/comfyui/workflow-38e76970d1c4.json",
       "sha256": "e58ba21bcd6514b456286adb80df6f361174473ff632e020802aa4124fce02fa"
+    },
+    {
+      "path": "results/rtx3060/gemm/after-20261025T101108Z-run01.json",
+      "sha256": "d27d5cff8abefbfcdf4cb5c029212b04a3304d3dd10109a73538e2f924ffc83c"
+    },
+    {
+      "path": "results/rtx3060/gemm/after-20261025T101328Z-run02.json",
+      "sha256": "c24e191c0b0337e3247e0cf8978920bbb998bf9f25b583b4f461dae69ad21972"
+    },
+    {
+      "path": "results/rtx3060/gemm/after-20261025T101546Z-run03.json",
+      "sha256": "601188bb1b293dae00cef5e871ff4ab20cfa835b1416c6442b48854ce0216045"
     },
     {
       "path": "results/rtx3060/gemm/before-20261025T084622Z-run01.json",
