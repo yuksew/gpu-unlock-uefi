@@ -91,7 +91,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\test-all.ps1
 ```
 
-The build produces `unlock/build/BOOTX64.EFI` and checks the PE format. The test commands do not touch the GPU. For the full simulated test that needs extra fixtures, and for packaging, see [TESTING.md](TESTING.md).
+The build produces `unlock/build/BOOTX64.EFI` and checks the PE format. `build.ps1` takes `-Board 2206|220a|ga106_2504`, `-HostProfile intel_bus1|discovery` and `-Preflight` (see [Adding another board](#adding-another-board)) and records them in `unlock/build/build-manifest.json`; `GU_LLVM_ROOT` overrides the LLVM path, and `GU_CLANG` / `GU_VCVARS` do the same for `test-port.cmd`. The test commands do not touch the GPU. For the full simulated test that needs extra fixtures, and for packaging, see [TESTING.md](TESTING.md).
 
 ## 12GB (220a) profile and the read-only preflight
 
@@ -107,6 +107,24 @@ The build produces `unlock/build/BOOTX64.EFI` and checks the PE format. The test
 The `preflight` build passes `-DGU_PREFLIGHT` and drops the ARM/transaction code at link time. It only reads config space, firmware BAR descriptors and the PROM window over MMIO, writes nothing to the GPU, and closes the exclusive PciIo open as soon as each check is done. On failure, the gate that stopped it is printed on the console and recorded in `REPORT.TXT`. Gate expectations for the 12GB card, the offline replay tool (`analysis/r769/preflight_gate_replay.py`) and the run procedure are documented in `analysis/r769/preflight-12gb.md` in the workspace.
 
 Hardware status of the 12GB profile: the read-only preflight passes all ten gates, and one transaction run completed with `status=0 stage=transaction attempted=1 driver_release=1 clean=1` (`FLR=1`). After that run FP16 Tensor GEMM measured 109.5 TFLOPS, against 60.5–61.4 TFLOPS measured on this same card before the unlock in an earlier session. The tables above are not interleaved runs, so read the ratios as an estimate. The patch lives only in VRAM for the current boot and is gone after a reboot.
+
+## Adding another board
+
+Every board-specific expectation lives in a board profile (`unlock/profiles/`), and everything the PC decides — where the GPU sits on PCI and which firmware display keeps the console — lives in a host profile (`unlock/hosts/`). [docs/BOARD-PROFILE.md](docs/BOARD-PROFILE.md) lists the fields and the procedure: build the read-only preflight from a discovery profile, boot it from cold a few times, copy the values it reports into `*.local.h`, and rebuild. A profile with any field still unconfirmed builds only the preflight; the transaction image refuses to compile.
+
+The five firmware assets do not change per board. They are GA10x-family files: the upstream module (`kernel/gpu_unlock/unlock_610.c`) loads the same `gsp_ga10x.bin` and `*_ga102.bin` set for every GA10x card it supports, and an RTX 3060 12GB (`10de:2504`, GA106) has been reported working with it there. `unlock/assets.json` and the asset hashes stay as they are.
+
+**RTX 3060 12GB (`ga106_2504`): unvalidated.** The profile is a discovery profile. Only the device ID and the 12288 MiB frame buffer are fixed; the subsystem, die ID, PROM hash, capability dword, class/revision and cold SS0/SS1 are unconfirmed until a preflight has read them off the card. On a host other than the validated Intel-iGPU one, use `-HostProfile discovery` as well.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile discovery -Preflight
+```
+
+```bash
+./preflight-linux.sh preflight-3060     # build/preflight-3060/BOOTX64.EFI
+./preflight-linux.sh usb-3060           # build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI
+./preflight-linux.sh transaction-3060   # refused until both profiles are confirmed
+```
 
 ## Provenance and license
 

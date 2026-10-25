@@ -1,0 +1,90 @@
+# Board and host profiles
+
+Every value the UEFI application compares against before it writes to a GPU comes from two compile-time profiles:
+
+- a **board profile** (`unlock/profiles/`) describes one physical card: its PCI identity, VBIOS, die ID and cold-state registers;
+- a **host profile** (`unlock/hosts/`) describes where the platform firmware puts things: the target GPU's PCI location and the one firmware display (GOP) that keeps the console alive while the target is reset.
+
+Each field has a `GU_BOARD_HAVE_*` or `GU_HOST_HAVE_*` flag. A field is *confirmed* (flag 1) only when its value was read off that card or that host by the preflight, never copied from another board or assumed from the SKU.
+
+| Profile | File | Select with | State |
+|---|---|---|---|
+| MSI RTX 3080 10GB, `10de:2206` | `profiles/ga102_2206.h` | default (or `-DGU_BOARD_2206`) | confirmed |
+| MSI RTX 3080 12GB, `10de:220a` | `profiles/ga102_220a.h` | `-DGU_BOARD_220A` | confirmed |
+| RTX 3060 12GB, `10de:2504` | `profiles/ga106_2504.h` | `-DGU_BOARD_GA106_2504` | discovery: unconfirmed |
+| Intel iGPU console, GPU at `0:1:0.0` | `hosts/intel_bus1.h` | default | confirmed |
+| Any other host | `hosts/discovery.h` | `-DGU_HOST_DISCOVERY` | discovery: unconfirmed |
+
+`unlock/build.ps1` takes `-Board 2206|220a|ga106_2504`, `-HostProfile intel_bus1|discovery` and `-Preflight`, and records all three in `build/build-manifest.json`.
+
+## Why an unconfirmed profile cannot build a transaction image
+
+`port.h` computes `GU_BOARD_COMPLETE` and `GU_HOST_COMPLETE` as the AND of their `HAVE_*` flags. A flag the profile forgot to define reads as 0, so an omission makes a profile incomplete rather than trusted. Unless `GU_PREFLIGHT` is defined, an incomplete board or host stops the compiler with an `#error`:
+
+```text
+port.h: error: "This board profile is not confirmed on a card yet. ..."
+port.h: error: "This host profile is not confirmed yet. ..."
+```
+
+The gates exist so the transaction only writes to the card it was written for, in the state it was validated in. A gate with nothing confirmed to compare against cannot do that, so the only image an unconfirmed profile can produce is the read-only preflight. In that image an unconfirmed field is skipped, not passed: the report logs
+
+```text
+gate <name>: PENDING (profile value not confirmed on this card)
+```
+
+and the summary says `PREFLIGHT profile=... host=... complete=0`. `GU_PROFILE_GATE()` in `port.h` is the single definition of this rule; outside the preflight it rejects, as a backstop behind the `#error`.
+
+`GU_TARGET_PCI_ID`, the ID the vendor transaction re-checks across the FLR, is derived from `GU_BOARD_ID`. Passing a `-DGU_TARGET_PCI_ID` that names another board is an `#error`, and so is selecting two board profiles.
+
+## Board fields
+
+| Field | Gate | Read from in `REPORT.TXT` |
+|---|---|---|
+| `GU_BOARD_ID` | config `0x00` (`vendor \| device << 16`); also how the target is found, never pending | `identity: pci=` |
+| `GU_BOARD_SUBSYSTEM` / `HAVE_SUBSYSTEM` | config `0x2c`, the AIB's own ID | `identity: subsystem=` |
+| `GU_BOARD_CLASS_REV` / `HAVE_CLASS` | config `0x08`, class and revision | `identity: class_rev=` |
+| `GU_BOARD_CAP_OFFSET`, `GU_BOARD_CAP_VALUE` / `HAVE_CAP` | VBIOS-placed capability dword (`0xc8` on GA102) | `config[c0]=` line, third dword for `0xc8` |
+| `GU_BOARD_BAR0_SIZE` | BAR0 alignment in config space and size in the firmware BAR descriptor | `bar0 descriptor: length=` |
+| `GU_BOARD_CHIP` / `HAVE_CHIP` | die ID at BAR0+0 | `chip: actual=` |
+| `GU_BOARD_PROM_OFFSET`, `GU_BOARD_PROM_SIZE` | the live PROM window that is hashed (BAR0+`0x300000`, 1 MiB) | — |
+| `GU_BOARD_PROM_SHA256` / `HAVE_PROM` | SHA-256 of that window: the card's VBIOS | `live PROM hash sha256=` |
+| `GU_BOARD_FB_MB` / `HAVE_FB` | frame-buffer MiB at FEAT `0x001183a4` | `cold state: ... fb_mb=` |
+| `GU_BOARD_SS0_MASK`, `GU_BOARD_SS0_VALUE` / `HAVE_SS0` | cold SS0 (`0x0082381c`): `(SS0 & MASK) == VALUE` | `cold state: ... SS0=` |
+| `GU_BOARD_SS1_BITS` / `HAVE_SS1` | cold SS1 (`0x00823820`): bit `SS1` must be set | `cold state: ... SS1=` |
+| `GU_BOARD_LABEL`, `GU_BOARD_PROFILE_NAME` | text only | — |
+
+The family-level cold gates (GFW boot state, FEAT PLM `0xffffff8f`, WPR2 high) are the same for every GA10x board and are not part of the profile.
+
+**SS0 across boots.** SS0 can change between cold boots: the 220a card showed `0x01521103`, `0x01521013` and `0x01521003` over three boots. Boot the preflight at least three times. If SS0 is identical in every report, use `MASK = 0xffffffffU` and that value. Otherwise use the AND of all observed values as both `MASK` and `VALUE`, as the 220a profile does, so a volatile bit cannot reject the card. An AND of 0 gates nothing; do not confirm a profile from it.
+
+**SS1** is a set of accepted values: set bit `n` for every observed `SS1=n` (the 2206 profile accepts 2 or 3, `0x0000000cU`).
+
+## Host fields
+
+| Field | Gate | Read from in `REPORT.TXT` |
+|---|---|---|
+| `GU_HOST_TARGET_SEGMENT/BUS/DEVICE/FUNCTION` / `HAVE_TARGET` | `GetLocation()` of the target function | `target BDF=<seg>:<bus>:<dev>.<fn>` |
+| `GU_HOST_DISPLAY_DEPTH`, `GU_HOST_DISPLAY_PCI` / `HAVE_DISPLAY` | the console GOP's device path below `PciRoot`, one `{device, function}` per `Pci()` node, root first | `GOP[n] pci_path=` of the accepted GOP |
+
+The display check still requires exactly one physical GOP, a valid mode and a matching forwarded console mode. With an unconfirmed host the preflight additionally logs `target pci_path=` and rejects any GOP at or below the target GPU, so the console can never be one that the transaction would reset.
+
+Windows' bus numbers are only a hint. The values that count are the ones UEFI reports in the preflight.
+
+**Not validated:** both confirmed hosts ran the console on an Intel iGPU. A host whose console is on another NVIDIA GPU — for example a second card driving the monitor — is accepted by the discovery preflight, but no transaction has run in that configuration; the transaction releases the NVIDIA UEFI driver from the target controller while that driver may also be serving the console.
+
+## Confirming a profile: preflight, then rebuild
+
+1. **Build the preflight** for the new board on the discovery host:
+
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile discovery -Preflight
+   ```
+
+   or `./preflight-linux.sh usb-3060`. Stage it as in [USB-BOOT.md](USB-BOOT.md).
+2. **Boot it from a cold start** (power fully off first), at least three times. Each run writes `\RTX3080-UNLOCK\RUNxx\REPORT.TXT`. Use a report only if it ends with `PREFLIGHT result=pass` and `FINAL status=0`: a gate that failed means the card was not in the state the values describe.
+3. **Check the reports agree.** `identity:` (PCI, subsystem, class/revision), `chip: actual=` and `live PROM hash sha256=` must be identical in every report; if they are not, the reports are from different cards or something changed, and nothing should be confirmed. `fb_mb` must also be identical. SS0 and SS1 are combined as described above.
+4. **Write the local profiles by hand.** Copy the discovery header's fallback block into `unlock/profiles/ga106_2504.local.h`, replace each per-card value with the reported one, set every `GU_BOARD_HAVE_*` to 1, and change `GU_BOARD_PROFILE_NAME` to say it is confirmed. Start the file with a comment naming the `RUNxx` reports and their SHA-256. Do the same for the host in `unlock/hosts/discovery.local.h` (`GU_HOST_PROFILE_NAME`, the BDF, the display path, both `HAVE_*` = 1). Leave a field at 0 if any report lacks it: an unconfirmed field is the safe state.
+5. **Rebuild the preflight and boot it once more.** With the local profiles in place every gate is a real comparison; the report must show no `PENDING` line, `complete=1` and `PREFLIGHT result=pass`.
+6. **Only then** build the transaction image (`-Board ga106_2504 -HostProfile discovery`, no `-Preflight`). `build-manifest.json` records the hashes of both `*.local.h` files, which are not tracked by Git.
+
+`*.local.h` files are ignored by Git on purpose: they describe one card and one PC. To publish a confirmed board, add it as its own profile under `unlock/profiles/` with the reports it came from, as the 2206 and 220a profiles do.

@@ -57,6 +57,24 @@ If the USB application opens again, leave it with Esc. Do not press U a second t
 
 If `STOP / POWER OFF` appears, turn the PC off with the power button. Do not continue into Windows from that screen. Inspect `RTX3080-UNLOCK/RUNxx/REPORT.TXT` before trying again.
 
+## RTX 3060 12GB: read-only preflight first
+
+The RTX 3060 12GB (`10de:2504`) profile is unvalidated and starts unconfirmed, so the only image it builds is the read-only preflight. That image reads config space, the firmware BAR descriptor, the cold-state registers and the PROM window, writes nothing to the GPU, loads no assets and never asks for U. The procedure that turns its reports into a confirmed profile is in [BOARD-PROFILE.md](BOARD-PROFILE.md).
+
+1. Build the preflight for the 3060 on a host whose topology is not yet confirmed:
+
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board ga106_2504 -HostProfile discovery -Preflight
+   python .\tools\package_usb.py --output .\usb-package-3060
+   ```
+
+   The assets are not needed for the preflight, so `--assets` can be omitted. On Linux, `./preflight-linux.sh usb-3060` stages the image as `unlock/build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI`; then create an empty, writable `RTX3080-UNLOCK` folder on the USB root yourself.
+2. The folder keeps the name `RTX3080-UNLOCK` for every board: the application writes its reports only there.
+3. Connect the monitor to a display that is **not** the RTX 3060. The preflight rejects a console GOP on the target GPU, and it needs exactly one physical GOP, so leave every other output disconnected. The validated configuration is the Intel iGPU; a console on another NVIDIA card is accepted by the preflight but has never been used for a transaction.
+4. Power the PC off completely, boot the **UEFI USB** entry, and let the preflight finish. It returns to the firmware by itself; `PREFLIGHT passed` means every confirmed gate passed and the unconfirmed ones were recorded as `PENDING`.
+5. Repeat from a cold start at least twice more. Each run adds `RTX3080-UNLOCK/RUNxx/REPORT.TXT`.
+6. Copy the reports to the PC and confirm the profiles as described in [BOARD-PROFILE.md](BOARD-PROFILE.md). Until both `ga106_2504.local.h` and `hosts/discovery.local.h` exist with every field confirmed, `build.ps1` without `-Preflight` stops on an `#error` and no transaction image exists.
+
 ## Scope
 
 A successful UEFI run does not guarantee better performance in Windows or long-run stability. Check the device state first and compare performance in your own workload. Whether the effect survives the next cold boot has not been confirmed.

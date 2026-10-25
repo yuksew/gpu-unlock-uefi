@@ -10,10 +10,11 @@
  *
  *   1. build the preflight image for this profile
  *   2. boot it once (twice more if SS0 differs between boots)
- *   3. run tools/gen_profile.py on the REPORT.TXT files
+ *   3. copy the reported values into ga106_2504.local.h, all HAVE_* = 1,
+ *      as docs/BOARD-PROFILE.md describes
  *   4. rebuild; the transaction image is only buildable from a confirmed profile
  *
- * Until step 3 writes ga106_2504.local.h, this header keeps every unconfirmed
+ * Until step 3 creates ga106_2504.local.h, this header keeps every unconfirmed
  * field flagged 0 and the transaction build refuses to compile. GU_BOARD_CHIP
  * carries the GA10x-family candidate for GA106 so the probe can report
  * match/mismatch, not so it can be trusted: the die ID still has to be read.
@@ -24,11 +25,11 @@
  */
 #pragma once
 
-/* GU_PROFILE_DISCOVERY forces the fallback below even when a generated
+/* GU_PROFILE_DISCOVERY forces the fallback below even when a local
    profile exists, so the host tests can prove that an unconfirmed profile
    still refuses to build a write-capable image. */
 #if __has_include("ga106_2504.local.h") && !defined(GU_PROFILE_DISCOVERY)
-/* Written by tools/gen_profile.py from this card's own preflight reports. */
+/* Filled in from this card's own preflight reports (docs/BOARD-PROFILE.md). */
 #include "ga106_2504.local.h"
 #else
 
