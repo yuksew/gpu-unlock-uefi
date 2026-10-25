@@ -119,4 +119,4 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\test-all.ps1
 
 The port and the reused core are **GPL-2.0-only**. The chain is the CMP 40HX unlocker, then [Zagitta/gpu-unlock](https://github.com/Zagitta/gpu-unlock), then [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlock-12g), then this fork. Bundled EDK2 headers keep their own license, and the NVIDIA firmware the application loads is not redistributed here. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-The RTX 3080 10GB and 12GB profiles are inherited unchanged; their measurements belong to the repositories above and were not reproduced on this fork's hardware.
+The RTX 3080 10GB and 12GB profiles are inherited unchanged. Their measurements and result files belong to the repositories above and are not reproduced here; this fork carries only its own RTX 3060 data.

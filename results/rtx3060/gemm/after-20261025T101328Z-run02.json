@@ -3,7 +3,7 @@
   "label": "after",
   "run": 2,
   "started_utc": "2026-10-25T10:13:28+00:00",
-  "note": "boot 2026-10-25 19:08 after the user's own UEFI run; monitor on RTX 3090; ComfyUI stopped",
+  "note": "boot 2026-10-25 19:08 after the UEFI run; monitor on the second GPU; ComfyUI stopped",
   "executable_sha256": "3e3b4becfcd722151515cfeed4c90de899018b1ceb1ddd3abd0e17333e548884",
   "arguments": [
     "--pci",

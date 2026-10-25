@@ -31,7 +31,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "101d528f747ef0004d09a10d4a87c2eeada5fa88a600f001e12eb2cef15d2265"
+      "sha256": "b18c0b6a0f2fee7a387d2b72e904e4fe6ed02f5fca18b80105409b590d28b6ae"
     },
     {
       "path": "TESTING.md",
@@ -2702,60 +2702,48 @@
       "sha256": "f949626ec24af17bfc0dc20e15e26d920e2d1320c00401ea4e4fbd04b9afb6f3"
     },
     {
-      "path": "results/benchmark.json",
-      "sha256": "11681321992649cb2b2aab0c53044246b7b7a80b77c19cc397ad16cdc8c1889f"
-    },
-    {
-      "path": "results/llm-prefill.json",
-      "sha256": "b6421aead28ac6e4a783ff0b515770c6d9fe7320366a25c6d55b414e1a1d3359"
-    },
-    {
-      "path": "results/pytorch-matrix.json",
-      "sha256": "aec76cb132a7c5fee0ac5298492efac6e0c7144c468a20348ead6f08d11245f6"
-    },
-    {
       "path": "results/rtx3060/comfyui-steps8/comfyui-before-fp16acc-20261025T091111Z.json",
-      "sha256": "6b98bf13b7a5a297e085e25a093e8c9877c4896ca982c5b4744e55147b5a4505"
+      "sha256": "dc18bcd40c32dc328b88f267e0fd26a142adea7c023fcbb28bae2b38fe969bf6"
     },
     {
       "path": "results/rtx3060/comfyui/comfyui-after-default-20261025T101825Z.json",
-      "sha256": "a849501347d1937905b7280af7080c6437fd92a5b92fc5bf2ea515a61b0bdd0a"
+      "sha256": "0f57c5461a5a1c7e4cf258c255cb8582e57224f4b4383efb083e3a2d75703d6e"
     },
     {
       "path": "results/rtx3060/comfyui/comfyui-after-fp16acc-20261025T102008Z.json",
-      "sha256": "daca9059dff9bc7a9bb99dc5fb1c7404630f02838803453c61346eb1d8d0e0b5"
+      "sha256": "b012590e1d22bc5fe36cecd44281d18dfc8c549b6f7299593aadc1062da74beb"
     },
     {
       "path": "results/rtx3060/comfyui/comfyui-before-default-20261025T091608Z.json",
-      "sha256": "6facb23fa5b8a32eb1c734d091ebe3a9f572f1dab8d7ef2f8dea99582c4ea4c0"
+      "sha256": "5be6551a3a8d828971eee10c230ba7cf284bc0f169e7729e43729756b30aa88c"
     },
     {
       "path": "results/rtx3060/comfyui/comfyui-before-fp16acc-20261025T091407Z.json",
-      "sha256": "e571e5eaa003060a710243ddbaf07172889bd2287512288d5670affb27b3e33a"
+      "sha256": "09c9ccb01fb4ee92db88828031ede93f72bf32102c1539f54eaecd03435bec9e"
     },
     {
       "path": "results/rtx3060/gemm/after-20261025T101108Z-run01.json",
-      "sha256": "d27d5cff8abefbfcdf4cb5c029212b04a3304d3dd10109a73538e2f924ffc83c"
+      "sha256": "ed5b12d5bce3a7cfe6173e3a1be8904ae66176e667266ecb278a54e9ff43c798"
     },
     {
       "path": "results/rtx3060/gemm/after-20261025T101328Z-run02.json",
-      "sha256": "c24e191c0b0337e3247e0cf8978920bbb998bf9f25b583b4f461dae69ad21972"
+      "sha256": "9434e45b5b939c86fb1989422f07ea688d885598d7b8612500a42d576c7fbdd9"
     },
     {
       "path": "results/rtx3060/gemm/after-20261025T101546Z-run03.json",
-      "sha256": "601188bb1b293dae00cef5e871ff4ab20cfa835b1416c6442b48854ce0216045"
+      "sha256": "8ab3c0d2ccc82a7fe6bdbc6a88f1683ac38a14f052b45979b04776ea58b38685"
     },
     {
       "path": "results/rtx3060/gemm/before-20261025T084622Z-run01.json",
-      "sha256": "28c7a3a782704595da1468178cf6fe4558d940cc181f6e61c4ae918138127a83"
+      "sha256": "39ac130f27b652922659a706676b6829714c733d91e3f2559448c70694d780ae"
     },
     {
       "path": "results/rtx3060/gemm/before-20261025T084841Z-run02.json",
-      "sha256": "14c2a05bd23205dfa78d5031ceafea2e6ed0c0cb3e302766500d7969321a4399"
+      "sha256": "276991fce6f17af75a0397753b20168e15282390b994dc2406f9bf3ec9d2c3a2"
     },
     {
       "path": "results/rtx3060/gemm/before-20261025T085059Z-run03.json",
-      "sha256": "30ae5352d18213f5016724caa85d6b4ebfebe8c49a97307e1f56832ddb6dce55"
+      "sha256": "59c273be1c76b665dd7c245eca04af9f8028803591b5024691d7c0dde45e6e06"
     },
     {
       "path": "test.cmd",
@@ -2915,7 +2903,7 @@
     },
     {
       "path": "unlock/profiles/ga102_2206.h",
-      "sha256": "6de6b8100dbe8dda4617c280f52d2a6421183cca0341b1f7be7281bd58cba12b"
+      "sha256": "47e67277aa0989d162ad39ffa11e8374b978606dab9f8512be3a50b385dcef29"
     },
     {
       "path": "unlock/profiles/ga102_220a.h",

@@ -3,10 +3,12 @@
  * MSI RTX 3080 10GB, PCI 10de:2206, subsystem 1462:3890.
  *
  * Every expected value below was read from this card's own firmware dump and
- * cold-state probe; see evidence/boot-03/REPORT.TXT, evidence/unlock-boot-09/
- * and results/benchmark.json. GU_BOARD_HAVE_* is 1 for every field because
- * each one has been confirmed on the card itself, which is what allows a
- * write-capable (non-preflight) image to be built from this profile.
+ * cold-state probe in the repository this fork came from
+ * (balaena01/rtx3080-unlock-12g, evidence/boot-03 and unlock-boot-09).
+ * GU_BOARD_HAVE_* is 1 for every field because each one has been confirmed on
+ * the card itself, which is what allows a write-capable (non-preflight) image
+ * to be built from this profile. The measurements for this board are in that
+ * repository too; this fork did not reproduce them.
  */
 #pragma once
 

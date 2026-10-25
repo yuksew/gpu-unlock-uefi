@@ -3,7 +3,7 @@
   "label": "before",
   "run": 1,
   "started_utc": "2026-10-25T08:46:22+00:00",
-  "note": "normal Windows boot, no unlock; monitor on RTX 3090; ComfyUI stopped",
+  "note": "normal Windows boot, no unlock; monitor on the second GPU; ComfyUI stopped",
   "executable_sha256": "3e3b4becfcd722151515cfeed4c90de899018b1ceb1ddd3abd0e17333e548884",
   "arguments": [
     "--pci",
