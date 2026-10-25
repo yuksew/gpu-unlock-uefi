@@ -73,7 +73,7 @@ Prefill and decode were measured separately with a different harness (an LLM ser
 
 A normal reboot is enough to undo it: after one, the same GEMM probe read 72.0 TFLOPS and 35.8 TFLOPS/GHz, the locked state.
 
-The second transaction (`evidence/unlock-3090-02/`) ran with one monitor on the iGPU and another on the 3090. The 3090's own output goes dark when its UEFI driver is released and comes back with the Windows driver; the console never moves, and the card still ends `clean=1`. That makes a spare output on the target harmless, which is what the display check now encodes.
+The second transaction (`evidence/unlock-3090-02/`) ran with one monitor on the iGPU and another on the 3090. The 3090's own output goes dark when its UEFI driver is released and comes back with the Windows driver; the console never moves, and the card still ends `clean=1`. That makes a spare output on the target harmless, which is what the display check now encodes. A GEMM set taken in that state (`results/rtx3090/gemm-dual/`, three runs) matched the single-monitor set within 0.5% on both tensor paths, with the controls flat, so having a desktop on the target does not move these numbers.
 
 ## Power and efficiency
 

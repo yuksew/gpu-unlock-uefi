@@ -35,7 +35,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "8e4dc573185e9ca7bf3ac8735d334eaa38550af49eaeb523be2e2c0cbd8ae731"
+      "sha256": "42a209d55cc7113c874d4ae131dd308bef225897a49e3dfccb81946755c8714d"
     },
     {
       "path": "TESTING.md",
@@ -2792,6 +2792,18 @@
     {
       "path": "results/rtx3090/comfyui/comfyui-before-fp16acc-20261025T113407Z.json",
       "sha256": "d61b203400aa075abe38158a3054dff35b17476b410c34eeef7e8b9fcc63e27b"
+    },
+    {
+      "path": "results/rtx3090/gemm-dual/after-dual-20261025T143314Z-run01.json",
+      "sha256": "5e819bede9646501edb79856bfcbd2ea48575617dfa2a348fc7d8c63fe4dc0f4"
+    },
+    {
+      "path": "results/rtx3090/gemm-dual/after-dual-20261025T143531Z-run02.json",
+      "sha256": "f76fb3662c16273f10cc6f69ef9e3587c3e1f5368c21cf9cb7ed77988f8e851e"
+    },
+    {
+      "path": "results/rtx3090/gemm-dual/after-dual-20261025T143747Z-run03.json",
+      "sha256": "690c3614f1b2029b91d9136b41b563ddf573d07fc79a5ecc02ca753748aa31cf"
     },
     {
       "path": "results/rtx3090/gemm/after-20261025T120359Z-run01.json",
