@@ -71,7 +71,7 @@ EFI_STATUS GuIoOpen(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
   status=Table->BootServices->HandleProtocol(loaded->DeviceHandle,&FsGuid,(VOID **)&fs);
   if(EFI_ERROR(status) || !fs)return EFI_UNSUPPORTED;
   status=fs->OpenVolume(fs,&Root);if(EFI_ERROR(status) || !Root)return EFI_DEVICE_ERROR;
-  status=Root->Open(Root,&Parent,L"\\RTX3080-UNLOCK",EFI_FILE_MODE_READ|EFI_FILE_MODE_WRITE,0);
+  status=Root->Open(Root,&Parent,L"\\GPU-UNLOCK",EFI_FILE_MODE_READ|EFI_FILE_MODE_WRITE,0);
   if(EFI_ERROR(status) || !Parent)return EFI_NOT_FOUND;
   status=Metadata(Parent,TRUE,0);if(EFI_ERROR(status))return status;
   for(UINTN slot=0;slot<100;slot++) {
@@ -91,9 +91,9 @@ EFI_STATUS GuIoOpen(EFI_HANDLE Image,EFI_SYSTEM_TABLE *St) {
     status=Run->Open(Run,&Report,L"REPORT.TXT",EFI_FILE_MODE_READ|EFI_FILE_MODE_WRITE|EFI_FILE_MODE_CREATE,0);
     if(EFI_ERROR(status) || !Report)return EFI_DEVICE_ERROR;
 #if defined(GU_PREFLIGHT)
-    GuLog("RTX3080 UEFI unlock PREFLIGHT v0.11 (read-only)\nRUN%02u\nRead-only gates only: no bus-master enable, no FLR, no GPU write, no asset loads.\nPciIo ownership is opened exclusive for the ownership check and released before return.\n",(unsigned)slot);
+    GuLog("GPU-UNLOCK UEFI preflight v0.11 (read-only)\nRUN%02u\nRead-only gates only: no bus-master enable, no FLR, no GPU write, no asset loads.\nPciIo ownership is opened exclusive for the ownership check and released before return.\n",(unsigned)slot);
 #else
-    GuLog("RTX3080 UEFI unlock experiment v0.10\nRUN%02u\nBus Master protocol state checks; hardware fix unproven; one manual attempt per launch.\n",(unsigned)slot);
+    GuLog("GPU-UNLOCK UEFI transaction v0.10\nRUN%02u\nBus Master protocol state checks; one manual attempt per launch.\n",(unsigned)slot);
 #endif
     GuLogText("PIO readback is not an execution gate. This path does not independently verify TCM contents; FWSEC scratch/WPR results are required.\n");
     return GuLogReady()?EFI_SUCCESS:EFI_DEVICE_ERROR;

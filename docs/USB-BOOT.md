@@ -27,7 +27,7 @@ Copy the **contents** of the finished `usb-package` to the root of the USB stick
 ```text
 USB:/
   EFI/BOOT/BOOTX64.EFI
-  RTX3080-UNLOCK/
+  GPU-UNLOCK/
     ASSETS/
       booter_load_ga102.bin
       v67-ga102-610.43.03.bin
@@ -41,7 +41,7 @@ USB:/
   SHA256SUMS.txt
 ```
 
-The `RTX3080-UNLOCK` folder must be writable so the application can record logs. Copying only `BOOTX64.EFI` is not enough to run: the application re-checks the file contents and the board conditions.
+The `GPU-UNLOCK` folder must be writable so the application can record logs. Copying only `BOOTX64.EFI` is not enough to run: the application re-checks the file contents and the board conditions.
 
 ## Running
 
@@ -53,7 +53,7 @@ The `RTX3080-UNLOCK` folder must be writable so the application can record logs.
 
 If the USB application opens again, leave it with Esc. Do not press U a second time in the same boot.
 
-If `STOP / POWER OFF` appears, turn the PC off with the power button. Do not continue into Windows from that screen. Inspect `RTX3080-UNLOCK/RUNxx/REPORT.TXT` before trying again.
+If `STOP / POWER OFF` appears, turn the PC off with the power button. Do not continue into Windows from that screen. Inspect `GPU-UNLOCK/RUNxx/REPORT.TXT` before trying again.
 
 ## RTX 3060 12GB
 
@@ -74,13 +74,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Boar
 python .\tools\package_usb.py --output .\usb-package-3060
 ```
 
-The preflight reads config space, the firmware BAR descriptor, the cold-state registers and the PROM window, writes nothing to the GPU, loads no assets and never asks for U. On Linux, `./preflight-linux.sh usb-3060` stages the image as `unlock/build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI`; create an empty, writable `RTX3080-UNLOCK` folder on the USB root yourself.
+The preflight reads config space, the firmware BAR descriptor, the cold-state registers and the PROM window, writes nothing to the GPU, loads no assets and never asks for U. On Linux, `./preflight-linux.sh usb-3060` stages the image as `unlock/build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI`; create an empty, writable `GPU-UNLOCK` folder on the USB root yourself.
 
-1. The folder keeps the name `RTX3080-UNLOCK` for every board: the application writes its reports only there.
+1. The folder keeps the name `GPU-UNLOCK` for every board: the application writes its reports only there.
 2. Connect the monitor to a display that is **not** the RTX 3060. The preflight rejects a console GOP on the target GPU, and it needs exactly one physical GOP, so leave every other output disconnected. On the confirmed machine that is a second NVIDIA card at `01:00.0`, and a transaction ran in exactly that configuration; a console on the target itself is always refused.
 3. Power the PC off completely, boot the **UEFI USB** entry, and let the preflight finish. It returns to the firmware by itself; on a confirmed profile the report has no `PENDING` line and ends with `complete=1`.
-4. Repeat from a cold start at least twice more while discovering. Each run adds `RTX3080-UNLOCK/RUNxx/REPORT.TXT`.
-5. A transaction run needs the five assets in `RTX3080-UNLOCK/ASSETS`; the preflight does not. `unlock/assets.json` lists their names, sizes and SHA256, and `package_usb.py` refuses a package whose assets do not match.
+4. Repeat from a cold start at least twice more while discovering. Each run adds `GPU-UNLOCK/RUNxx/REPORT.TXT`.
+5. A transaction run needs the five assets in `GPU-UNLOCK/ASSETS`; the preflight does not. `unlock/assets.json` lists their names, sizes and SHA256, and `package_usb.py` refuses a package whose assets do not match.
 
 ## Scope
 

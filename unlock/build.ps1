@@ -1,6 +1,6 @@
 param(
     # Board profile (unlock/profiles/) and host profile (unlock/hosts/); see docs/BOARD-PROFILE.md.
-    [ValidateSet('2206','220a','ga106_2504')][string]$Board = '2206',
+    [ValidateSet('2206','220a','2204','ga106_2504')][string]$Board = '2206',
     [ValidateSet('intel_bus1','nvidia_bus5','discovery')][string]$HostProfile = 'intel_bus1',
     # Read-only image. An unconfirmed board or host profile builds only with this.
     [switch]$Preflight
@@ -10,7 +10,7 @@ Set-Location -LiteralPath $PSScriptRoot
 # GU_LLVM_ROOT overrides the toolchain for other installs.
 $llvmRoot = if ($env:GU_LLVM_ROOT) { $env:GU_LLVM_ROOT } else { 'C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/VC/Tools/Llvm/x64/bin' }
 New-Item -ItemType Directory -Path 'build' -Force | Out-Null
-$profileFlags = @(switch ($Board) { '220a' { '-DGU_BOARD_220A' } 'ga106_2504' { '-DGU_BOARD_GA106_2504' } })
+$profileFlags = @(switch ($Board) { '220a' { '-DGU_BOARD_220A' } '2204' { '-DGU_BOARD_2204' } 'ga106_2504' { '-DGU_BOARD_GA106_2504' } })
 if ($HostProfile -eq 'discovery') { $profileFlags += '-DGU_HOST_DISCOVERY' }
 if ($HostProfile -eq 'nvidia_bus5') { $profileFlags += '-DGU_HOST_NVIDIA_BUS5' }
 if ($Preflight) { $profileFlags += '-DGU_PREFLIGHT' }

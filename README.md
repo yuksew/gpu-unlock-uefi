@@ -1,14 +1,29 @@
-# RTX 3060 12GB UEFI unlock (GA106)
+# GPU tensor unlock over UEFI (GA10x)
 
 **English** | [日本語](README.ja.md)
 
-A UEFI application that restores the full FP16/BF16 tensor issue rate on an NVIDIA RTX 3060 12GB. It runs from a FAT32 USB stick before Windows starts, writes nothing to the VBIOS, and hands control straight back to Windows Boot Manager without a reboot in between.
+A UEFI application that restores the full FP16/BF16 tensor issue rate on NVIDIA GA10x GeForce cards: the ones shipped with FP32-accumulate tensor maths at half the rate of their professional siblings. It runs from a FAT32 USB stick before Windows starts, writes nothing to the VBIOS, and hands control straight back to Windows Boot Manager without a reboot in between.
 
-Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlock-12g), which is a UEFI port of [Zagitta/gpu-unlock](https://github.com/Zagitta/gpu-unlock). This fork adds the GA106 / RTX 3060 12GB board profile, a host profile for a console on a second NVIDIA card, and the measured result of one unlock on real hardware.
+Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlock-12g), which is a UEFI port of [Zagitta/gpu-unlock](https://github.com/Zagitta/gpu-unlock). This fork adds the GA106 / RTX 3060 12GB board profile, an RTX 3090 discovery profile, a host profile for a console on a second NVIDIA card, and the measured result of one unlock on real hardware.
 
-**The supported scope is the one card and one host listed below.** Every gate compares against values read from that card and that PC. Anything that does not match is refused before a write.
+## Boards and hosts
 
-## Status
+| Board profile | Select with | Card | State |
+| --- | --- | --- | --- |
+| `ga102_2206` | default | RTX 3080 10GB, `10de:2206` | confirmed and measured upstream |
+| `ga102_220a` | `-Board 220a` | RTX 3080 12GB, `10de:220a` | confirmed upstream, one transaction |
+| `ga102_2204` | `-Board 2204` | RTX 3090, `10de:2204` | discovery: unconfirmed |
+| `ga106_2504` | `-Board ga106_2504` | RTX 3060 12GB, `10de:2504` | confirmed and measured here |
+
+| Host profile | Select with | Console GOP | Target |
+| --- | --- | --- | --- |
+| `intel_bus1` | default | Intel iGPU at `00:02.0` | `0:1:0.0` |
+| `nvidia_bus5` | `-HostProfile nvidia_bus5` | second NVIDIA card at `01:00.0` | `0:5:0.0` |
+| `discovery` | `-HostProfile discovery` | recorded, not required | recorded, not required |
+
+Every gate compares against values read from that card and that PC. Anything that does not match is refused before a write, and a profile with an unconfirmed field cannot build a transaction image at all.
+
+## Status (RTX 3060 12GB, the only card measured here)
 
 | Step | State |
 | --- | --- |
@@ -17,9 +32,9 @@ Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlo
 | Effect measured in Windows | yes, see below |
 | Cold-boot persistence | not tested: the patch lives in VRAM and is gone after a power cycle |
 
-## What gets faster
+## Measured result (RTX 3060 12GB)
 
-RTX 3060 12GB, three GEMM runs per state with FP32 accumulation, 4096³, medians of medians:
+Three GEMM runs per state with FP32 accumulation, 4096³, medians of medians:
 
 | Path | Before | After | Change | Per clock |
 | --- | --- | --- | --- | --- |
@@ -53,7 +68,7 @@ One open question: on the reference host the target GPU trained at **Gen4 x1** (
 - Firmware: the five runtime assets are pinned to NVIDIA 610.43.03 (`unlock/assets.json` holds names, sizes and SHA256).
 - Scope of effect: one boot. A power cycle removes it; there is no persistence and no VBIOS write.
 
-Another RTX 3060 12GB will almost certainly fail the subsystem or PROM gate: those values are per card, not per SKU. That is the intended behaviour, and the discovery procedure below is how you get your own.
+Another RTX 3060 12GB will almost certainly fail the subsystem or PROM gate: those values are per card, not per SKU. That is the intended behaviour, and the discovery procedure below is how you get your own. The same applies to the RTX 3090 profile, which ships unconfirmed with only the device ID and the 24576 MiB frame buffer asserted.
 
 ## Running it from USB
 
@@ -66,7 +81,7 @@ Another RTX 3060 12GB will almost certainly fail the subsystem or PROM gate: tho
 
    `unlock/assets.json` lists the five files; `package_usb.py` refuses a package whose assets do not match. They are not shipped here: they are NVIDIA firmware, generated from the pinned driver inputs the upstream project documents.
 
-2. Copy the **contents** of `usb-package` to the root of a FAT32 stick. The `RTX3080-UNLOCK` folder must be writable; the application writes its report there.
+2. Copy the **contents** of `usb-package` to the root of a FAT32 stick. The `GPU-UNLOCK` folder must be writable; the application writes its report there.
 
 3. Secure Boot off, CSM off, one monitor on the non-target card, then power the PC off completely and boot the **UEFI USB** entry.
 
@@ -74,7 +89,7 @@ Another RTX 3060 12GB will almost certainly fail the subsystem or PROM gate: tho
 
 5. When `UEFI transaction completed and cleaned up` appears, choose **Windows Boot Manager**. Do not reboot in between.
 
-If `STOP / POWER OFF` appears, turn the PC off with the power button and read `RTX3080-UNLOCK/RUNxx/REPORT.TXT` before trying again. Nothing is written to the card's flash: a power cycle is a full revert.
+If `STOP / POWER OFF` appears, turn the PC off with the power button and read `GPU-UNLOCK/RUNxx/REPORT.TXT` before trying again. Nothing is written to the card's flash: a power cycle is a full revert.
 
 ## Profiles, and how another card gets supported
 

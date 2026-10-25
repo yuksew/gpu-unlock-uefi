@@ -31,11 +31,11 @@
     },
     {
       "path": "README.ja.md",
-      "sha256": "6d10ae3cf11a8142a0210313faa67feaae1080c74bcb3b873676ea5ec89ffbb2"
+      "sha256": "daab55452555f0782e3460f67e0a253ee52256bf2354afec08ae5d29c23c566e"
     },
     {
       "path": "README.md",
-      "sha256": "1aa09f3e09ca44a67a4c7002addcf0e5d789e2ae3278df0d9c226e7325ac18e7"
+      "sha256": "8d0f21a4dd7aabe185935aaa5f575583ae81f3e7e55695a4ce51e7aefd19759e"
     },
     {
       "path": "TESTING.md",
@@ -2651,11 +2651,11 @@
     },
     {
       "path": "docs/BOARD-PROFILE.md",
-      "sha256": "d32c6a6e3cde35215b162ee053dbe20be0cf0cd05d3993eb85a94fe1eca78bae"
+      "sha256": "6d0c8d980784205010649cd68664a80ba9c656bc6950ae37843e3b08e31d9720"
     },
     {
       "path": "docs/USB-BOOT.md",
-      "sha256": "1abeeb94e932f31451c20393a5be90e203b7a0591081c4588d364b30b178a4bf"
+      "sha256": "fc56046680c549efb324c1244bc366f9e964c968b06a19d296e317e6b3bdce5d"
     },
     {
       "path": "efi_runtime.c",
@@ -2691,7 +2691,7 @@
     },
     {
       "path": "preflight-linux.sh",
-      "sha256": "033075fc36b590242435180accf98335f1078cff0fe3561870d3ef597a0f3f64"
+      "sha256": "1f35eea9c3b4879d71740bb1c200d2374b8c3173cfeaaccc8df37e3faced709a"
     },
     {
       "path": "probe_app.c",
@@ -2763,7 +2763,7 @@
     },
     {
       "path": "tools/package_usb.py",
-      "sha256": "4a837f0ca18353adf0c6252a86accc7b4cd34f4d37e2f950714d886427133b75"
+      "sha256": "792c0e9c54b235f5236a52ebd5ebbac968e7a7cae1dbec0178a03c1874c9ac62"
     },
     {
       "path": "tools/source_manifest.py",
@@ -2775,7 +2775,7 @@
     },
     {
       "path": "tools/test_package_usb.py",
-      "sha256": "495a7463ef5b90d8c047ecd7b1a7ab13c53262a3b4c11c391a760c372893a288"
+      "sha256": "6bf48022ba2d5eab1a7b2c9929be4305b498189879abd7f32e9665457afd3799"
     },
     {
       "path": "unlock/app.c",
@@ -2787,7 +2787,7 @@
     },
     {
       "path": "unlock/app_io.c",
-      "sha256": "b277abaaaace10bea96508682785231b34df31cd4546df2bd1beba6532f77fa8"
+      "sha256": "025fd44f9935c2c6990015313b6e86efab7b53ebff2e39a3efbf137549e0b062"
     },
     {
       "path": "unlock/app_io.h",
@@ -2799,7 +2799,7 @@
     },
     {
       "path": "unlock/build.ps1",
-      "sha256": "2528c5eef641a925d62d9b256f070f15ec2f8a245ff159efed3849dab9816f3b"
+      "sha256": "9ed3ad0e48b8557c76e82931d140e0b4b15a6e9d48be23082b581c3b211a6426"
     },
     {
       "path": "unlock/checks.c",
@@ -2903,7 +2903,11 @@
     },
     {
       "path": "unlock/port.h",
-      "sha256": "63e26d5387c1158973908ffde80587876f4ad1b37bdf9e916daf991af80a82e1"
+      "sha256": "8578ce0bf43f2a4d8a04fe3cfe7dbde996beaf15b928c9dd12592ec68cde1b9a"
+    },
+    {
+      "path": "unlock/profiles/ga102_2204.h",
+      "sha256": "b9d4b693074153acc1a710ee25846f0da91476f0f1edd731d218507287378d8a"
     },
     {
       "path": "unlock/profiles/ga102_2206.h",
@@ -2987,7 +2991,7 @@
     },
     {
       "path": "unlock/tests/test_app.c",
-      "sha256": "161c6fdf721d1b6113681c545942248aa1df8cdcf58282cffab4e7b09b98afc0"
+      "sha256": "e0191a259b52882b30586a965f0b52925f6c12d16543657027788674fa232955"
     },
     {
       "path": "unlock/tests/test_checks.c",

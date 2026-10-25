@@ -11,14 +11,17 @@
      -DGU_BOARD_2206          MSI RTX 3080 10GB  (10de:2206 / 1462:3890)
      -DGU_BOARD_220A          MSI RTX 3080 12GB  (10de:220a / 1462:3896)
      -DGU_BOARD_GA106_2504    RTX 3060 12GB      (10de:2504)
+     -DGU_BOARD_2204          RTX 3090           (10de:2204, unconfirmed)
      -DGU_BOARD_UNCONFIRMED   test fixture only, never a board
    Profiles live in unlock/profiles/; docs/BOARD-PROFILE.md lists the fields. */
 #if defined(GU_BOARD_2206) + defined(GU_BOARD_220A) + defined(GU_BOARD_GA106_2504) + \
-    defined(GU_BOARD_UNCONFIRMED) > 1
+    defined(GU_BOARD_2204) + defined(GU_BOARD_UNCONFIRMED) > 1
 #error "Select exactly one GU_BOARD_* profile"
 #endif
 #if defined(GU_BOARD_UNCONFIRMED)
 #include "profiles/unconfirmed.h"
+#elif defined(GU_BOARD_2204)
+#include "profiles/ga102_2204.h"
 #elif defined(GU_BOARD_GA106_2504)
 #include "profiles/ga106_2504.h"
 #elif defined(GU_BOARD_220A)

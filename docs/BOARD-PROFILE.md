@@ -12,12 +12,13 @@ Each field has a `GU_BOARD_HAVE_*` or `GU_HOST_HAVE_*` flag. A field is *confirm
 | MSI RTX 3080 10GB, `10de:2206` | `profiles/ga102_2206.h` | default (or `-DGU_BOARD_2206`) | confirmed |
 | MSI RTX 3080 12GB, `10de:220a` | `profiles/ga102_220a.h` | `-DGU_BOARD_220A` | confirmed |
 | RTX 3060 12GB, `10de:2504` | `profiles/ga106_2504.h` | `-DGU_BOARD_GA106_2504` | confirmed 2026-10-25 (preflight only, no transaction yet) |
+| RTX 3090, `10de:2204` | `profiles/ga102_2204.h` | `-DGU_BOARD_2204` | discovery: unconfirmed |
 | Test fixture, unconfirmed | `profiles/unconfirmed.h` | `-DGU_BOARD_UNCONFIRMED` | never a board |
 | Intel iGPU console, GPU at `0:1:0.0` | `hosts/intel_bus1.h` | default | confirmed |
 | Second NVIDIA card holds the console at `01:00.0`, target at `0:5:0.0` | `hosts/nvidia_bus5.h` | `-DGU_HOST_NVIDIA_BUS5` | confirmed 2026-10-25 |
 | Any other host | `hosts/discovery.h` | `-DGU_HOST_DISCOVERY` | discovery: unconfirmed |
 
-`unlock/build.ps1` takes `-Board 2206|220a|ga106_2504`, `-HostProfile intel_bus1|nvidia_bus5|discovery` and `-Preflight`, and records all three in `build/build-manifest.json`.
+`unlock/build.ps1` takes `-Board 2206|220a|2204|ga106_2504`, `-HostProfile intel_bus1|nvidia_bus5|discovery` and `-Preflight`, and records all three in `build/build-manifest.json`.
 
 ## Why an unconfirmed profile cannot build a transaction image
 
@@ -83,7 +84,7 @@ Windows' bus numbers are only a hint. The values that count are the ones UEFI re
    ```
 
    or `./preflight-linux.sh usb-3060`. Stage it as in [USB-BOOT.md](USB-BOOT.md).
-2. **Boot it from a cold start** (power fully off first), at least three times. Each run writes `\RTX3080-UNLOCK\RUNxx\REPORT.TXT`. Use a report only if it ends with `PREFLIGHT result=pass` and `FINAL status=0`: a gate that failed means the card was not in the state the values describe.
+2. **Boot it from a cold start** (power fully off first), at least three times. Each run writes `\GPU-UNLOCK\RUNxx\REPORT.TXT`. Use a report only if it ends with `PREFLIGHT result=pass` and `FINAL status=0`: a gate that failed means the card was not in the state the values describe.
 3. **Check the reports agree.** `identity:` (PCI, subsystem, class/revision), `chip: actual=` and `live PROM hash sha256=` must be identical in every report; if they are not, the reports are from different cards or something changed, and nothing should be confirmed. `fb_mb` must also be identical. SS0 and SS1 are combined as described above.
 4. **Write the profile.** If the board already has a published profile of its own, put the reported values into that profile, name the `RUNxx` reports in a comment at the top, and set every `GU_BOARD_HAVE_*` to 1 —that is what `profiles/ga106_2504.h` records for the card confirmed on 2026-10-25. For a card that has no published profile, copy the discovery fallback block into `unlock/profiles/<board>.local.h` and do the same there; the local file overrides the shipped one. Either way, leave a field at 0 if any report lacks it: an unconfirmed field is the safe state. Do the same for the host (`GU_HOST_PROFILE_NAME`, the BDF, the display path, both `HAVE_*` = 1), as `hosts/nvidia_bus5.h` records.
 5. **Rebuild the preflight and boot it once more.** With the confirmed profiles in place every gate is a real comparison; the report must show no `PENDING` line, `complete=1` and `PREFLIGHT result=pass`. This is also the only way to catch a cold-state value that varies between boots: the runs so far were used to build the mask, this one tests it.

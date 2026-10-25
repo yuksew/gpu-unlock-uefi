@@ -50,9 +50,12 @@ build_image() {
 # 12GB card. The board profile selected in port.h owns identity, cold state
 # and the VBIOS hash, and also names GU_TARGET_PCI_ID for the vendor gates.
 BOARD_220A=(-DGU_BOARD_220A)
-# RTX 3060 12GB: discovery board profile on a host whose GPU location and
-# console GOP have not been read by the preflight yet.
-BOARD_3060=(-DGU_BOARD_GA106_2504 -DGU_HOST_DISCOVERY)
+# RTX 3060 12GB on the confirmed host: console on a second NVIDIA card, target
+# at 0:5:0.0. Both profiles are confirmed, so the transaction image builds.
+BOARD_3060=(-DGU_BOARD_GA106_2504 -DGU_HOST_NVIDIA_BUS5)
+# RTX 3090: discovery board profile on a host whose GPU location and console
+# GOP have not been read by the preflight yet.
+BOARD_3090=(-DGU_BOARD_2204 -DGU_HOST_DISCOVERY)
 
 build_preflight() {
   build_image preflight-12gb "${BOARD_220A[@]}" -DGU_PREFLIGHT
@@ -74,12 +77,16 @@ build_transaction_3060() {
   build_image transaction-3060 "${BOARD_3060[@]}"
 }
 
+build_preflight_3090() {
+  build_image preflight-3090 "${BOARD_3090[@]}" -DGU_PREFLIGHT
+}
+
 stage_usb_3060() {
   build_preflight_3060
   install -d build/usb-preflight-3060/EFI/BOOT
   install -m 0644 build/preflight-3060/BOOTX64.EFI build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI
   sha256sum build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI
-  echo "stage build/usb-preflight-3060 to the USB root; \\RTX3080-UNLOCK must already exist"
+  echo "stage build/usb-preflight-3060 to the USB root; \\GPU-UNLOCK must already exist"
 }
 
 stage_usb() {
@@ -87,7 +94,15 @@ stage_usb() {
   install -d build/usb-preflight/EFI/BOOT
   install -m 0644 build/preflight-12gb/BOOTX64.EFI build/usb-preflight/EFI/BOOT/BOOTX64.EFI
   sha256sum build/usb-preflight/EFI/BOOT/BOOTX64.EFI
-  echo "stage build/usb-preflight to the USB root; \\RTX3080-UNLOCK must already exist"
+  echo "stage build/usb-preflight to the USB root; \\GPU-UNLOCK must already exist"
+}
+
+stage_usb_3090() {
+  build_preflight_3090
+  install -d build/usb-preflight-3090/EFI/BOOT
+  install -m 0644 build/preflight-3090/BOOTX64.EFI build/usb-preflight-3090/EFI/BOOT/BOOTX64.EFI
+  sha256sum build/usb-preflight-3090/EFI/BOOT/BOOTX64.EFI
+  echo "stage build/usb-preflight-3090 to the USB root; \\GPU-UNLOCK must already exist"
 }
 
 case "${1:-preflight}" in
@@ -97,5 +112,7 @@ case "${1:-preflight}" in
   preflight-3060) build_preflight_3060 ;;
   transaction-3060) build_transaction_3060 ;;
   usb-3060) stage_usb_3060 ;;
-  *) echo "usage: $0 [preflight|all|usb|preflight-3060|transaction-3060|usb-3060]" >&2; exit 2 ;;
+  preflight-3090) build_preflight_3090 ;;
+  usb-3090) stage_usb_3090 ;;
+  *) echo "usage: $0 [preflight|all|usb|preflight-3060|transaction-3060|usb-3060|preflight-3090|usb-3090]" >&2; exit 2 ;;
 esac

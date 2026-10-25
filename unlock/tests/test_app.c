@@ -311,7 +311,7 @@ static EFI_STATUS EFIAPI file_close(EFI_FILE_PROTOCOL *f){
 static EFI_STATUS EFIAPI file_open(EFI_FILE_PROTOCOL *f,EFI_FILE_PROTOCOL **out,CHAR16 *name,UINT64 mode,UINT64 attributes) {
   FILE_FAKE *v=(FILE_FAKE *)f;char path[128];narrow(path,sizeof(path),name);CHECK(v->open);*out=NULL;
   int target=-1;
-  if(v->kind==0 && !strcmp(path,"\\RTX3080-UNLOCK"))target=1;
+  if(v->kind==0 && !strcmp(path,"\\GPU-UNLOCK"))target=1;
   else if(v->kind==1 && !strncmp(path,"RUN",3)) {
     CHECK(!strcmp(path,"RUN00") || !strcmp(path,"RUN01") || !strcmp(path,"RUN02"));
     if(strcmp(path,"RUN02"))target=2;
