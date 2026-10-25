@@ -12,7 +12,7 @@ Fork of [balaena01/rtx3080-unlock-12g](https://github.com/balaena01/rtx3080-unlo
 | --- | --- | --- | --- |
 | `ga102_2206` | default | RTX 3080 10GB, `10de:2206` | confirmed and measured upstream |
 | `ga102_220a` | `-Board 220a` | RTX 3080 12GB, `10de:220a` | confirmed upstream, one transaction |
-| `ga102_2204` | `-Board 2204` | MSI RTX 3090, `10de:2204` | confirmed here, no transaction yet |
+| `ga102_2204` | `-Board 2204` | MSI RTX 3090, `10de:2204` | confirmed and unlocked here, not measured |
 | `ga106_2504` | `-Board ga106_2504` | RTX 3060 12GB, `10de:2504` | confirmed and measured here |
 
 | Host profile | Select with | Console GOP | Target |
