@@ -69,7 +69,9 @@ Three GEMM runs per state, same harness and flags as the 3060 set, 4096³ with F
 
 Same shape as the 3060 and the same reason: per clock the patched path doubles, while the absolute gain is smaller because the card then sits against its 350 W limit (296–337 W measured) and settles at a lower clock (1980 → 1785 MHz on FP16, → 1860 MHz on BF16).
 
-Prefill and decode were measured separately with a different harness (an LLM server, 3 repetitions per case): prompt throughput rose 8.4% at 4K and 12.5% at 16K, and decode stayed within a few percent at short and 4K contexts. Decode at 16K came out 13.8% lower, which is not something the unlock should cause; that run also spent 18% of its power samples above 330 W against 4% before (max 344.8 W, 72 °C), so read it as a result to repeat, not as an effect. That harness's raw data is not in this repository.
+Prefill and decode were measured separately with a different harness (an LLM server, 3 repetitions per case) twice per state: prompt throughput rose 8.8% at 4K and 13.2% at 16K, and each state's two runs agree to within half a point. Decode did not move measurably. The same state varies by about ±10% between runs at 16K (109.9 and 125.3 tok/s without the patch, 102.9 and 108.0 with it), so one run is not enough to claim an effect there, and the single high sample is what an earlier reading of −13.8% rested on. That harness's raw data is not in this repository.
+
+A normal reboot is enough to undo it: after one, the same GEMM probe read 72.0 TFLOPS and 35.8 TFLOPS/GHz, the locked state.
 
 ## What does not get faster
 
