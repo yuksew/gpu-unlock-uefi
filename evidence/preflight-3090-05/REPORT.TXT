@@ -1,0 +1,77 @@
+GPU-UNLOCK UEFI preflight v0.11 (read-only)
+RUN07
+Read-only gates only: no bus-master enable, no FLR, no GPU write, no asset loads.
+PciIo ownership is opened exclusive for the ownership check and released before return.
+PIO readback is not an execution gate. This path does not independently verify TCM contents; FWSEC scratch/WPR results are required.
+CHECK stage=secure-boot status=0
+CHECK stage=watchdog status=0
+PCI enumeration: status=0 handles=50
+PCI target matches=1 status=0
+target pci_path=Pci(0x1,0x1)/Pci(0x0,0x0) depth=2 status=0
+target location: status=0
+identity: pci=0x220410de subsystem=0x38811462 class_rev=0x30000a1
+config[00]=220410de 00100002 030000a1 00800010
+config[10]=de000000 0000000c 000000e8 0000000c
+config[20]=000000f0 0000f001 00000000 38811462
+config[30]=df000000 00000060 00000000 000001ff
+config[40]=38811462 00000000 00000000 00000000
+config[50]=00000000 00000001 0023d6ce 00000000
+config[60]=48036801 00000008 00807805 00000000
+config[70]=00000000 00000000 0012b410 112c8de1
+config[80]=00092930 00454d04 11040040 00000000
+config[90]=00000000 00000000 00000000 00070813
+config[a0]=00001400 0180001e 001f0004 00000000
+config[b0]=00000000 01140009 00000000 00000000
+config[c0]=00000000 00000000 00050011 00b90000
+config[d0]=00ba0000 00000000 00000000 00000000
+config[e0]=00000000 00000000 00000000 00000000
+config[f0]=00000000 00000000 00000000 00000000
+target BDF=0:1:0.0 checks=1 pm=0x60 pcie=0x78 msi=0x68 msix=0
+CHECK stage=target status=0
+GOP enumeration: status=0 handles=2
+GOP[0] path_status=0 route=0 framebuffer=0xe800000000 bytes=3145728 mode=3 max_mode=14 info_bytes=36 console=0 target=1
+GOP[0] format=1 size=1024x768 stride=1024
+GOP[0] not the console (spare output on the target GPU); ignored
+GOP[1] path_status=0 route=1 framebuffer=0xf810000000 bytes=3145728 mode=2 max_mode=15 info_bytes=36 console=0 target=0
+GOP[1] format=1 size=1024x768 stride=1024
+GOP result: valid=1 console_gops=1
+CHECK stage=display status=0
+ownership: records=10 exclusive=0 status=0x800000000000000f
+owner[0] protocol=fe47349a attributes=0x2 count=3 agent=0x84a6ff98 controller=0x85891a18
+owner[1] protocol=fe47349a attributes=0x2 count=1 agent=0x82879020 controller=0x85891a18
+owner[2] protocol=3bc1b285 attributes=0x1 count=2 agent=0x877f4b18 controller=0
+owner[3] protocol=09576e91 attributes=0x1 count=79 agent=0x877f4b18 controller=0
+owner[4] protocol=09576e91 attributes=0x2 count=7 agent=0x84a6ff98 controller=0x85891a18
+owner[5] protocol=09576e91 attributes=0x8 count=1 agent=0x84a6ff98 controller=0x82b46e18
+owner[6] protocol=09576e91 attributes=0x4 count=2 agent=0x848be918 controller=0x85891a18
+owner[7] protocol=09576e91 attributes=0x2 count=2 agent=0x85c33698 controller=0x85891a18
+owner[8] protocol=4cf5b200 attributes=0x1 count=29 agent=0x877f4b18 controller=0
+owner[9] protocol=4cf5b200 attributes=0x10 count=1 agent=0x84a6ff98 controller=0x85891a18
+ownership: records=10 exclusive=0 status=0
+owner[0] protocol=fe47349a attributes=0x2 count=3 agent=0x84a6ff98 controller=0x85891a18
+owner[1] protocol=fe47349a attributes=0x2 count=1 agent=0x82879020 controller=0x85891a18
+owner[2] protocol=3bc1b285 attributes=0x1 count=2 agent=0x877f4b18 controller=0
+owner[3] protocol=09576e91 attributes=0x1 count=79 agent=0x877f4b18 controller=0
+owner[4] protocol=09576e91 attributes=0x2 count=7 agent=0x84a6ff98 controller=0x85891a18
+owner[5] protocol=09576e91 attributes=0x8 count=1 agent=0x84a6ff98 controller=0x82b46e18
+owner[6] protocol=09576e91 attributes=0x4 count=2 agent=0x848be918 controller=0x85891a18
+owner[7] protocol=09576e91 attributes=0x2 count=2 agent=0x85c33698 controller=0x85891a18
+owner[8] protocol=4cf5b200 attributes=0x1 count=29 agent=0x877f4b18 controller=0
+owner[9] protocol=4cf5b200 attributes=0x10 count=1 agent=0x84a6ff98 controller=0x85891a18
+release allows a child of the same driver at record 5
+release candidate: agent=0x84a6ff98 image=0x84a6ff98 source=0x85891a18 base=0x82855000 bytes=177920 version=0x60009 code_type=3 children=0
+Exclusive ownership deferred until manual U and explicit driver release.
+CHECK stage=ownership status=0
+target location: status=0
+identity: pci=0x220410de subsystem=0x38811462 class_rev=0x30000a1
+target BDF=0:1:0.0 checks=1 pm=0x60 pcie=0x78 msi=0x68 msix=0
+CHECK stage=config-recheck status=0
+bar0 query: status=0
+bar0 descriptor: type=0 granularity=32 min=0xde000000 max=0xdeffffff length=0x1000000 translation=0
+bar0 cross-check: config_base=0xde000000 descriptor_base=0xde000000 agree=1
+CHECK stage=bar0 status=0
+chip: actual=0xb72000a1 expected=0xb72000a1 pass=1
+cold state: chip=0xb72000a1 plm=0xffffff8f gfw=0x8b8f/0x3ff/0x10 WPR2_HI=0 SS0=0x50004006 SS1=0x6 fb_mb=0x6000
+cold gates: gfw=1 plm=1 wpr2_hi=1 ss0=0 ss1=1 fb_mb=1
+CHECK stage=cold-state status=0x8000000000000006
+FINAL status=0x8000000000000006 stage=cold-state attempted=0 driver_release=0 clean=1

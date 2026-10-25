@@ -11,15 +11,15 @@
  *   class/rev 0x030000a1  identity: ... class_rev=0x30000a1
  *   chip      0xb72000a1  chip: actual=0xb72000a1 (GA102)
  *   PROM      de78e145... live PROM hash sha256=de78e145...
- *   SS0       0x50004016  in all three discovery boots
+ *   SS0       0x50004016  in the three discovery boots, 0x50004006 in a later one
  *   SS1       6           in all three discovery boots
  *   cap       0xc8 = 0x00050011
  *   fb        0x6000 = 24576 MiB at FEAT 0x001183a4
  *
- * Unlike the 12GB GA102 board and the RTX 3060, SS0 did not vary between cold
- * boots here, so the gate is an exact match rather than a mask over the common
- * bits. If a later cold boot reports anything else, the mask treatment in
- * profiles/ga102_220a.h is the pattern to copy.
+ * SS0 looked stable across the three discovery boots and was gated exactly,
+ * but a later cold boot reported 0x50004006 instead of 0x50004016: bit 0x10 is
+ * volatile after all. The gate is the AND of every observed value, so neither
+ * state rejects the card (the 220a profile needed the same treatment).
  *
  * SS1 is a set of accepted cold values, not an equality: only 6 has been seen.
  *
@@ -47,9 +47,9 @@
 
 #define GU_BOARD_FB_MB 0x6000U
 
-/* Exact: SS0 was 0x50004016 in every discovery boot. */
-#define GU_BOARD_SS0_MASK 0xffffffffU
-#define GU_BOARD_SS0_VALUE 0x50004016U
+/* Only the bits common to every observed cold boot (0x50004016, 0x50004006). */
+#define GU_BOARD_SS0_MASK 0x50004006U
+#define GU_BOARD_SS0_VALUE 0x50004006U
 
 /* SS1 < 32 is an index into this mask; 6 is the only value seen so far. */
 #define GU_BOARD_SS1_BITS 0x00000040U
