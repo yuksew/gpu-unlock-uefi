@@ -7,7 +7,7 @@
     },
     {
       "path": ".gitignore",
-      "sha256": "ad831a21852fe3b7e0d91399228edcf589935c1d67e7b2653bea3a6444a71c4b"
+      "sha256": "c3e260ca14d41bc579197988753bbb1e56683a17e0ab9fc4002bcd9fc505fa34"
     },
     {
       "path": "LICENSE",
@@ -58,12 +58,36 @@
       "sha256": "a1a9d93dfcfbea88f5d966178181af3fa64e54cfdc8cd05d7a03ae480b91c6c8"
     },
     {
+      "path": "analysis/bench_comfyui.py",
+      "sha256": "e89adee15ccaafe37f2a238c2e5f61fffdea66e37d9b223912121cae3747c374"
+    },
+    {
       "path": "analysis/build-benchmark.cmd",
       "sha256": "e3a0a9d05680d946c720d45c7eca91137b4159ea13d4870100158af088d155ca"
     },
     {
+      "path": "analysis/build-power-benchmark.cmd",
+      "sha256": "9f4fe65c113300fe34b2d6e0142ab8d39975f924f26c0cb10fd824e606c4278f"
+    },
+    {
+      "path": "analysis/compare_power.py",
+      "sha256": "2e4f4e932d527f21eeae64e10701432f3b7d0b8eba8087691c92b0652311857f"
+    },
+    {
       "path": "analysis/compute-benchmark.cu",
       "sha256": "57b04fa8599ce298d58237246b4353e72000ce65d3d75bd406e97d1d26ec0fd2"
+    },
+    {
+      "path": "analysis/nvml_sampler.py",
+      "sha256": "7dc4cd53d7b11fa13f3da7c3eaeb53adb17415ca5cede04b1c8c47769739d515"
+    },
+    {
+      "path": "analysis/power-benchmark.cu",
+      "sha256": "f74e894fc5f7cbcacdf62aa17e72affa056ce8f173b3075a25367ab5823a64e4"
+    },
+    {
+      "path": "analysis/run_power_benchmark.py",
+      "sha256": "0cf3ed0f8678c0423873688c43c7c76850ccd47984a063926979e489cccddef4"
     },
     {
       "path": "build-linux.sh",
@@ -2634,6 +2658,10 @@
       "sha256": "20b43822b0737cbd0f692ad8200cba4cfc47c192431827a98056c8a0068efb19"
     },
     {
+      "path": "docs/BENCHMARK.md",
+      "sha256": "bafbd3a8bbeec37add9c7faeea494e199acbf11fc0a76f2e4a7abecb8524afb0"
+    },
+    {
       "path": "docs/BOARD-PROFILE.md",
       "sha256": "c2075962114378c59f9fdc0eb181661fe521ceb8b45c917649475634dcfc5317"
     },
@@ -2688,6 +2716,18 @@
     {
       "path": "results/pytorch-matrix.json",
       "sha256": "aec76cb132a7c5fee0ac5298492efac6e0c7144c468a20348ead6f08d11245f6"
+    },
+    {
+      "path": "results/rtx3060/gemm/before-20261025T084622Z-run01.json",
+      "sha256": "28c7a3a782704595da1468178cf6fe4558d940cc181f6e61c4ae918138127a83"
+    },
+    {
+      "path": "results/rtx3060/gemm/before-20261025T084841Z-run02.json",
+      "sha256": "14c2a05bd23205dfa78d5031ceafea2e6ed0c0cb3e302766500d7969321a4399"
+    },
+    {
+      "path": "results/rtx3060/gemm/before-20261025T085059Z-run03.json",
+      "sha256": "30ae5352d18213f5016724caa85d6b4ebfebe8c49a97307e1f56832ddb6dce55"
     },
     {
       "path": "test.cmd",
