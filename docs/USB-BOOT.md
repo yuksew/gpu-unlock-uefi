@@ -1,5 +1,7 @@
 # USB preparation and booting
 
+**English** | [日本語](USB-BOOT.ja.md)
+
 This guide targets the card and host listed in the README. The run in `evidence/unlock-3060-01/` booted from a freshly prepared FAT32 stick, but other sticks and other PCs remain your own test.
 
 ## Preparation
@@ -82,8 +84,20 @@ The preflight reads config space, the firmware BAR descriptor, the cold-state re
 4. Repeat from a cold start at least twice more while discovering. Each run adds `GPU-UNLOCK/RUNxx/REPORT.TXT`.
 5. A transaction run needs the five assets in `GPU-UNLOCK/ASSETS`; the preflight does not. `unlock/assets.json` lists their names, sizes and SHA256, and `package_usb.py` refuses a package whose assets do not match.
 
+## RTX 3090
+
+The RTX 3090 profile is confirmed for the MSI card and the host whose values it records. Because the 3090 here is also the card that usually holds the console, unlocking it needs the console somewhere else: in the confirmed layout the monitor sits on the adapter at `08:00.0` and the 3090 is the target at `0:1:0.0` (`-HostProfile console_bus8`). Moving the monitor back to the 3090 puts the console on the target, which the display gate refuses.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile console_bus8 -Preflight
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\unlock\build.ps1 -Board 2204 -HostProfile console_bus8
+python .\tools\package_usb.py --assets .\assets --output .\usb-package-3090
+```
+
+The card draws up to 350 W after the unlock, so power it from separate PCIe cables rather than one daisy-chained pair.
+
 ## Scope
 
-A successful UEFI run does not guarantee better performance in Windows or long-run stability. Check the device state first and compare performance in your own workload. Whether the effect survives the next cold boot has not been confirmed.
+A successful UEFI run does not guarantee better performance in Windows or long-run stability. Check the device state first and compare performance in your own workload. The effect is gone after a power cycle: the before and after sets in `results/` were taken on different boots, and every cold boot starts from the locked state. Suspend/resume has not been tested on either board.
 
 You do not need to change the bootloader of your existing Windows disk. To stop using the USB route, remove the stick and boot Windows Boot Manager as usual.

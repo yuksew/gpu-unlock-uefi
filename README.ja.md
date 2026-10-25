@@ -120,7 +120,7 @@ VRAM 帯域、FP32 のスループット、INT8 のカーネル、そしてメ�
 gate <name>: PENDING (profile value not confirmed on this card)
 ```
 
-pass として扱われることはありません。自分のカードを対応させるには `-HostProfile discovery -Preflight` でビルドし、コールドブートで数回動かして、報告された値を埋めます。フィールド一覧と手順は [docs/BOARD-PROFILE.md](docs/BOARD-PROFILE.md) にあります（英語）。
+pass として扱われることはありません。自分のカードを対応させるには `-HostProfile discovery -Preflight` でビルドし、コールドブートで数回動かして、報告された値を埋めます。フィールド一覧と手順は [docs/BOARD-PROFILE.ja.md](docs/BOARD-PROFILE.ja.md) にあります。
 
 ## ビルドとテスト
 

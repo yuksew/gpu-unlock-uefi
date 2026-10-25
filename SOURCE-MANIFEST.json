@@ -31,7 +31,7 @@
     },
     {
       "path": "README.ja.md",
-      "sha256": "772bdf6cc8c03299f7a14084ad5ac4a8636c546bb7d2f7fd21373eefe0542285"
+      "sha256": "9709da9127bbfc6e68c8571f68b376aabaa0ac76109d8958106b1e70e07c434f"
     },
     {
       "path": "README.md",
@@ -2650,12 +2650,20 @@
       "sha256": "1f13979b2dc50e779cbee08b7f4ab9f36b45f377f2416858afcb5e74fbbe0fc0"
     },
     {
+      "path": "docs/BOARD-PROFILE.ja.md",
+      "sha256": "928c6b0e31c7b0e28b952bb3766b656dc236fc35bb81a90aca0808b8642fbd84"
+    },
+    {
       "path": "docs/BOARD-PROFILE.md",
-      "sha256": "1e1d977a30b7b1849aa060659aa5c52383776c91d0eb7a28afa9349bb6591849"
+      "sha256": "c72e3e8c0026e61abf4074c118493f9012a7746618260dc62479ffc5cac865c7"
+    },
+    {
+      "path": "docs/USB-BOOT.ja.md",
+      "sha256": "eee54d2766be43172a4863c9de6195b399177a7a5ac0606113e2d34cc9503021"
     },
     {
       "path": "docs/USB-BOOT.md",
-      "sha256": "fc56046680c549efb324c1244bc366f9e964c968b06a19d296e317e6b3bdce5d"
+      "sha256": "47c12c8d9c1388a850100f2666c1ff1a8a6c18d65583b0cfac1bf3be68a38065"
     },
     {
       "path": "efi_runtime.c",

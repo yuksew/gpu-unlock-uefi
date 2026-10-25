@@ -1,5 +1,7 @@
 # Board and host profiles
 
+**English** | [日本語](BOARD-PROFILE.ja.md)
+
 Every value the UEFI application compares against before it writes to a GPU comes from two compile-time profiles:
 
 - a **board profile** (`unlock/profiles/`) describes one physical card: its PCI identity, VBIOS, die ID and cold-state registers;
@@ -11,8 +13,8 @@ Each field has a `GU_BOARD_HAVE_*` or `GU_HOST_HAVE_*` flag. A field is *confirm
 |---|---|---|---|
 | MSI RTX 3080 10GB, `10de:2206` | `profiles/ga102_2206.h` | default (or `-DGU_BOARD_2206`) | confirmed |
 | MSI RTX 3080 12GB, `10de:220a` | `profiles/ga102_220a.h` | `-DGU_BOARD_220A` | confirmed |
-| RTX 3060 12GB, `10de:2504` | `profiles/ga106_2504.h` | `-DGU_BOARD_GA106_2504` | confirmed 2026-10-25 (preflight only, no transaction yet) |
-| MSI RTX 3090, `10de:2204` | `profiles/ga102_2204.h` | `-DGU_BOARD_2204` | confirmed 2026-10-25 |
+| RTX 3060 12GB, `10de:2504` | `profiles/ga106_2504.h` | `-DGU_BOARD_GA106_2504` | confirmed 2026-10-25, one transaction |
+| MSI RTX 3090, `10de:2204` | `profiles/ga102_2204.h` | `-DGU_BOARD_2204` | confirmed 2026-10-25, one transaction |
 | Test fixture, unconfirmed | `profiles/unconfirmed.h` | `-DGU_BOARD_UNCONFIRMED` | never a board |
 | Intel iGPU console, GPU at `0:1:0.0` | `hosts/intel_bus1.h` | default | confirmed |
 | Second NVIDIA card holds the console at `01:00.0`, target at `0:5:0.0` | `hosts/nvidia_bus5.h` | `-DGU_HOST_NVIDIA_BUS5` | confirmed 2026-10-25 |
@@ -74,7 +76,7 @@ The display check still requires exactly one physical GOP, a valid mode and a ma
 
 Windows' bus numbers are only a hint. The values that count are the ones UEFI reports in the preflight.
 
-**Validated hosts:** `intel_bus1` (Intel iGPU console) ran the two GA102 boards. `nvidia_bus5` (console on a second NVIDIA card at `01:00.0`, target at `0:5:0.0`) ran an RTX 3060 transaction on 2026-10-25: the target's UEFI driver was released and the card reset while the console kept running on the other card. `console_bus8` is the inverse layout on the same PC, confirmed by the RTX 3090 preflight: there the 3090 is the target at `0:1:0.0` and the console sits at `08:00.0`. A host whose console is on another NVIDIA GPU —for example a second card driving the monitor —is accepted by the discovery preflight, but no transaction has run in that configuration; the transaction releases the NVIDIA UEFI driver from the target controller while that driver may also be serving the console.
+**Validated hosts:** `intel_bus1` (Intel iGPU console) ran the two GA102 boards. `nvidia_bus5` (console on a second NVIDIA card at `01:00.0`, target at `0:5:0.0`) ran an RTX 3060 transaction on 2026-10-25: the target's UEFI driver was released and the card reset while the console kept running on the other card. `console_bus8` is the inverse layout on the same PC, confirmed by the RTX 3090 preflight and then by its transaction: there the 3090 is the target at `0:1:0.0` and the console sits at `08:00.0`. Both cases matter because the transaction calls `DisconnectController` on the driver instance that owns the *target* controller while the same driver image keeps serving the console on a different card.
 
 ## Confirming a profile: preflight, then rebuild
 
