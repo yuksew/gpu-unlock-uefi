@@ -301,12 +301,14 @@ static EFI_STATUS FindTarget(VOID) {
   }
   GuFree(handles);GuLog("PCI target matches=%zu status=%#llx\n",(size_t)found,(unsigned long long)status);
   if(EFI_ERROR(status) || found!=1)return EFI_UNSUPPORTED;
-  if(!GU_HOST_HAVE_DISPLAY) {
+  /* The target's own chain, always: it is what tells the display check which
+     GOP sits on the card this run resets, whatever the host profile says. */
+  {
     EFI_DEVICE_PATH_PROTOCOL *path=NULL;char text[16*GU_PATH_MAX_PCI+1]="none";
     status=Gu.bs->HandleProtocol(Gu.handle,&PathGuid,(VOID **)&path);
     TargetDepth=!EFI_ERROR(status) && path?GuPathPci(path,256,TargetPath):0;
     if(TargetDepth)PathText(TargetPath,TargetDepth,text);
-    GuLog("target pci_path=%s status=%#llx\n",text,(unsigned long long)status);
+    GuLog("target pci_path=%s depth=%zu status=%#llx\n",text,TargetDepth,(unsigned long long)status);
   }
   return ConfigCheck(TRUE);
 }

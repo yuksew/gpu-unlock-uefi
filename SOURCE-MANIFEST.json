@@ -2839,7 +2839,7 @@
     },
     {
       "path": "unlock/app.c",
-      "sha256": "c2af65e18cbc7d6e3ec7cb114a346b9a35060ea7d50e725d04ca3db9b5862359"
+      "sha256": "7fed8cc2a92c61e25d1283cdeb8d9f0d5841934514eb28aec8fbc0d0eb4b54bd"
     },
     {
       "path": "unlock/app.h",
