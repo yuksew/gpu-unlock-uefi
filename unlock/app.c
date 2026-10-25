@@ -387,7 +387,7 @@ static EFI_STATUS PromCheck(VOID) {
 GU_TX_ONLY static EFI_STATUS Arm(VOID) {
   if(!Table->ConIn || !Table->ConIn->Reset || !Table->ConIn->ReadKeyStroke)return EFI_UNSUPPORTED;
   EFI_STATUS status=Table->ConIn->Reset(Table->ConIn,FALSE);if(EFI_ERROR(status))return status;
-  GuLog("READY: %s / Intel display / verified USB log and firmware.\n",GU_BOARD_LABEL);
+  GuLog("READY: %s / console %s / verified USB log and firmware.\n",GU_BOARD_LABEL,GU_HOST_PROFILE_NAME);
   if(PendingOwner.agent)GuLogText("U will release the RTX firmware driver, restore verified access settings if needed, then recheck and attempt once.\n");
   GuLogText("Press U to attempt once; Esc or 30-second timeout cancels.\n");
   if(!GuLogReady())return EFI_DEVICE_ERROR;
