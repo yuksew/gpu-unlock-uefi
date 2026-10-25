@@ -9,6 +9,11 @@
 #     all        preflight, the 220a transaction build and the default 2206
 #                transaction build (compile/verify only, never staged)
 #     usb        stage the preflight image as build/usb-preflight/EFI/BOOT/BOOTX64.EFI
+#     preflight-3060    RTX 3060 12GB (10de:2504) on an unconfirmed host + GU_PREFLIGHT
+#     transaction-3060  the 3060 transaction build; port.h refuses it until both
+#                       profiles/ga106_2504.local.h and hosts/discovery.local.h
+#                       confirm every field (docs/BOARD-PROFILE.md)
+#     usb-3060          stage preflight-3060 as build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI
 set -euo pipefail
 cd "$(dirname "$0")/unlock"
 
@@ -42,9 +47,12 @@ build_image() {
   echo "verified build/$name/BOOTX64.EFI"
 }
 
-# 12GB card. GU_TARGET_PCI_ID feeds the vendor gates in unlock_610.c; the
-# board profile in port.h owns identity, cold state and the VBIOS hash.
-BOARD_220A=(-DGU_BOARD_220A -DGU_TARGET_PCI_ID=0x220a10deU)
+# 12GB card. The board profile selected in port.h owns identity, cold state
+# and the VBIOS hash, and also names GU_TARGET_PCI_ID for the vendor gates.
+BOARD_220A=(-DGU_BOARD_220A)
+# RTX 3060 12GB: discovery board profile on a host whose GPU location and
+# console GOP have not been read by the preflight yet.
+BOARD_3060=(-DGU_BOARD_GA106_2504 -DGU_HOST_DISCOVERY)
 
 build_preflight() {
   build_image preflight-12gb "${BOARD_220A[@]}" -DGU_PREFLIGHT
@@ -55,7 +63,23 @@ build_transaction_12gb() {
 }
 
 build_transaction_10gb() {
-  build_image transaction-10gb -DGU_TARGET_PCI_ID=0x220610deU
+  build_image transaction-10gb
+}
+
+build_preflight_3060() {
+  build_image preflight-3060 "${BOARD_3060[@]}" -DGU_PREFLIGHT
+}
+
+build_transaction_3060() {
+  build_image transaction-3060 "${BOARD_3060[@]}"
+}
+
+stage_usb_3060() {
+  build_preflight_3060
+  install -d build/usb-preflight-3060/EFI/BOOT
+  install -m 0644 build/preflight-3060/BOOTX64.EFI build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI
+  sha256sum build/usb-preflight-3060/EFI/BOOT/BOOTX64.EFI
+  echo "stage build/usb-preflight-3060 to the USB root; \\RTX3080-UNLOCK must already exist"
 }
 
 stage_usb() {
@@ -70,5 +94,8 @@ case "${1:-preflight}" in
   preflight) build_preflight ;;
   all) build_preflight; build_transaction_12gb; build_transaction_10gb ;;
   usb) stage_usb ;;
-  *) echo "usage: $0 [preflight|all|usb]" >&2; exit 2 ;;
+  preflight-3060) build_preflight_3060 ;;
+  transaction-3060) build_transaction_3060 ;;
+  usb-3060) stage_usb_3060 ;;
+  *) echo "usage: $0 [preflight|all|usb|preflight-3060|transaction-3060|usb-3060]" >&2; exit 2 ;;
 esac
